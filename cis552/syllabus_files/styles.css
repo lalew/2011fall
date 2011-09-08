@@ -1,0 +1,179 @@
+body {
+  font-family: verdana, arial, sans-serif;
+  background: #888888;
+}
+
+td#header {
+  background: #ffffaa;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  color: #666666;
+  font-size: 33px;
+  font-weight: bold;
+  text-align: center;
+}
+
+td#pagetitle {
+  font-size: x-large;
+  font-weight: bold;
+  background: #ffffee;
+  color: #666666;
+  width: 150px;
+  padding: 10px;
+}
+
+td#menu {
+  background: #ffffee;
+  width: 150px;
+  padding: 10px;
+  font-size: small;
+}
+
+td#content {
+  background: #f5f5f5;
+  text-align: justify;
+  padding-top: 15px;
+  padding-left: 30px;
+  padding-right: 30px;
+  padding-bottom: 60px;
+}
+
+div#manualbody {
+  background: #f5f5f5;
+  text-align: justify;
+  padding: 20px;
+  margin: 20px;
+}
+
+div#manualheader {
+  background: #dddddd;
+  border: medium solid #444444;
+  padding-top: 25px;
+  padding-bottom: 25px;
+  line-height: 2;
+  color: #666666;
+  font-size: 40px;
+  font-weight: bold;
+  text-align: center;
+}
+
+A:link {text-decoration: none; color:#666666}
+A:visited {text-decoration: none; color:#666666}
+A:active {text-decoration: none; color:#666666}
+A:hover {text-decoration: none; color: black }
+
+li {
+  margin: 6px;
+}
+
+tt {
+  font-size: large;
+}
+
+ul {
+  list-style: square;
+}
+
+div#pagetoc {
+  font-size: small;
+  padding-top: 15px;
+  padding-bottom: 10px;
+}
+
+h3 {
+  font-size: large;
+  font-weight: bold;
+  padding-bottom: 0px;
+  padding-top: 10px;
+}
+
+table.syllabusbackup {
+  border: thin solid #444444;
+  padding: 5;
+  cell-padding: 2;
+  background: #cccccc;
+  valign: top;
+  font-size: small;
+}
+
+table.syllabus {
+  border: none;
+  padding: 5;
+  cell-padding: 2;
+  background: #777777;
+  valign: top;
+  font-size: small;
+}
+
+table.syllabus td {
+  background: #eeeeee;
+  padding: 2;
+  vertical-align: top;
+}
+
+table.syllabus .header td {
+  font-weight: bold;
+  background: #999999;
+  font-size: normal;
+}
+
+table.syllabus .monday td {
+  background: #dddddd;
+}
+
+table.styletable {
+  border: none;
+  padding: 5;
+  margin-left: 20px;
+  cell-padding: 2;
+  valign: top;
+  font-size: small;
+  width: 95%;
+}
+
+td.styletag {
+  align: left;
+  font-weight: bold;
+  color: #888888;
+  width: 35;
+}
+
+table.styletable td {
+  padding: 2;
+  vertical-align: top;
+}
+
+table.styletable p {
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-top: 0;
+  margin-bottom: 5;
+}
+
+table.simple {
+  border: none;
+  padding: 5;
+  margin-left: 20px;
+  cell-padding: 2;
+  vertical-align: top;
+  font-size: small;
+  width: 95%;
+}
+
+table.simple td {
+  vertical-align: top;
+}
+
+.mediumfont {
+  font-size: 14px;
+}
+
+.bcpnote {
+  font-size: 10px;
+  color: #bbbb44;
+}
+
+.alert {
+  color: red;
+}
+
