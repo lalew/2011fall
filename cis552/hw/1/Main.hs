@@ -15,11 +15,9 @@ main = do
    return ()
 
 -- Part 0 (a)
-
+abc:: Bool->Bool->Bool->Bool
 abc x y z =
-  if x then if y then True else
-       if (x && z) then True else False
-  else False
+  x && (y || (x && z))
  
  
 t0a :: Test
@@ -30,17 +28,8 @@ t0a = "0a1" ~: TestList [abc True False True ~?= True,
 -- 0 (b)
 
 arithmetic :: ((Int, Int), Int) -> ((Int,Int), Int) -> (Int, Int, Int)
-arithmetic x1 x2 =
-     let a = fst (fst x1) in
-     let b = snd (fst x1) in
-     let c = snd x1 in
-     let d = fst (fst x2) in
-     let e = snd (fst x2) in
-     let f = snd x2 
-       in
-       ((((((b*f) - (c*e)), ((c*
-       d) - (a*f)
-       ), ((a*e)-(b*d))))))
+arithmetic ((a, b), c) ((d, e), f) =
+           (b*f - c*e, c*d - a*f, a*e - b*d)
  
 
 t0b :: Test
