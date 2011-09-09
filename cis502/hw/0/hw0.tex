@@ -15,30 +15,52 @@ Solution:
 \newtheorem{fact1}{Fact}
 
 \begin{fact1}\label{fact}
-A ship should be the last one that schedules to stay in a port that it 
+A ship should be the last one that schedules to visit a port that it 
 will remain in.
 \end{fact1}
 
 \begin{proof}
-By contradiction, we suppose ship $S$ will remain in port $P$, beginning on
-day $d$, for the rest of the month, and another ship $S'$  has a schedule to
-stay in port $P$ on day $d+x$, where $0 \le x \le (m - d)$. But this will 
-conflict with the requirement (\textdagger), therefore $S'$ cannot have a 
-schedule to stay in port $P$, namely, $S$ is the last ship that schedule to 
-stay in the port $P$.
+By contradiction, we suppose ship $S$, which is not the last ship that
+will visit port $P$, will remain in port $P$, beginning on day $d$, and 
+another ship $S'$  has a schedule to visit port $P$ on day $d+x$, where 
+$0 \le x \le (m - d)$. But this will conflict with the requirement (
+\textdagger). Therefore $S$ cannot remain in the port $P$ for the rest
+of the month, which contradicts with the assumption. 
 \end{proof}
 
 In order to proof that a set of truncations can always be found, we can
 use contradiction.
 
 \begin{proof}
+Suppose on some day $d$, a ship $S$ cannot remain in any port, while
+all the other $n-1$ ships all remain in their ports respectively.
 
+There are three cases here, 
+\begin{itemize}
+    \item[1.] all ports are occupied, so $S$ has no place to remain in.
+    \item[2.] $S$ remains in port $P$, but there is another ship $S'$ that 
+    will schedule to visit port $P$ on day $d+x$ ($0 \le x \le (m - d)$), 
+    in order not to violate the requirement (\textdagger), $S$ cannot 
+    remain in $P$.
+    \item[3.] a port $P$ is the only empty port, but $S$ stayed in $P$ before, 
+    so $S$ cannot visit and remain in $P$.
+\end{itemize}
+
+For first case, because there are $n$ ships and $n$ ports, and the rest $n-1$
+ships already remain in the ports, there must be exactly one empty port.
+
+For second case, from the assumption, we know all the other ships are in ports,
+so there cannot be another ship that will visit port $P$.
+
+For last case, it means another ship $S'$, instead of $S$, is the last ship that
+visit the port $P$. From Fact \ref{fact}, we know $S'$ will remain in $P$, so
+$P$ is not empty. There is a contradiction.
+
+In sum, the ship $S$ will find a port to remain in, while all the other ships 
+are in their ports already. In other words, there is a set of truncations can 
+always be found.
 \end{proof}
 
-\begin{itemize}
-    \item Show a set of truncations can always be found: We can prove this by
-contradiction. First, we suppose there is a ship $S$ that cannot find any port
-to remain in. 
-\end{itemize}
+
 
 \end{document}
