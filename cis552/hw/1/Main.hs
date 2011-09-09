@@ -108,7 +108,7 @@ sumDigits :: [Integer] -> Integer
 
 sumDigits [] = 0
 sumDigits (hd:tl) = if hd >= 10 then sumDigits (toDigits hd) + sumDigits tl
-                               else hd + sumDigits tl
+                                else hd + sumDigits tl
 
 t1c :: Test
 t1c = "1c" ~: sumDigits[8,14,6,10] ~?= 20
@@ -132,7 +132,11 @@ test1 = TestList [ t1a, t1b, t1c, t1d ]
 -- lists are the same length.
  
 conv :: [Int] -> [Int] -> Int
-conv xs ys = error "conv: unimplemented"
+conv [] [] = 0
+conv [] _ = error "unmatched list"
+conv _ [] = error "unmatched list"
+conv xs ys = (head xs)*(last ys) 
+           + conv (tail xs) (reverse (tail (reverse ys)))
 
 t2a :: Test
 t2a = "2a" ~: conv [2,4,6] [1,2,3] ~?= 20
@@ -144,7 +148,14 @@ t2a = "2a" ~: conv [2,4,6] [1,2,3] ~?= 20
 -- the length of the longer number.   
  
 normalize :: [Int] -> [Int] -> ([Int], [Int])
-normalize = error "normalize: unimplemented"
+normalize xs ys = let lx = length xs
+                      ly = length ys
+                  in if lx > ly then (nHelper xs (2*lx+1 - lx), 
+                                      nHelper ys (2*lx+1 - ly))
+                                else (nHelper xs (2*ly+1 - lx), 
+                                      nHelper ys (2*ly+1 - ly))
+                  where nHelper str 0 = str
+                        nHelper str n = [0] ++ nHelper str (n - 1)
 
 t2b :: Test
 t2b = "2b" ~: normalize [1] [2,3] ~?= ([0,0,0,0,1], [0,0,0,2,3])
@@ -155,7 +166,15 @@ t2b = "2b" ~: normalize [1] [2,3] ~?= ([0,0,0,0,1], [0,0,0,2,3])
 -- the Ūrdhva Tiryagbhyām algorithm.
  
 multiply :: [Int] -> [Int] -> [Int]
-multiply = error "unimplemented"
+multiply xs ys = let (left, right) = normalize xs ys
+                 in mHelper left right 0  (length left)  (length left - 1)
+                 where mHelper _ _ _ _ 0 = [0]
+                       mHelper l r c len i 
+                        = let s = conv (drop i l) (drop i r)
+                              z = (s + c) `mod` 10
+                              c'= (s + c) `div` 10
+                          in mHelper l r c' len (i - 1) ++ [z]
+                          
 
 t2c :: Test
 t2c = "2c" ~: multiply [2,4,6][1,2,3] ~?= [0,0,3,0,2,5,8]
@@ -163,7 +182,9 @@ t2c = "2c" ~: multiply [2,4,6][1,2,3] ~?= [0,0,3,0,2,5,8]
 -- 2d) OPTIONAL CHALLENGE PROBLEM 
 
 convAlt :: [Int] -> [Int] -> Int
-convAlt = error "unimplemented"
+convAlt [] [] = 0
+convAlt xs ys = (head xs)*(last ys) 
+           + convAlt (tail xs) (reverse (tail (reverse ys)))
 
 t2d :: Test
 t2d = "2d" ~: convAlt [2,4,6][1,2,3] ~=? 20
