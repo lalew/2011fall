@@ -2,6 +2,8 @@
 \usepackage[utf8x]{inputenc}
 \usepackage{ucs}
 \usepackage{amsthm}
+\usepackage{algorithm}
+\usepackage{algorithmic}
 
 
 \author{Zi Yan}
@@ -61,6 +63,28 @@ are in their ports already. In other words, there is a set of truncations can
 always be found.
 \end{proof}
 
+\begin{algorithm}[h!]
+\caption{An algorithm for finding a set of truncation}
+\begin{algorithmic}[1]
+\REQUIRE Initially all $n$ ships $s \in S$ and all $n$ ports $p \in P$ are all free.
+\ENSURE At last, all ships remain in different ports respectively after $m$ days.
+
+\medskip
+
+\FOR{$i=1$ \TO $m$}
+    \FOR{$j=1$ \TO $n$}
+	    \IF{$s_j$ has a schedule to visit port $p$ on day $i$ \AND $s_j \in S$}
+	    \STATE let $s_j$ remain in $p$
+	    \STATE remove $s_j$ from $S$
+	        \IF{there is already another ship $s'$ in the port}
+	        \STATE move $s'$ out
+	        \STATE put $s'$ back into $S$
+	        \ENDIF
+	    \ENDIF
+	\ENDFOR
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
 
 
 \end{document}
