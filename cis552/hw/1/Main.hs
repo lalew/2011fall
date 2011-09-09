@@ -39,11 +39,12 @@ t0b = "0b" ~: TestList[ arithmetic ((1,2),3) ((4,5),6) ~?= (-3,6,-3),
 -- 0 (c)
 
 cmax :: [Int] -> Int -> Int
-cmax l t 
- = g (length l - 1) t 
-     where g n t = if n < 0 then t else 
-                   if (l !! n) > t then g (n-1) (l !! n) else g (n-1) t
- 
+
+cmax [] t = t
+cmax l t
+     = cmax (tail l) (if (head l > t) 
+                      then head l
+                      else t)
                 
 
 t0c :: Test
@@ -52,11 +53,16 @@ t0c ="0c" ~: TestList[ cmax [1,4,2] 0 ~?= 4,
                        cmax [5,1,5] 0 ~?= 5 ]
 
 -- 0 (d)
- 
-reverse l  = reverse_aux l [] where
-  reverse_aux l acc = 
-    if null l then acc
-       else reverse_aux (tail l) (head l : acc) 
+
+reverse :: [a] -> [a] 
+
+reverse [] = []
+reverse (hd:tl) = reverse tl ++ [hd]
+
+--reverse l  = reverse_aux l [] where
+--  reverse_aux l acc = 
+--    if null l then acc
+--       else reverse_aux (tail l) (head l : acc) 
  
 
 t0d :: Test
@@ -70,10 +76,16 @@ test0 = "test0" ~: TestList [ t0a , t0b, t0c, t0d ]
 -- Part 1 (a)  
 
 toDigits :: Integer -> [Integer]
-toDigits = error "unimplemented"
+
+toDigits num = if num >= 10 
+               then toDigits (div num 10) ++ [mod num 10]
+               else [num]
 
 toDigitsRev :: Integer -> [Integer]
-toDigitsRev = error "unimplemented"
+
+toDigitsRev num = if num >= 10 
+                  then [mod num 10] ++ toDigitsRev (div num 10)
+                  else [num]
 
 t1a :: Test
 t1a = "1a" ~: toDigitsRev 1234 ~?= [4,3,2,1]
@@ -81,7 +93,11 @@ t1a = "1a" ~: toDigitsRev 1234 ~?= [4,3,2,1]
 -- 1 (b)  
 
 doubleEveryOther :: [Integer] -> [Integer] 
-doubleEveryOther = error "unimplemented"
+doubleEveryOther l = dHelper l 0
+                     where dHelper [] _ = []
+                           dHelper (hd:tl) sign = if sign == 0
+                                                then [hd]++dHelper tl 1
+                                                else [2*hd] ++ dHelper tl 0
 
 t1b :: Test
 t1b = "1b" ~: doubleEveryOther [8,7,6,5] ~?= [8,14,6,10]
@@ -89,7 +105,10 @@ t1b = "1b" ~: doubleEveryOther [8,7,6,5] ~?= [8,14,6,10]
 -- 1 (c) 
 
 sumDigits :: [Integer] -> Integer
-sumDigits = error "unimplemented"
+
+sumDigits [] = 0
+sumDigits (hd:tl) = if hd >= 10 then sumDigits (toDigits hd) + sumDigits tl
+                               else hd + sumDigits tl
 
 t1c :: Test
 t1c = "1c" ~: sumDigits[8,14,6,10] ~?= 20
@@ -97,7 +116,7 @@ t1c = "1c" ~: sumDigits[8,14,6,10] ~?= 20
 -- 1 (d) 
 
 validate :: Integer -> Bool
-validate = error "unimplemented"
+validate num = mod (sumDigits (doubleEveryOther (toDigitsRev num))) 10 == 0
 
 t1d :: Test
 t1d = "1d" ~: validate 4012888888881881 ~?= True
