@@ -135,7 +135,7 @@ conv :: [Int] -> [Int] -> Int
 conv [] [] = 0
 conv [] _ = error "unmatched list"
 conv _ [] = error "unmatched list"
-conv xs ys = (head xs)*(last ys) 
+conv xs ys = (head xs)*(last ys) --was (head xs)*(head (reverse ys))
            + conv (tail xs) (reverse (tail (reverse ys)))
 
 t2a :: Test
@@ -184,7 +184,7 @@ t2c = "2c" ~: multiply [2,4,6][1,2,3] ~?= [0,0,3,0,2,5,8]
 convAlt :: [Int] -> [Int] -> Int
 convAlt [] [] = 0
 convAlt xs ys = (head xs)*(last ys) 
-           + convAlt (tail xs) (reverse (tail (reverse ys)))
+           + convAlt (tail xs) (init ys) -- was (reverse (tail (reverse ys)))
 
 t2d :: Test
 t2d = "2d" ~: convAlt [2,4,6][1,2,3] ~=? 20
@@ -201,9 +201,14 @@ test3 = "test3" ~: TestList [t3a, t3b, t3c, t3d, t3e, t3f, t3g, t3h]
 -- and `intersperses' that element between the elements of the list. 
 -- For example,
 --    intersperse ',' "abcde" == "a,b,c,d,e"
+intersperse' :: a->[a]->[a]
+intersperse' _ [a] = [a]
+intersperse' e list = [head list]
+                         ++ [e] 
+                         ++ (intersperse' e (tail list))
 
 t3a :: Test
-t3a = "3a" ~: assertFailure "testcase for 4a"
+t3a = "3a" ~: intersperse' ',' "abcde" ~=? "a,b,c,d,e"
 
 
 -- 3 (b)
@@ -212,8 +217,13 @@ t3a = "3a" ~: assertFailure "testcase for 4a"
 -- for example:
 --   invert [("a",1),("a",2)] returns [(1,"a"),(2,"a")] 
 
+invert' :: [(a,b)]->[(b,a)]
+
+invert' [] = []
+invert' lst = [(snd (head lst), fst (head lst))] ++ (invert' (tail lst))
+
 t3b :: Test
-t3b = "3b" ~: assertFailure "testcase for 4b"
+t3b = "3b" ~: invert' [("a",1),("a",2)] ~=? [(1,"a"),(2,"a")] 
  
 
 -- 3 (c)
@@ -226,8 +236,16 @@ t3b = "3b" ~: assertFailure "testcase for 4b"
 --     takeWhile (< 9) [1,2,3] == [1,2,3]
 --     takeWhile (< 0) [1,2,3] == []
 
+takeWhile' :: (a -> Bool)->[a]->[a]
+
+takeWhile' _ [] = []
+takeWhile' p lst = if p (head lst) 
+                   then [head lst] ++ takeWhile' p (tail lst)
+                   else []
+
 t3c :: Test
-t3c = "3c" ~: assertFailure "testcase for 4c"
+t3c = "3c" ~: takeWhile' (< 3) [1,2,3,4,1,2,3,4] ~=? [1,2] 
+
  
 
 -- 3 (d)
@@ -238,8 +256,15 @@ t3c = "3c" ~: assertFailure "testcase for 4c"
 -- for example: 
 --     find odd [0,2,3,4] returns Just 3
 
+find' :: (a->Bool)->[a]->Maybe a
+
+find' _ [] = Nothing
+find' p (hd:tl) = if p hd 
+                 then Just hd
+                 else find' p tl
+
 t3d :: Test
-t3d = "3d" ~: assertFailure "testcase for 4d"
+t3d = "3d" ~: find' odd [0,2,6,4] ~=? Nothing
  
 
 -- 3 (e)
@@ -249,8 +274,14 @@ t3d = "3d" ~: assertFailure "testcase for 4d"
 -- for example:
 --    all odd [1,2,3] returns False
 
+all' :: (a->Bool)->[a]->Bool
+
+all' _ [] = True
+all' p (hd:tl) = (p hd) && all' p tl
+
+
 t3e :: Test
-t3e = "3e" ~: assertFailure "testcase for 4e"
+t3e = "3e" ~: all' odd [1,2,3] ~=? False
  
 
 -- 3 (f)
@@ -263,10 +294,14 @@ t3e = "3e" ~: assertFailure "testcase for 4e"
 --   map2 f [x1, x2, ..., xn] [y1, y2, ..., yn, yn+1] 
 --        returns [f x1 y1, f x2 y2, ..., f xn yn]
 
+map2' :: (a->b->c)->[a]->[b]->[c]
 
+map2' _ [] _ = []
+map2' _ _ [] = []
+map2' f xs ys = [f (head xs) (head ys)] ++ map2' f (tail xs) (tail ys)
 
 t3f :: Test
-t3f = "3f" ~: assertFailure "testcase for 4f"
+t3f = "3f" ~: map2' (*) [1,2,3] [4,5,6] ~=? [4,10,18]
 
 -- 3 (g)
 
@@ -276,10 +311,15 @@ t3f = "3f" ~: assertFailure "testcase for 4f"
 -- for example:  
 --    zip [1,2] [True] returns [(1,True)]
 
+zip' :: [a]->[b]->[(a,b)]
+
+zip' [] _ = []
+zip' _ [] = []
+zip' xs ys = [(head xs, head ys)] ++ zip' (tail xs) (tail ys)
 
 
 t3g :: Test
-t3g = "3g" ~: assertFailure "testcase(s) for zip"
+t3g = "3g" ~:  zip' [1,2,4] [True,False] ~=? [(1,True),(2,False)]
 
 -- 3 (h)  WARNING this one is tricky!
 
@@ -289,8 +329,26 @@ t3g = "3g" ~: assertFailure "testcase(s) for zip"
 -- for example:
 --    transpose [[1,2,3],[4,5,6]] returns [[1,4],[2,5],[3,6]]
 
+transpose' ::[[a]]->[[a]]
 
+transpose' [] = []
+transpose' lst = if all' (\l-> not (null l)) lst
+                 then [headers lst] ++ transpose' (tails lst)
+                 else [[]]
+
+headers :: [[a]]->[a]
+
+headers [] = []
+headers lst = if all' (\l-> not (null l)) lst 
+              then [head (head lst)] ++ headers (tail lst)
+              else []
+
+tails ::[[a]]->[[a]]
+
+tails [] = []
+tails lst = if all' (\l-> not (null (tail l))) lst
+            then [tail (head lst)] ++ tails (tail lst)
+            else []
 
 t3h :: Test
-t3h = "3h" ~: assertFailure "testcase for 4h"
-
+t3h = "3h" ~: transpose' [[1,2,3],[4,5,6]] ~=? [[1,4],[2,5],[3,6]]
