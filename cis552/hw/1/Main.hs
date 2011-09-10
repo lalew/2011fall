@@ -335,7 +335,7 @@ transpose' [] = []
 transpose' lst = if all' (\l-> not (null l)) lst
                  then [headers lst] ++ transpose' (tails lst)
                  else [[]]
-
+-- provide all the first element in each list in the outter list
 headers :: [[a]]->[a]
 
 headers [] = []
@@ -343,6 +343,7 @@ headers lst = if all' (\l-> not (null l)) lst
               then [head (head lst)] ++ headers (tail lst)
               else []
 
+-- provide all the rest elements in each list in the outter list
 tails ::[[a]]->[[a]]
 
 tails [] = []
