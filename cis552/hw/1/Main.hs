@@ -59,10 +59,7 @@ reverse :: [a] -> [a]
 reverse [] = []
 reverse (hd:tl) = reverse tl ++ [hd]
 
---reverse l  = reverse_aux l [] where
---  reverse_aux l acc = 
---    if null l then acc
---       else reverse_aux (tail l) (head l : acc) 
+-- I think the way above is much better than the original one.
  
 
 t0d :: Test
@@ -77,15 +74,13 @@ test0 = "test0" ~: TestList [ t0a , t0b, t0c, t0d ]
 
 toDigits :: Integer -> [Integer]
 
-toDigits num = if num >= 10 
-               then toDigits (div num 10) ++ [mod num 10]
-               else [num]
+toDigits num  | num >= 10 = toDigits (div num 10) ++ [mod num 10]
+              | otherwise = [num]
+
 
 toDigitsRev :: Integer -> [Integer]
 
-toDigitsRev num = if num >= 10 
-                  then [mod num 10] ++ toDigitsRev (div num 10)
-                  else [num]
+toDigitsRev num = reverse $ toDigits num
 
 t1a :: Test
 t1a = "1a" ~: toDigitsRev 1234 ~?= [4,3,2,1]
@@ -95,9 +90,8 @@ t1a = "1a" ~: toDigitsRev 1234 ~?= [4,3,2,1]
 doubleEveryOther :: [Integer] -> [Integer] 
 doubleEveryOther l = dHelper l 0
                      where dHelper [] _ = []
-                           dHelper (hd:tl) sign = if sign == 0
-                                                then [hd]++dHelper tl 1
-                                                else [2*hd] ++ dHelper tl 0
+                           dHelper (hd:tl) sign | sign == 0 = [hd]++dHelper tl 1
+                                                | otherwise = [2*hd] ++ dHelper tl 0
 
 t1b :: Test
 t1b = "1b" ~: doubleEveryOther [8,7,6,5] ~?= [8,14,6,10]
@@ -107,8 +101,8 @@ t1b = "1b" ~: doubleEveryOther [8,7,6,5] ~?= [8,14,6,10]
 sumDigits :: [Integer] -> Integer
 
 sumDigits [] = 0
-sumDigits (hd:tl) = if hd >= 10 then sumDigits (toDigits hd) + sumDigits tl
-                                else hd + sumDigits tl
+sumDigits (hd:tl) | hd >= 10  = sumDigits (toDigits hd) + sumDigits tl
+                  | otherwise = hd + sumDigits tl
 
 t1c :: Test
 t1c = "1c" ~: sumDigits[8,14,6,10] ~?= 20
@@ -133,10 +127,11 @@ test1 = TestList [ t1a, t1b, t1c, t1d ]
  
 conv :: [Int] -> [Int] -> Int
 conv [] [] = 0
-conv [] _ = error "unmatched list"
-conv _ [] = error "unmatched list"
-conv xs ys = (head xs)*(last ys) --was (head xs)*(head (reverse ys))
-           + conv (tail xs) (reverse (tail (reverse ys)))
+-- Normally, I should add the two lines below.
+--conv [] _ = error "unmatched list"
+--conv _ [] = error "unmatched list"
+conv xs ys = (head xs)*(last ys) -- was (head xs)*(head (reverse ys))
+           + conv (tail xs) (init ys) -- was (reverse (tail (reverse ys)))
 
 t2a :: Test
 t2a = "2a" ~: conv [2,4,6] [1,2,3] ~?= 20
@@ -170,10 +165,10 @@ multiply xs ys = let (left, right) = normalize xs ys
                  in mHelper left right 0  (length left)  (length left - 1)
                  where mHelper _ _ _ _ 0 = [0]
                        mHelper l r c len i 
-                        = let s = conv (drop i l) (drop i r)
-                              z = (s + c) `mod` 10
-                              c'= (s + c) `div` 10
-                          in mHelper l r c' len (i - 1) ++ [z]
+                               = let s = conv (drop i l) (drop i r)
+                                     z = (s + c) `mod` 10
+                                     c'= (s + c) `div` 10
+                                 in mHelper l r c' len (i - 1) ++ [z]
                           
 
 t2c :: Test
@@ -182,9 +177,12 @@ t2c = "2c" ~: multiply [2,4,6][1,2,3] ~?= [0,0,3,0,2,5,8]
 -- 2d) OPTIONAL CHALLENGE PROBLEM 
 
 convAlt :: [Int] -> [Int] -> Int
-convAlt [] [] = 0
-convAlt xs ys = (head xs)*(last ys) 
-           + convAlt (tail xs) (init ys) -- was (reverse (tail (reverse ys)))
+
+convAlt xs ys = walk xs (fst)
+                where walk [] k = k (0, ys)
+                      walk (hd:tl) k = 
+                            walk tl (\(total,ys') -> 
+                                     k ((hd*(head ys')) + total, tail ys'))
 
 t2d :: Test
 t2d = "2d" ~: convAlt [2,4,6][1,2,3] ~=? 20
@@ -202,13 +200,15 @@ test3 = "test3" ~: TestList [t3a, t3b, t3c, t3d, t3e, t3f, t3g, t3h]
 -- For example,
 --    intersperse ',' "abcde" == "a,b,c,d,e"
 intersperse' :: a->[a]->[a]
+intersperse' _ []  = []
 intersperse' _ [a] = [a]
 intersperse' e list = [head list]
                          ++ [e] 
                          ++ (intersperse' e (tail list))
 
 t3a :: Test
-t3a = "3a" ~: intersperse' ',' "abcde" ~=? "a,b,c,d,e"
+t3a = "3a" ~: TestList [intersperse' ',' "abcde" ~?= "a,b,c,d,e",
+                        intersperse' ',' ""      ~?= ""]
 
 
 -- 3 (b)
@@ -223,8 +223,10 @@ invert' [] = []
 invert' lst = [(snd (head lst), fst (head lst))] ++ (invert' (tail lst))
 
 t3b :: Test
-t3b = "3b" ~: invert' [("a",1),("a",2)] ~=? [(1,"a"),(2,"a")] 
- 
+t3b = "3b" ~: TestList [invert' [("a",1),("a",2)] ~?= [(1,"a"),(2,"a")],
+                        invert' [(1, "a")] ~?= [("a", 1)],
+                        invert' ([]:: [(Int,Char)]) ~?= ([]:: [(Char,Int)]) ]
+-- It seems that I have to specify []'s type, [(a,b)] does not work.
 
 -- 3 (c)
 
@@ -244,7 +246,10 @@ takeWhile' p lst = if p (head lst)
                    else []
 
 t3c :: Test
-t3c = "3c" ~: takeWhile' (< 3) [1,2,3,4,1,2,3,4] ~=? [1,2] 
+t3c = "3c" ~: TestList [takeWhile' (< 3) [1,2,3,4,1,2,3,4] ~?= [1,2],
+                        takeWhile' (< 8) [1,2,3,4] ~?= [1,2,3,4],
+                        takeWhile' (< 0) [1,2,3] ~?= [],
+                        takeWhile' (> 3) [] ~?= []]
 
  
 
@@ -264,7 +269,9 @@ find' p (hd:tl) = if p hd
                  else find' p tl
 
 t3d :: Test
-t3d = "3d" ~: find' odd [0,2,6,4] ~=? Nothing
+t3d = "3d" ~: TestList [find' odd [0,2,6,4] ~?= Nothing,
+                        find' even [1,3,2,5] ~?= Just 2,
+                        find' even [] ~?= Nothing]
  
 
 -- 3 (e)
@@ -281,7 +288,9 @@ all' p (hd:tl) = (p hd) && all' p tl
 
 
 t3e :: Test
-t3e = "3e" ~: all' odd [1,2,3] ~=? False
+t3e = "3e" ~: TestList [all' odd [1,2,3] ~?= False,
+                        all' even [2,4,6] ~?= True,
+                        all' even []      ~?= True]
  
 
 -- 3 (f)
@@ -301,7 +310,10 @@ map2' _ _ [] = []
 map2' f xs ys = [f (head xs) (head ys)] ++ map2' f (tail xs) (tail ys)
 
 t3f :: Test
-t3f = "3f" ~: map2' (*) [1,2,3] [4,5,6] ~=? [4,10,18]
+t3f = "3f" ~: TestList [map2' (*) [1,2,3] [4,5,6] ~?= [4,10,18],
+                        map2' (+) [1,2,3] [5,6] ~?= [6,8],
+                        map2' (-) [5,6] [3,4,10] ~?= [2, 2],
+                        map2' (/) [] [1,3,4] ~?= []]
 
 -- 3 (g)
 
@@ -319,7 +331,9 @@ zip' xs ys = [(head xs, head ys)] ++ zip' (tail xs) (tail ys)
 
 
 t3g :: Test
-t3g = "3g" ~:  zip' [1,2,4] [True,False] ~=? [(1,True),(2,False)]
+t3g = "3g" ~: TestList [zip' [1,2,4] [True,False] ~?= [(1,True),(2,False)],
+                        zip' [1,2] [True, True, True] ~?= [(1,True),(2,True)],
+                        zip' ([]::[Int]) [True,True] ~?= ([]::[(Int,Bool)]) ]
 
 -- 3 (h)  WARNING this one is tricky!
 
@@ -335,6 +349,7 @@ transpose' [] = []
 transpose' lst = if all' (\l-> not (null l)) lst
                  then [headers lst] ++ transpose' (tails lst)
                  else [[]]
+
 -- provide all the first element in each list in the outter list
 headers :: [[a]]->[a]
 
@@ -352,4 +367,6 @@ tails lst = if all' (\l-> not (null (tail l))) lst
             else []
 
 t3h :: Test
-t3h = "3h" ~: transpose' [[1,2,3],[4,5,6]] ~=? [[1,4],[2,5],[3,6]]
+t3h = "3h" ~: TestList [transpose' [[1,2,3],[4,5,6]] ~?= [[1,4],[2,5],[3,6]],
+                        transpose' [[1,4],[2,5],[3,6]] ~?= [[1,2,3],[4,5,6]],
+                        transpose' [[1,3],[]] ~?= ([[]]::[[Int]])]
