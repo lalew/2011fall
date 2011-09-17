@@ -89,9 +89,9 @@ t1a = "1a" ~: toDigitsRev 1234 ~?= [4,3,2,1]
 
 doubleEveryOther :: [Integer] -> [Integer] 
 doubleEveryOther l = dHelper l 0
-                     where dHelper [] _ = []
-                           dHelper (hd:tl) sign | sign == 0 = [hd]++dHelper tl 1
-                                                | otherwise = [2*hd] ++ dHelper tl 0
+   where dHelper [] _ = []
+         dHelper (hd:tl) sign | sign == 0 = [hd]++dHelper tl 1
+                              | otherwise = [2*hd] ++ dHelper tl 0
 
 t1b :: Test
 t1b = "1b" ~: doubleEveryOther [8,7,6,5] ~?= [8,14,6,10]
@@ -110,7 +110,7 @@ t1c = "1c" ~: sumDigits[8,14,6,10] ~?= 20
 -- 1 (d) 
 
 validate :: Integer -> Bool
-validate num = mod (sumDigits (doubleEveryOther (toDigitsRev num))) 10 == 0
+validate num = mod ((sumDigits . doubleEveryOther . toDigitsRev) num) 10 == 0
 
 t1d :: Test
 t1d = "1d" ~: validate 4012888888881881 ~?= True
@@ -203,8 +203,8 @@ intersperse' :: a->[a]->[a]
 intersperse' _ []  = []
 intersperse' _ [a] = [a]
 intersperse' e list = [head list]
-                         ++ [e] 
-                         ++ (intersperse' e (tail list))
+                      ++ [e] 
+                      ++ (intersperse' e (tail list))
 
 t3a :: Test
 t3a = "3a" ~: TestList [intersperse' ',' "abcde" ~?= "a,b,c,d,e",
@@ -226,7 +226,8 @@ t3b :: Test
 t3b = "3b" ~: TestList [invert' [("a",1),("a",2)] ~?= [(1,"a"),(2,"a")],
                         invert' [(1, "a")] ~?= [("a", 1)],
                         invert' ([]:: [(Int,Char)]) ~?= ([]:: [(Char,Int)]) ]
--- It seems that I have to specify []'s type, [(a,b)] does not work.
+
+-- It seems that I have to specify []'s type, type [(a,b)] does not work.
 
 -- 3 (c)
 
@@ -240,10 +241,15 @@ t3b = "3b" ~: TestList [invert' [("a",1),("a",2)] ~?= [(1,"a"),(2,"a")],
 
 takeWhile' :: (a -> Bool)->[a]->[a]
 
-takeWhile' _ [] = []
-takeWhile' p lst = if p (head lst) 
-                   then [head lst] ++ takeWhile' p (tail lst)
-                   else []
+
+takeWhile' p = foldr step [] 
+               where step x xs = if (p x) then x:xs
+                                          else []
+-- old definition
+-- takeWhile' _ [] = []
+-- takeWhile' p lst = if p (head lst) 
+--                    then [head lst] ++ takeWhile' p (tail lst)
+--                    else []
 
 t3c :: Test
 t3c = "3c" ~: TestList [takeWhile' (< 3) [1,2,3,4,1,2,3,4] ~?= [1,2],
@@ -265,8 +271,8 @@ find' :: (a->Bool)->[a]->Maybe a
 
 find' _ [] = Nothing
 find' p (hd:tl) = if p hd 
-                 then Just hd
-                 else find' p tl
+                  then Just hd
+                  else find' p tl
 
 t3d :: Test
 t3d = "3d" ~: TestList [find' odd [0,2,6,4] ~?= Nothing,
