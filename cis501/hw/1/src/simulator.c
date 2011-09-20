@@ -29,6 +29,13 @@ void simulate(FILE* inputFile, FILE* outputFile)
   int64_t totalMicroops = 0;
   int64_t totalMacroops = 0;
   
+  //additional work
+  int opsDistr[100];//assume the max number of micro per macro is 100
+  int maxMicro = 1;
+  double avgMicro = 0;
+
+  memset(opsDistr, 0, sizeof(int)*100);
+
   fprintf(outputFile, "Processing trace...\n");
   
   while (true) {
@@ -70,6 +77,7 @@ void simulate(FILE* inputFile, FILE* outputFile)
       fprintf(stderr, "Error parsing trace at line %" PRIi64 "\n", totalMicroops);
       abort();
     }
+    
 
     // For each micro-op
     totalMicroops++;
@@ -77,14 +85,36 @@ void simulate(FILE* inputFile, FILE* outputFile)
     // For each macro-op:
     if (microOpCount == 1) {
       totalMacroops++;
+
+      opsDistr[maxMicro]++;
     }
+
+    //additional works
+    
+    //record the number of micro per macro
+    maxMicro = microOpCount;
+    
+
   }
   
   fprintf(outputFile, "Processed %" PRIi64 " trace records.\n", totalMicroops);
 
   fprintf(outputFile, "Micro-ops: %" PRIi64 "\n", totalMicroops);
   fprintf(outputFile, "Macro-ops: %" PRIi64 "\n", totalMacroops);
+  
+  fprintf(outputFile, "Average number of micro-ops per macro-ops: %1.2f\n", 
+                       (double)totalMicroops/totalMacroops);
 
+  fprintf(outputFile, "Micro per Macro\t\tPercentage\n");
+  for (int i = 1; i < 6; ++i)
+  {
+      double distr = (double)opsDistr[i]/totalMacroops;
+      fprintf(outputFile, "%15d\t\t%f\n", i, distr);
+
+      avgMicro += distr*i;
+  }
+  fprintf(outputFile, "Average number of micro-ops per macro-ops: %1.2f\n",
+                       avgMicro);
 }
 
 int main(int argc, char *argv[]) 
