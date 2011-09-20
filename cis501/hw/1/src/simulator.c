@@ -106,12 +106,14 @@ void simulate(FILE* inputFile, FILE* outputFile)
                        (double)totalMicroops/totalMacroops);
 
   fprintf(outputFile, "Micro per Macro\t\tPercentage\n");
-  for (int i = 1; i < 6; ++i)
+  for (int i = 0; i < 100; ++i)
   {
-      double distr = (double)opsDistr[i]/totalMacroops;
-      fprintf(outputFile, "%15d\t\t%f\n", i, distr);
-
-      avgMicro += distr*i;
+      if (opsDistr[i] != 0)
+      {
+          double distr = (double)opsDistr[i]/totalMacroops;
+          fprintf(outputFile, "%15d\t\t%f\n", i, distr);
+          avgMicro += distr*i;
+      }
   }
   fprintf(outputFile, "Average number of micro-ops per macro-ops: %1.2f\n",
                        avgMicro);
