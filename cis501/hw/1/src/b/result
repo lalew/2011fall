@@ -1,0 +1,15 @@
+Starting timer
+Stopping timer
+./code-O0: 45.755888 seconds
+Starting timer
+Stopping timer
+./code-O3: 11.883262 seconds
+Starting timer
+Stopping timer
+./code-O3-unrolled: 11.080406 seconds
+Starting timer
+Stopping timer
+./code-O3-unrolled-vector: 6.259242 seconds
+Starting timer
+Stopping timer
+./code-O3-unrolled-vector-openmp: 2.916026 seconds

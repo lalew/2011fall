@@ -7,6 +7,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <strings.h>
+#include <math.h>
+
+#define LOADS   0
+#define STORES  1
+#define UBRANCH 2
+#define CBRANCH 3
+#define OTHER   4
+
+const char instMix[][25]=
+{"Loads", "Stores",
+ "Unconditional branches",
+ "Conditional branches",
+ "Other"
+};
 
 void simulate(FILE* inputFile, FILE* outputFile)
 {
@@ -31,11 +45,25 @@ void simulate(FILE* inputFile, FILE* outputFile)
   
   //additional work
   int opsDistr[100];//assume the max number of micro per macro is 100
-  int maxMicro = 1;
+  int maxMicro = 0;
   double avgMicro = 0;
 
-  memset(opsDistr, 0, sizeof(int)*100);
+  int sizeDistr[100];
+  double avgSize = 0;
 
+  int branchDistr[100];
+  int totalBranch = 0;
+
+  int mixDistr[5];
+
+  int fusionNum = 0;
+  char preFlag = ' ';
+
+  memset(opsDistr, 0, sizeof(int)*100);
+  memset(sizeDistr, 0, sizeof(int)*100);
+  memset(branchDistr, 0, sizeof(int)*100);
+  memset(mixDistr, 0, sizeof(int)*5);
+  
   fprintf(outputFile, "Processing trace...\n");
   
   while (true) {
@@ -70,6 +98,8 @@ void simulate(FILE* inputFile, FILE* outputFile)
                         microOperation);
                         
     if (result == EOF) {
+      //for the last instruction
+      opsDistr[maxMicro]++;
       break;
     }
 
@@ -86,14 +116,50 @@ void simulate(FILE* inputFile, FILE* outputFile)
     if (microOpCount == 1) {
       totalMacroops++;
 
+      //additional work
       opsDistr[maxMicro]++;
+      
+      int instSize = fallthroughPC - instructionAddress;
+      sizeDistr[instSize] ++;
     }
 
     //additional works
-    
     //record the number of micro per macro
     maxMicro = microOpCount;
     
+    //distribution of branch distances
+    if (targetAddressTakenBranch != 0)
+    {
+        int numBits = 1 
+                      + floor(log2(abs(instructionAddress 
+                      - targetAddressTakenBranch)));
+        branchDistr[numBits]++;
+        totalBranch++;
+    }
+
+    //Instruction Mix
+    if (loadStore == 'L')
+        mixDistr[LOADS]++;
+    else if (loadStore == 'S')
+        mixDistr[STORES]++;
+    else if (targetAddressTakenBranch != 0 
+             && conditionRegister == '-')
+        mixDistr[UBRANCH]++;
+    else if (targetAddressTakenBranch != 0
+             && conditionRegister == 'R')
+        mixDistr[CBRANCH]++;
+    else
+        mixDistr[OTHER]++;
+
+    //operation fusion
+    if (preFlag == 'W' 
+        && targetAddressTakenBranch != 0
+        && conditionRegister == 'R')
+    {
+        fusionNum++;
+    }
+
+    preFlag = conditionRegister;
 
   }
   
@@ -102,21 +168,72 @@ void simulate(FILE* inputFile, FILE* outputFile)
   fprintf(outputFile, "Micro-ops: %" PRIi64 "\n", totalMicroops);
   fprintf(outputFile, "Macro-ops: %" PRIi64 "\n", totalMacroops);
   
+  //Question 1
   fprintf(outputFile, "Average number of micro-ops per macro-ops: %1.2f\n", 
                        (double)totalMicroops/totalMacroops);
-
   fprintf(outputFile, "Micro per Macro\t\tPercentage\n");
-  for (int i = 0; i < 100; ++i)
+  for (int i = 1; i < 100; ++i)
   {
       if (opsDistr[i] != 0)
       {
-          double distr = (double)opsDistr[i]/totalMacroops;
-          fprintf(outputFile, "%15d\t\t%f\n", i, distr);
-          avgMicro += distr*i;
+          double distr = (double)opsDistr[i]/totalMacroops*100;
+          fprintf(outputFile, "%15d\t\t%.2f\n", i, distr);
+          avgMicro += distr*i/100;
       }
   }
-  fprintf(outputFile, "Average number of micro-ops per macro-ops: %1.2f\n",
+  fprintf(outputFile, "Average number of micro-ops per macro-ops: %1.2f\n\n",
                        avgMicro);
+
+  //Question 2
+  fprintf(outputFile, "Bytes per Macro\t\tPercentage\n");
+  for (int i = 1; i < 100; ++i)
+  {
+      if (sizeDistr[i] != 0)
+      {
+          double distr = (double)sizeDistr[i]/totalMacroops*100;
+          fprintf(outputFile, "%15d\t\t%.2f\n", i, distr);
+          avgSize += distr*i/100;
+      }
+  }
+  fprintf(outputFile, "Average bytes per Macro-ops:%1.2f\n\n", avgSize);
+
+  //Question 3
+  fprintf(outputFile, "Cumulative number of bits per Macro\t\tPercentage\n");
+  double cumPer = 0;
+  for (int i = 1; i < 100; ++i)
+  {
+      if (branchDistr[i] != 0)
+      {
+          double distr = (double)branchDistr[i]/totalBranch*100;
+          cumPer += distr;
+          fprintf(outputFile, "%15d\t\t%.2f\n", i, cumPer);
+      }
+  }
+
+  //Question 4
+  fprintf(outputFile, "\n    Type of instructions\t\tPercentage\n");
+  for (int i = 0; i < 5; ++i)
+  {
+      fprintf(outputFile, "%25s\t\t%.2f\n", instMix[i], 
+              (double)mixDistr[i]/totalMicroops*100);
+  }
+
+  //Question 5
+  int total16 = 0;
+  for (int i = 0; i <= 16; ++i)
+  {
+      total16 += branchDistr[i];
+  }
+  fprintf(outputFile, "\nThe increase of micro-ops for larger branch:%.2f",
+          (double)(totalBranch - total16)/totalMicroops);
+
+  //Question 6
+  fprintf(outputFile, "\n%.2f percent of all micro-ops are eligible for "
+          "such fusion.\n", (double)fusionNum/totalMicroops*100);
+  fprintf(outputFile, "It will be %.2f %% faster.\n", 
+          (double)fusionNum/totalMicroops*100);
+
+
 }
 
 int main(int argc, char *argv[]) 

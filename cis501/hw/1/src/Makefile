@@ -7,3 +7,6 @@ simulator: simulator.c
 
 run: sjeng-1K.trace.gz simulator
 	$(UNZIP) $< | ./simulator
+
+run2: sjeng-10M.trace.gz simulator
+	$(UNZIP) $< | ./simulator
