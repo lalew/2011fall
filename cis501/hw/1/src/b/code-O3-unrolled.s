@@ -1,83 +1,68 @@
-	.section	__TEXT,__text,regular,pure_instructions
-	.globl	_saxpy
-	.align	4, 0x90
-_saxpy:
-Leh_func_begin1:
-	pushq	%rbp
-Ltmp0:
-	movq	%rsp, %rbp
-Ltmp1:
-	movq	_a@GOTPCREL(%rip), %rax
-	movss	(%rax), %xmm0
+	.file	"code.c"
+	.text
+	.p2align 4,,15
+.globl saxpy
+	.type	saxpy, @function
+saxpy:
+.LFB0:
+	.cfi_startproc
+	movss	a(%rip), %xmm0
 	xorl	%eax, %eax
-	movq	_x@GOTPCREL(%rip), %rcx
-	movq	_y@GOTPCREL(%rip), %rdx
-	movq	_z@GOTPCREL(%rip), %rsi
-	.align	4, 0x90
-LBB1_1:
-	movss	(%rcx,%rax,4), %xmm1
+	.p2align 4,,10
+	.p2align 3
+.L2:
+	leaq	4(%rax), %r10
+	leaq	8(%rax), %r9
+	leaq	12(%rax), %r8
+	leaq	16(%rax), %rdi
+	leaq	20(%rax), %rsi
+	leaq	24(%rax), %rcx
+	leaq	28(%rax), %rdx
+	movss	x(%rax), %xmm8
+	mulss	%xmm0, %xmm8
+	movss	x(%r10), %xmm7
+	movss	x(%r9), %xmm6
+	mulss	%xmm0, %xmm7
+	movss	x(%r8), %xmm5
+	mulss	%xmm0, %xmm6
+	movss	x(%rdi), %xmm4
+	mulss	%xmm0, %xmm5
+	movss	x(%rsi), %xmm3
+	mulss	%xmm0, %xmm4
+	movss	x(%rcx), %xmm2
+	mulss	%xmm0, %xmm3
+	movss	x(%rdx), %xmm1
+	mulss	%xmm0, %xmm2
 	mulss	%xmm0, %xmm1
-	addss	(%rdx,%rax,4), %xmm1
-	movss	%xmm1, (%rsi,%rax,4)
-	incq	%rax
-	cmpq	$65536, %rax
-	jne	LBB1_1
-	popq	%rbp
+	addss	y(%rax), %xmm8
+	addss	y(%r10), %xmm7
+	addss	y(%r9), %xmm6
+	addss	y(%r8), %xmm5
+	addss	y(%rdi), %xmm4
+	addss	y(%rsi), %xmm3
+	addss	y(%rcx), %xmm2
+	movss	%xmm8, z(%rax)
+	addq	$32, %rax
+	addss	y(%rdx), %xmm1
+	cmpq	$262144, %rax
+	movss	%xmm7, z(%r10)
+	movss	%xmm6, z(%r9)
+	movss	%xmm5, z(%r8)
+	movss	%xmm4, z(%rdi)
+	movss	%xmm3, z(%rsi)
+	movss	%xmm2, z(%rcx)
+	movss	%xmm1, z(%rdx)
+	jne	.L2
+	rep
 	ret
-Leh_func_end1:
-
-	.comm	_x,262144,5
-	.comm	_a,4,2
-	.comm	_y,262144,5
-	.comm	_z,262144,5
-	.section	__TEXT,__eh_frame,coalesced,no_toc+strip_static_syms+live_support
-EH_frame0:
-Lsection_eh_frame:
-Leh_frame_common:
-Lset0 = Leh_frame_common_end-Leh_frame_common_begin
-	.long	Lset0
-Leh_frame_common_begin:
-	.long	0
-	.byte	1
-	.asciz	 "zR"
-	.byte	1
-	.byte	120
-	.byte	16
-	.byte	1
-	.byte	16
-	.byte	12
-	.byte	7
-	.byte	8
-	.byte	144
-	.byte	1
-	.align	3
-Leh_frame_common_end:
-	.globl	_saxpy.eh
-_saxpy.eh:
-Lset1 = Leh_frame_end1-Leh_frame_begin1
-	.long	Lset1
-Leh_frame_begin1:
-Lset2 = Leh_frame_begin1-Leh_frame_common
-	.long	Lset2
-Ltmp2:
-	.quad	Leh_func_begin1-Ltmp2
-Lset3 = Leh_func_end1-Leh_func_begin1
-	.quad	Lset3
-	.byte	0
-	.byte	4
-Lset4 = Ltmp0-Leh_func_begin1
-	.long	Lset4
-	.byte	14
-	.byte	16
-	.byte	134
-	.byte	2
-	.byte	4
-Lset5 = Ltmp1-Ltmp0
-	.long	Lset5
-	.byte	13
-	.byte	6
-	.align	3
-Leh_frame_end1:
-
-
-.subsections_via_symbols
+	.cfi_endproc
+.LFE0:
+	.size	saxpy, .-saxpy
+	.comm	x,262144,32
+	.comm	y,262144,32
+	.comm	z,262144,32
+	.comm	a,4,4
+	.ident	"GCC: (SUSE Linux) 4.5.1 20101208 [gcc-4_5-branch revision 167585]"
+	.section	.comment.SUSE.OPTs,"MS",@progbits,1
+	.string	"Ospwg"
+	.section	.note.GNU-stack,"",@progbits

@@ -1,0 +1,81 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage[utf8x]{inputenc}
+\usepackage{ucs}
+\author{Zi Yan}
+\title{CIS501 HW1b}
+\date{}
+\begin{document}
+\maketitle
+
+\section{Total speedup}
+
+\section{Relative speedup}
+\begin{itemize}
+    \item -O3 is 3.85045 times faster than -O0.
+    \item unrolled is 1.07246 times faster than -O3.
+    \item unrolled \& vectorized is 1.77025 times faster than just unrolled.
+    \item ``-fopenmp" is 2.14650 times faster than unrolled \& vectorized.
+\end{itemize}
+\section{Static instruction counts}
+\begin{itemize}
+    \item -O0: 15 instructions.
+    \item -O3: 7 instructions.
+    \item unrolled: 42 instructions.
+    \item unrolled \& vectorized: 42 instructions.
+\end{itemize}
+
+\section{Dynamic instruction counts}
+\begin{itemize}
+    \item -O0: $65536 \times 15 = 983040$ instructions.
+    \item -O3: $65536 \times 7 = 458752$ instructions.
+    \item unrolled: $8192 \times 42 = 344064$ instructions.
+    \item unrolled \& vectorized: $2048 \times 42 = 86016$ instructions.
+\end{itemize}
+
+\section{Static vs. dynamic instruction counts}
+The most optimized .s file (unrolled \& vectorized) is 3 times as many
+static instructions as the less optimized one (-O0). However, the most
+optimized file has only 0.0875 times dynamic instructions of the less
+optimized one. 
+
+Apparently optimization increases the static instructions, but it
+decreases the iteration times of the whole loop, therefore, the dynamic
+instructions are decreased.
+
+\section{Performance estimate based on dynamic instruction count}
+Because CPI is 1, the number of clock cycles a program runs is the very
+dynamic instruction number.
+
+\begin{itemize}
+    \item -O3 is 2.14286 times faster than -O0.
+    \item unrolled is 1.33333 times faster than -O3.
+    \item vectorized is 4 times faster than -O3 + unrolling.
+\end{itemize}
+
+\section{Loop unrolling pro/con}
+\textbf{One advantage:} The program runs faster.
+\\
+\textbf{One disadvantage:} The size of the program doubles.
+
+\section{Estimated vs. actual performance}
+Except the performance improvement of -O3 over -O0, all the others
+are high than the actual performances.
+
+\section{CPI calculation}
+\begin{itemize}
+    \item -O0: CPI $=3,000,000,000 \times 45.76 \div (983040 \times
+     200000) = 0.6982$.
+     \item -O3: CPI $=3,000,000,000 \times 11.88 \div (458752 \times
+     200000) = 0.3884$.
+     \item unrolled: CPI $=3,000,000,000 \times 11.08 \div (344064
+      \times 200000) = 0.4830$.
+     \item unrolled+vectorized: CPI $=3,000,000,000 \times 6.26 \div
+      (86016 \times 200000) = 1.0917$.
+\end{itemize}
+
+\section{CPI and compiler optimizations}
+As more optimizations are enabled, the CPIs goes down then climbs
+up. 
+
+From -O0 to -O3, 
+\end{document}

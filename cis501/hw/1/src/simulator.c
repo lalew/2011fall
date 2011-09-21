@@ -228,8 +228,9 @@ void simulate(FILE* inputFile, FILE* outputFile)
           (double)(totalBranch - total16)/totalMicroops);
 
   //Question 6
-  fprintf(outputFile, "\n%.2f percent of all micro-ops are eligible for "
-          "such fusion.\n", (double)fusionNum/totalMicroops*100);
+  fprintf(outputFile, "\n%d pairs (%.2f percent) of all micro-ops are "
+          "eligible for such fusion.\n", 
+          fusionNum, (double)fusionNum/totalMicroops*100*2);
   fprintf(outputFile, "It will be %.2f %% faster.\n", 
           (double)fusionNum/totalMicroops*100);
 

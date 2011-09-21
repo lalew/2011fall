@@ -1,15 +1,15 @@
 Starting timer
 Stopping timer
-./code-O0: 45.755888 seconds
+./code-O0: 45.755888 seconds 1
 Starting timer
 Stopping timer
-./code-O3: 11.883262 seconds
+./code-O3: 11.883262 seconds 3.85045
 Starting timer
 Stopping timer
-./code-O3-unrolled: 11.080406 seconds
+./code-O3-unrolled: 11.080406 seconds 4.12944
 Starting timer
 Stopping timer
-./code-O3-unrolled-vector: 6.259242 seconds
+./code-O3-unrolled-vector: 6.259242 seconds 7.31013
 Starting timer
 Stopping timer
-./code-O3-unrolled-vector-openmp: 2.916026 seconds
+./code-O3-unrolled-vector-openmp: 2.916026 seconds 15.69118
