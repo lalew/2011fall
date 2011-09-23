@@ -1,0 +1,116 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[margin=2.54cm]{geometry}
+\usepackage{parskip}
+\usepackage{tikz}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{algorithmic}
+\usepackage{algorithm}
+
+
+
+\begin{document}
+Name: Yan, Zi \\
+Course: CIS 502 \\
+Assignment: HW2 \\
+\line(1,0){400}
+%Write your content here
+
+
+\section*{Problem 1}
+\paragraph*{a.)}
+No.
+In the figure \ref{p1a}, a minimum-bottleneck tree can be \{(c,d), (d,b),
+(b,e), (a,b)\}, but the minimum spanning tree is \{(a,b), (a,c), (a,d),
+(b,e)\}. 
+
+\begin{figure}[!h]
+\caption{example}
+\label{p1a}
+\center
+\begin{tikzpicture}
+  \coordinate [label=170:$a$] (A) at (0,0);
+  \coordinate [label=$b$] (B) at (2.5,0.25);
+  \coordinate [label=$c$] (C) at (-2.5, -0.5);
+  \coordinate [label=below:$d$] (D) at (0.25, -2.5);
+  \coordinate [label=$e$] (E) at (0.25, 2.5);
+  
+  \draw (A) -- node[above] {1} (B);
+  \draw (A) -- node[above] {1} (C);
+  \draw (A) -- node[left] {1} (D);
+  \draw (A) -- node[left] {3} (E);
+  \draw (C) -- node[below] {2} (D);
+  \draw (D) -- node[right] {2} (B);
+  \draw (B) -- node[above] {2} (E);
+\end{tikzpicture}
+\end{figure}
+
+\paragraph*{b.)}
+Yes.
+Suppose not. Let $T=(V, E')$ be the minimum spanning tree of the 
+graph $G$, and $T'=(V, E'')$ be the minimum-bottleneck tree of $G$,
+where $T$ and $T'$ are not identical. The difference is that $e \neq e'$
+and $w_e < w_{e'}$, where $e \in E''$ is the most weighted edge in $T'$,
+and $e' \in E'$ is the most weighted edge in $T$, but the rest edges of
+two spanning tree are the same. From the assumption, we can show
+that $\sum\limits_{e \in E'} w_e > \sum\limits_{e \in E''} w_e$. But this 
+contradicts the fact that $T$ is MST.
+
+\paragraph*{c.)} We can simply use Kruskal's Algorithm to find a 
+minimum spanning tree in $O(m\log n)$ time. And the MST can be
+regarded as a minimum-bottleneck tree.
+
+\paragraph*{d.)} We can combine binary search and DFS to implement
+the algorithm. Briefly, we use binary search to find the minimum 
+bottleneck weight, using DFS to verify whether all the edges weighted 
+no greater than this weight can make the original graph connected,
+namely forming a spanning tree. 
+
+\begin{algorithm}
+\caption{Using DFS to find minimum-bottleneck tree}
+\begin{algorithmic}
+\STATE \textbf{FIND\_MBT($G$)}
+\WHILE{there are still more than one vertex in $G$}
+\STATE Let $w_{max}$ = the median number of all existing edge 
+weights
+\STATE VERIFY-WEIGHT($G, w_{max}$)
+\IF{$w_{max}$ is a valid weight}
+\STATE Remove all the unvisited edges from $G$
+\ELSE Regard all visited edges and vertices as a single node in the
+following steps
+\ENDIF
+\ENDWHILE
+\STATE The vertices and remaining edges consist of minimum-
+bottleneck tree
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\begin{algorithmic}
+\STATE VERIFY-WEIGHT($G, w_{max}$)
+\FOR{each vertex $u \in V$}
+    \STATE visited[$u$] = \FALSE
+\ENDFOR
+\STATE $v$ = any vertex picked from $V$
+\STATE DFS-MOD($v$, $w_{max}$)
+\FOR{each vertex $u \in V$}
+    \IF{visited[$u$] == \FALSE}
+        \RETURN "not a valid weight"
+        \ELSE \RETURN "a valid weight"
+    \ENDIF
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\begin{algorithmic}
+\STATE DFS-MOD($u, w_{max}$)
+\STATE visited[$u$] = \TRUE
+\FOR{each $v \in$Adj[$u$]}
+\IF{\NOT visited[$v$] \AND $w(u,v) \le w_{max}$}
+\STATE DFS($v, w_{max}$)
+\ENDIF
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+\end{document}
