@@ -1,0 +1,145 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage[utf8x]{inputenc}
+\usepackage{ucs}
+\author{Zi Yan}
+\title{CIS501 HW1a}
+\date{}
+\begin{document}
+\maketitle
+
+The following answers are all about the trace sjeng-10M.tar.gz.
+
+ \section*{Question 1 - Micro-ops per Macro-op}
+ \begin{itemize}
+     \item[a.] The average number of micro-ops per macro-op is 1.32.
+    
+     \item[b.] 
+\begin{tabular}{|c|c|}
+\hline 
+Micro-ops per Macro-op & Percentage\\
+\hline
+1 & 75.16 \\ 
+\hline 
+2 & 19.75 \\ 
+\hline 
+3 & 3.45 \\ 
+\hline 
+4 & 1.09 \\ 
+\hline 
+5 & 0.55 \\ 
+\hline 
+\end{tabular} 
+
+So the average number of micro-ops per macro-op is 
+$1\times 0.7516 + 2 \times 0.1975 + 3 \times 0.0345 + 4 \times
+ 0.0109 + 5 \times 0.0055 = 1.32$
+ \end{itemize}
+ \section*{Question 2 - Size of Instructions in Bytes}
+ \begin{itemize}
+     \item[a.] Average bytes per Macro-op is 4.04.
+     \item[b.]
+     \begin{tabular}{|c|c|}
+\hline 
+Bytes per Macro & Percentage \\ 
+\hline 
+1 & 1.99717 \\ 
+\hline 
+2 & 25.82105 \\ 
+\hline 
+3 & 25.63944 \\ 
+\hline 
+4 & 15.15138 \\ 
+\hline 
+5 & 4.96922 \\ 
+\hline 
+6 & 8.84013 \\ 
+\hline 
+7 & 8.09828 \\ 
+\hline 
+8 & 8.11079 \\ 
+\hline 
+9 & 0.75554 \\ 
+\hline 
+10 & 0.20650 \\ 
+\hline 
+11 & 0.29168 \\ 
+\hline 
+12 & 0.08512 \\ 
+\hline 
+13 & 0.00083 \\ 
+\hline 
+14 & 0.03266 \\ 
+\hline 
+15 & 0.00021 \\ 
+\hline 
+\end{tabular} 
+
+So average bytes per Macro-op is 4.04
+ \end{itemize}
+ \section*{Question 3 - Distribution of Branch Distances}
+ \begin{itemize}
+     \item[a.] 
+     \begin{tabular}{|c|c|}
+\hline 
+Cumulative number of bits per Macro & Percentage \\ 
+\hline 
+1 & 0 \\ 
+\hline 
+2 & 0 \\ 
+\hline 
+3 & 0 \\ 
+\hline 
+4 & 3.17 \\ 
+\hline 
+5 & 15.29 \\ 
+\hline 
+6 & 38.38 \\ 
+\hline 
+7 & 46.80 \\ 
+\hline 
+8 & 61.56 \\ 
+\hline 
+9 & 72.73 \\ 
+\hline 
+10 & 81.01 \\ 
+\hline 
+11 & 85.26 \\ 
+\hline 
+12 & 91.52 \\ 
+\hline 
+13 & 93.07 \\ 
+\hline 
+14 & 93.70 \\ 
+\hline 
+15 & 96.56 \\ 
+\hline 
+16 & 99.52 \\ 
+\hline 
+17 & 100.00 \\ 
+\hline 
+\end{tabular} 
+    \item[b.] 61.56 percent of branches can be encoded with 8 bits. 
+    99.52 percent of branches can be encoded with 16 bits
+ \end{itemize}
+ \section*{Question 4 - Instruction Mix}
+ \begin{tabular}{|c|c|}
+\hline 
+Type of instructions & Percentage \\ 
+\hline 
+Loads & 20.13 \\ 
+\hline 
+Stores & 6.91 \\ 
+\hline 
+Unconditional branches & 3.53 \\ 
+\hline 
+Conditional branches & 13.82 \\ 
+\hline 
+Other & 55.62 \\ 
+\hline 
+\end{tabular} 
+ \section*{Question 5 - Performance Calculation}
+ The increase of total micro-ops for larger branches is 6.67\%
+ \section*{Question 6 - Operation Fusion}
+ 1328289 pairs (26.57\%) of all micro-ops are eligible for such fusion.
+It will be 13.28 \% faster.
+\end{document}

@@ -1,0 +1,58 @@
+gzcat sjeng-10M.trace.gz | ./simulator
+Processing trace...
+Processed 10000000 trace records.
+Micro-ops: 10000000
+Macro-ops: 7569542
+Average number of micro-ops per macro-ops: 1.32
+Micro per Macro		Percentage
+              1		75.16
+              2		19.75
+              3		3.45
+              4		1.09
+              5		0.55
+Average number of micro-ops per macro-ops: 1.32
+
+Bytes per Macro		Percentage
+              1		2.00
+              2		25.82
+              3		25.64
+              4		15.15
+              5		4.97
+              6		8.84
+              7		8.10
+              8		8.11
+              9		0.76
+             10		0.21
+             11		0.29
+             12		0.09
+             13		0.00
+             14		0.03
+             15		0.00
+Average bytes per Macro-ops:4.04
+
+Cumulative number of bits per Macro		Percentage
+              3		3.17
+              4		15.29
+              5		38.38
+              6		46.80
+              7		61.56
+              8		72.73
+              9		81.01
+             10		85.26
+             11		91.52
+             12		93.07
+             13		93.70
+             14		96.56
+             15		99.52
+             16		100.00
+
+    Type of instructions		Percentage
+                    Loads		20.13
+                   Stores		6.91
+   Unconditional branches		3.53
+     Conditional branches		13.82
+                    Other		55.62
+
+The increase of micro-ops for larger branch:0.05
+1328289 pairs (26.57 percent) of all micro-ops are eligible for such fusion.
+It will be 13.28 % faster.

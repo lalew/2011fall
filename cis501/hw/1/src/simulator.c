@@ -49,6 +49,7 @@ void simulate(FILE* inputFile, FILE* outputFile)
   double avgMicro = 0;
 
   int sizeDistr[100];
+  int totalSize = 0;
   double avgSize = 0;
 
   int branchDistr[100];
@@ -121,6 +122,7 @@ void simulate(FILE* inputFile, FILE* outputFile)
       
       int instSize = fallthroughPC - instructionAddress;
       sizeDistr[instSize] ++;
+      totalSize += instSize;
     }
 
     //additional works
@@ -130,7 +132,7 @@ void simulate(FILE* inputFile, FILE* outputFile)
     //distribution of branch distances
     if (targetAddressTakenBranch != 0)
     {
-        int numBits = 1 
+        int numBits = 2 
                       + floor(log2(abs(instructionAddress 
                       - targetAddressTakenBranch)));
         branchDistr[numBits]++;
@@ -169,7 +171,7 @@ void simulate(FILE* inputFile, FILE* outputFile)
   fprintf(outputFile, "Macro-ops: %" PRIi64 "\n", totalMacroops);
   
   //Question 1
-  fprintf(outputFile, "Average number of micro-ops per macro-ops: %1.2f\n", 
+  fprintf(outputFile, "Average number of micro-ops per macro-op: %1.2f\n", 
                        (double)totalMicroops/totalMacroops);
   fprintf(outputFile, "Micro per Macro\t\tPercentage\n");
   for (int i = 1; i < 100; ++i)
@@ -181,17 +183,20 @@ void simulate(FILE* inputFile, FILE* outputFile)
           avgMicro += distr*i/100;
       }
   }
-  fprintf(outputFile, "Average number of micro-ops per macro-ops: %1.2f\n\n",
+  fprintf(outputFile, "Average number of micro-ops per macro-op: %1.2f\n\n",
                        avgMicro);
 
   //Question 2
+  fprintf(outputFile, "Average bytes per Macro-op: %1.2f\n", 
+                      (double)totalSize/totalMacroops);
+
   fprintf(outputFile, "Bytes per Macro\t\tPercentage\n");
   for (int i = 1; i < 100; ++i)
   {
       if (sizeDistr[i] != 0)
       {
           double distr = (double)sizeDistr[i]/totalMacroops*100;
-          fprintf(outputFile, "%15d\t\t%.2f\n", i, distr);
+          fprintf(outputFile, "%15d\t\t%.5f\n", i, distr);
           avgSize += distr*i/100;
       }
   }
@@ -200,18 +205,29 @@ void simulate(FILE* inputFile, FILE* outputFile)
   //Question 3
   fprintf(outputFile, "Cumulative number of bits per Macro\t\tPercentage\n");
   double cumPer = 0;
+  double cum8bit = 0, cum16bit = 0;
   for (int i = 1; i < 100; ++i)
   {
       if (branchDistr[i] != 0)
       {
           double distr = (double)branchDistr[i]/totalBranch*100;
           cumPer += distr;
-          fprintf(outputFile, "%15d\t\t%.2f\n", i, cumPer);
+          fprintf(outputFile, "%35d\t\t%.2f\n", i, cumPer);
+
+          if (i == 8)
+              cum8bit = cumPer;
+          if (i == 16)
+              cum16bit = cumPer;
       }
   }
 
+  fprintf(outputFile, "%1.2f percent of branches can be encoded with 8 bits\n",
+                       cum8bit);
+  fprintf(outputFile, "%1.2f percent of branches can be encoded with 16 bits\n",
+                       cum16bit);
+
   //Question 4
-  fprintf(outputFile, "\n    Type of instructions\t\tPercentage\n");
+  fprintf(outputFile, "\n     Type of instructions\t\tPercentage\n");
   for (int i = 0; i < 5; ++i)
   {
       fprintf(outputFile, "%25s\t\t%.2f\n", instMix[i], 
@@ -219,13 +235,9 @@ void simulate(FILE* inputFile, FILE* outputFile)
   }
 
   //Question 5
-  int total16 = 0;
-  for (int i = 0; i <= 16; ++i)
-  {
-      total16 += branchDistr[i];
-  }
-  fprintf(outputFile, "\nThe increase of micro-ops for larger branch:%.2f",
-          (double)(totalBranch - total16)/totalMicroops);
+  fprintf(outputFile, "\nThe increase of total micro-ops for larger branch:"
+          "%.2f%%",
+          (100-cum8bit)*(mixDistr[UBRANCH]+mixDistr[CBRANCH])/totalMicroops);
 
   //Question 6
   fprintf(outputFile, "\n%d pairs (%.2f percent) of all micro-ops are "

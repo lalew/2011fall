@@ -1,6 +1,7 @@
 \documentclass[12pt,letterpaper]{article}
 \usepackage[utf8x]{inputenc}
 \usepackage{ucs}
+\usepackage{graphicx}
 \author{Zi Yan}
 \title{CIS501 HW1b}
 \date{}
@@ -8,7 +9,10 @@
 \maketitle
 
 \section{Total speedup}
-
+%\begin {figure}[!htb]
+%       \includegraphics[angle=90,width=1.2\linewidth]{q5.png}
+%\end {figure}
+\clearpage
 \section{Relative speedup}
 \begin{itemize}
     \item -O3 is 3.85045 times faster than -O0.
@@ -74,8 +78,17 @@ are high than the actual performances.
 \end{itemize}
 
 \section{CPI and compiler optimizations}
-As more optimizations are enabled, the CPIs goes down then climbs
+As more optimizations are enabled, the CPI goes down then climbs
 up. 
 
-From -O0 to -O3, 
+From -O0 to -O3,  the compiler uses more efficient instructions for 
+array multiplication and addition, like movss, mulss, addss, and 
+removes the 32-bit instructions, like movl, cltq, so that CPI is 
+decreased.
+
+From -O3 to unrolled, to unrolled+vectorized, the compiler continuously
+adds more complex instructions, such that the CPI is decreased by 
+those instructions, because those may take more clocks to execute.
+
+
 \end{document}

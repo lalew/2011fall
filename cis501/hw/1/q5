@@ -1,0 +1,5 @@
+-O0 1
+-O3 3.85
+unrolled 4.13
+unrolled+vectorized 7.31
+openmp 15.69
