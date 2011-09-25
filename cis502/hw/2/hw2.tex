@@ -6,7 +6,7 @@
 \usepackage{amssymb}
 \usepackage{algorithmic}
 \usepackage{algorithm}
-
+\usepackage{amsthm}
 
 
 \begin{document}
@@ -66,6 +66,22 @@ bottleneck weight, using DFS to verify whether all the edges weighted
 no greater than this weight can make the original graph connected,
 namely forming a spanning tree. 
 
+\begin{proof}
+Because DFS will provide a subgraph which makes all the nodes 
+connected, if the original graph is connected. And once the binary
+search can give a $w_{max}$ that makes the graph with all edge weights
+less than or equal to $w_{max}$ connected, the DFS-MOD will also give
+a connected subgraph which can be regarded as a spanning tree. As 
+the binary search goes on, a minimum $w_{max}$ can be found that
+it is the minimum weight and the graph with all edge weights less than
+or equal to it will still be connected. At this time, DFS-MOD will provide
+the minimum-bottleneck tree.
+
+The binary search will take $O(\log m)$ time, and DFS-MOD will use
+$O(m+n)$ time. The total runtime will be $O((m+n)\log m) = 
+O(m\log n) = O(n + m\log n)$
+\end{proof}
+
 \begin{algorithm}
 \caption{Using DFS to find minimum-bottleneck tree}
 \begin{algorithmic}
@@ -75,12 +91,13 @@ namely forming a spanning tree.
 weights
 \STATE VERIFY-WEIGHT($G, w_{max}$)
 \IF{$w_{max}$ is a valid weight}
-\STATE Remove all the unvisited edges from $G$
-\ELSE Regard all visited edges and vertices as a single node in the
+    \STATE Remove all the unvisited edges from $G$
+\ELSE 
+    \STATE Regard all visited edges and vertices as a single node in the
 following steps
 \ENDIF
 \ENDWHILE
-\STATE The vertices and remaining edges consist of minimum-
+\STATE The vertices and remaining edges consist of minimum 
 bottleneck tree
 \end{algorithmic}
 \end{algorithm}
@@ -111,6 +128,127 @@ bottleneck tree
 \STATE DFS($v, w_{max}$)
 \ENDIF
 \ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+\section*{Problem 2}
+\paragraph*{(a)} It is true. Suppose not. Assume MACS (minimum 
+altitude connected subgraph) has a distinct edge from MST (minimum 
+spanning tree), connecting two nodes $i$ and $j$ to form a 
+\textit{winter-optimal} path. This means that a edge $e_{\text{MACS}}$
+in MACS, which is the highest edge in the path from $i$ to $j$, is 
+lower than the highest edge $e_{\text{MST}}$ in MST. Therefore,
+$\sum\limits_{e \in E_{\text{MACS}}}a_e < \sum\limits_{e \in 
+ E_{\text{MST}}}a_e$, which contradicts the fact of MST.
+
+%
+%
+%MST (minimum 
+%spanning tree) has a distinct edge $e_{\text{MST}}$ from MACS 
+%(minimum altitude connected subgraph), connecting two disjoint sets of 
+%vertices $S$ and $V-S$, and the rest edges are the same. There are two 
+%cases here.
+%\begin{itemize}
+%    \item[1.] $A(e_{\text{MST}}) > A(e_{\text{MACS}})$. Therefore, 
+%    $\sum\limits_{e \in E_{\text{MACS}}}a_e < \sum\limits_{e \in 
+%    E_{\text{MST}}}a_e$, but this contradicts that MST has the minimum 
+%    total edge weight.
+%    \item[2.] $A(e_{\text{MST}}) < A(e_{\text{MACS}})$. Therefore, 
+%    between town $i$ and $j$, where $i \in S$ and $j \in (V-S)$ and $i$ 
+%    and $j$ are directly connected by $e_{\text{MST}}$, in the MACS, the 
+%    path between them will have at least $e_{\text{MACS}}$ maximum 
+%    weight. In such a condition, the MACS is not optimal, which 
+%    contradicts the assumption.
+%\end{itemize}
+%So, the MST, with respect to the edge weights $a_e$, is a MACS.
+
+\paragraph*{(b)}
+It is true. Suppose not. Assume the MACS contains a edge 
+$e_{\text{MACS}}$ which is not in the MST. It connects two disjoint
+sets $S$ and $V-S$ of vertices instead of $e_{\text{MST}}$ which is
+in the MST. According to Cut Property, $e_{\text{MST}} < 
+e_{\text{MACS}}$. 
+
+\section*{Problem 3}
+The algorithm is that from $v_1$ to $v_n$ you pick a vertex one by one,
+every time a vertex $v_i$ is chosen, you pick any $d_i$ other vertices
+which have non-zero degrees and larger subscripts than $i$ to connect 
+to with one edge, and decrease the degree of each vertex by 1. After you
+go through all the vertices, if the remaining degrees of all the edges are
+zero, then the graph $G$ will not contain multiple edges between the
+same pair of nodes, or self-loop edges.
+
+Suppose not, then there will be multiple edges between the same pair of 
+nodes, or self-loop edges. First, we discuss multiple edge between the 
+same pair of nodes, which means between $v_i$ and $v_j$, where $i < 
+j$, there are at least two edges. But from the algorithm above, we only 
+form exact one edge to $v_j$ when we are at $v_i$, therefore, the other
+edges are formed when we are at $v_j$. But this contradicts with our
+algorithm. Second, we discuss self-loop edges. But from the algorithm, 
+before we reach the last vertex, no self-loop edge is formed, therefore, 
+the self-loop edges will be formed when we finish the last vertex, which
+means there will be one vertex with non-zero degree. This contradicts
+the assumption.
+
+For each vertex $v_i$, $O(d_i)$ is used to form edges and decrease 
+degrees, so the total runtime of the algorithm should be 
+$\sum\limits_{k=1}^n O(d_k) = O(m)$.
+\clearpage
+\section*{Problem 4}
+The algorithm is described below. 
+
+The algorithm maintains a property that every time a vertex $v$ is 
+visited, dist[$v$] will hold the current shortest distance from $s$ to
+$v$, and num[$v$] indicates the number of shortest paths from $s$
+to $v$ with distance dist[$v$].
+
+
+%\textbf{Base:} At the beginning, only $s$ is visited, therefore, dist[$s$]
+%=0, num[$s$]=1, and the dists of all the other nodes are $\infty$ and
+%the nums of them are 0.
+%
+%\textbf{Step:} At $i$th step, all the visited nodes will hold shortest
+%distance from $s$ and how many of them. Then, at $i+1$ step, 
+\begin{proof}
+Suppose not. Assume at $i$th step, the path from $s$ to $u$ is not
+the shortest one, but there is one edge $(k', j)$ instead of $(k, j)$ will
+make the path from $s$ to $k'$ to $u$ shorter than the one from $s$
+to $k$ to $u$. Therefore, dist[$k'$] + $w_{k',j} <$ dist[$k$] + $w_{k,j}$.
+And this contradicts with lines 14-20 in the algorithm.
+
+Meanwhile, lines 17-19 ensure when there are alternately shortest paths,
+num[$v$] will take those paths into account. 
+\end{proof}
+
+Because the algorithm just add some constant time operations, the
+runtime is still $O(n+m)$.
+
+\begin{algorithm}
+\begin{algorithmic}[1]
+\STATE BFS-SHORTEST($s$)
+\STATE Set visited[$s$] = \TRUE \;and visited[$v$] = \FALSE \;for all
+other $v$
+\STATE Set dist[$s$] = 0 and dist[$v$] =$\infty$ for all other $v$
+\STATE Set num[$s$] = 1 and num[$v$] = 0 for all other $v$
+\STATE Add $s$ to Queue $Q$
+\WHILE{$Q$ is not empty}
+\STATE Let $u$ = Dequeue($Q$)
+\FOR{all $v$ which is adjacent to $u$}
+\IF{visited[$v$] == \FALSE}
+\STATE Enqueue($Q$, $v$)
+\STATE dist[$v$] = dist[$u$] + $w_{u,v}$
+\STATE num[$v$] = 1
+\ELSE
+\IF{dist[$v$] $>$ dist[$u$] + $w_{u,v}$}
+\STATE dist[$v$] = dist[$u$] + $w_{u,v}$
+\STATE num[$v$] = 1
+\ELSIF{dist[$v$] == dist[$u$] + $w_{u,v}$}
+\STATE num[$v$] = num[$v$] + 1
+\ENDIF
+\ENDIF
+\ENDFOR
+\ENDWHILE
+\RETURN num[$t$]
 \end{algorithmic}
 \end{algorithm}
 \end{document}
