@@ -244,7 +244,7 @@ void simulate(FILE* inputFile, FILE* outputFile)
           "eligible for such fusion.\n", 
           fusionNum, (double)fusionNum/totalMicroops*100*2);
   fprintf(outputFile, "It will be %.2f %% faster.\n", 
-          (double)fusionNum/totalMicroops*100);
+          (double)totalMicroops/(totalMicroops-fusionNum)*100 - 100);
 
 
 }

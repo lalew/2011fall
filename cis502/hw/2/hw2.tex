@@ -77,9 +77,10 @@ it is the minimum weight and the graph with all edge weights less than
 or equal to it will still be connected. At this time, DFS-MOD will provide
 the minimum-bottleneck tree.
 
-The binary search will take $O(\log m)$ time, and DFS-MOD will use
-$O(m+n)$ time. The total runtime will be $O((m+n)\log m) = 
-O(m\log n) = O(n + m\log n)$
+The binary search will take $O(\log m)$ time, but DFS-MOD will only
+visit half of the graph at first and half of the unvisited graph or the
+visited one in the subsequent steps. Therefore, the total runtime
+will be $\sum\limits_{i=1}O(\frac{m+n}{2^i}) = O(m+n)=O(n+m\log n)$
 \end{proof}
 
 \begin{algorithm}
@@ -125,7 +126,7 @@ bottleneck tree
 \STATE visited[$u$] = \TRUE
 \FOR{each $v \in$Adj[$u$]}
 \IF{\NOT visited[$v$] \AND $w(u,v) \le w_{max}$}
-\STATE DFS($v, w_{max}$)
+\STATE DFS-MOD($v, w_{max}$)
 \ENDIF
 \ENDFOR
 \end{algorithmic}
@@ -163,61 +164,111 @@ $\sum\limits_{e \in E_{\text{MACS}}}a_e < \sum\limits_{e \in
 %So, the MST, with respect to the edge weights $a_e$, is a MACS.
 
 \paragraph*{(b)}
-It is true. Suppose not. Assume the MACS contains a edge 
-$e_{\text{MACS}}$ which is not in the MST. It connects two disjoint
-sets $S$ and $V-S$ of vertices instead of $e_{\text{MST}}$ which is
-in the MST. According to Cut Property, $e_{\text{MST}} < 
-e_{\text{MACS}}$. 
+It is true. Suppose not. Assume the MACS contains no edge from the 
+MST. This means in a cycle the highest edge $e_h$, which connects
+the vertices $i$ and $j$, is in the MACS. Therefore removing $e_h$ and 
+connecting $i$ and $j$ with the ``longer way" will form a better 
+\textit{winter-optimal} path than before. This contradicts the 
+assumption.
+
 
 \section*{Problem 3}
-The algorithm is that from $v_1$ to $v_n$ you pick a vertex one by one,
-every time a vertex $v_i$ is chosen, you pick any $d_i$ other vertices
-which have non-zero degrees and larger subscripts than $i$ to connect 
-to with one edge, and decrease the degree of each vertex by 1. After you
-go through all the vertices, if the remaining degrees of all the edges are
-zero, then the graph $G$ will not contain multiple edges between the
-same pair of nodes, or self-loop edges.
+Initially we need an additional array $r$, and $r$ is identical to array 
+$d$, where $r_i = d_i$, and it means that $v_i$ can still form $r_i$
+edges to other vertices.
 
-Suppose not, then there will be multiple edges between the same pair of 
-nodes, or self-loop edges. First, we discuss multiple edge between the 
-same pair of nodes, which means between $v_i$ and $v_j$, where $i < 
-j$, there are at least two edges. But from the algorithm above, we only 
-form exact one edge to $v_j$ when we are at $v_i$, therefore, the other
-edges are formed when we are at $v_j$. But this contradicts with our
-algorithm. Second, we discuss self-loop edges. But from the algorithm, 
-before we reach the last vertex, no self-loop edge is formed, therefore, 
-the self-loop edges will be formed when we finish the last vertex, which
-means there will be one vertex with non-zero degree. This contradicts
-the assumption.
+The algorithm is that from $v_1$ to $v_n$ you pick a vertex one by one,
+every time a vertex $v_i$ is chosen, you pick any $r_i$ other vertices,
+each of which has its subscript $j$ larger than $i$ and a non-zero $r_j$ 
+value, to connect to with one edge, and then decrease the corresponding
+$r_j$ by 1 each time. After you go through all the vertices, all the 
+element in array $r$ should be zero, otherwise the graph $G$ will 
+contain either multiple edges between the same pair of nodes or self-
+loop edges, or both.
+
+The algorithm maintains that if $G$ will not contain either multiple 
+edges between the same pair of nodes or self-loop edges, at any vertex 
+$v_i$, each vertex $v_j$, where $j<i$, have connected to $d_j$ vertices 
+with $r_j = 0$, and $r_i \le (n-i)$.
+\begin{proof}
+\textbf{Base:} When picking $v_1$, it is trivial.
+
+\textbf{Induction Step:} Assume at vertex $v_i$, every vertex $v_j$,
+where $j<i$, have connected to $d_j$ vertices with $r_j = 0$, and 
+$r_i \le (n-i)$. So at vertex $v_{i+1}$, according to the operation
+in $i$th step, there should be more than $r_i$ vertices with non-zero
+$r$ value, otherwise $v_i$ will have not enough vertices to connect to,
+which leads to either self-loop edges or multiple edges between $v_i$
+and any other vertices, therefore contradicts the assumption. Then, 
+$v_i$ can form $r_i$ edges from itself to any $r_i$ vertices, decreasing
+$r_i$ to zero. For $r_{i+1}$, it should be less than or equal to $n-i$,
+otherwise, multiple edges between $v_{i+1}$ and any other vertices
+or self-loop edges will be formed, which contradicts the assumption.
+Consequently, at $v_{i+1}$, the property still maintains.
+
+At $v_n$, all the other vertices have their $r$ equal to zero, and $r_i \le 
+(n-n) = 0$. It means every vertex $v_i$ connects to $d_i$ different
+vertices with no multiple edge between the same pair of vertices and
+no self-loop edge.
+\end{proof}
+
+%Suppose not, then there will be multiple edges between the same pair of 
+%nodes, or self-loop edges. First, we discuss multiple edge between the 
+%same pair of nodes, which means between $v_i$ and $v_j$, where $i < 
+%j$, there are at least two edges. But from the algorithm above, we only 
+%form exact one edge to $v_j$ when we are at $v_i$, therefore, the other
+%edges are formed when we are at $v_j$. But this contradicts with our
+%algorithm. Second, we discuss self-loop edges. But from the algorithm, 
+%before we reach the last vertex, no self-loop edge is formed, therefore, 
+%the self-loop edges will be formed when we finish the last vertex, which
+%means there will be one vertex with non-zero degree. This contradicts
+%the assumption.
 
 For each vertex $v_i$, $O(d_i)$ is used to form edges and decrease 
-degrees, so the total runtime of the algorithm should be 
-$\sum\limits_{k=1}^n O(d_k) = O(m)$.
+$r_i$, so the total runtime of the algorithm should be 
+$\sum\limits_{k=1}^n O(d_k) + O(n)= O(n+m)$.
 \clearpage
 \section*{Problem 4}
-The algorithm is described below. 
-
 The algorithm maintains a property that every time a vertex $v$ is 
 visited, dist[$v$] will hold the current shortest distance from $s$ to
 $v$, and num[$v$] indicates the number of shortest paths from $s$
 to $v$ with distance dist[$v$].
 
-
-%\textbf{Base:} At the beginning, only $s$ is visited, therefore, dist[$s$]
-%=0, num[$s$]=1, and the dists of all the other nodes are $\infty$ and
-%the nums of them are 0.
+%Suppose not. Assume at $i$th step, the path from $s$ to $u$ is not
+%the shortest one, but there is one edge $(k', j)$ instead of $(k, j)$ will
+%make the path from $s$ to $k'$ to $u$ shorter than the one from $s$
+%to $k$ to $u$. Therefore, dist[$k'$] + $w_{k',j} <$ dist[$k$] + $w_{k,j}$.
+%And this contradicts with lines 14-20 in the algorithm.
 %
-%\textbf{Step:} At $i$th step, all the visited nodes will hold shortest
-%distance from $s$ and how many of them. Then, at $i+1$ step, 
-\begin{proof}
-Suppose not. Assume at $i$th step, the path from $s$ to $u$ is not
-the shortest one, but there is one edge $(k', j)$ instead of $(k, j)$ will
-make the path from $s$ to $k'$ to $u$ shorter than the one from $s$
-to $k$ to $u$. Therefore, dist[$k'$] + $w_{k',j} <$ dist[$k$] + $w_{k,j}$.
-And this contradicts with lines 14-20 in the algorithm.
+%Meanwhile, lines 17-19 ensure when there are alternately shortest paths,
+%num[$v$] will take those paths into account. 
 
-Meanwhile, lines 17-19 ensure when there are alternately shortest paths,
-num[$v$] will take those paths into account. 
+\begin{proof}
+\textbf{Base:} At the beginning, only $s$ is visited, therefore, dist[$s$]
+=0, num[$s$]=1, and the dists of all the other nodes are $\infty$ and
+the nums of them are 0.
+
+\textbf{Induction Step:} At $i$th step, all the visited nodes will hold 
+shortest distance from $s$ and how many of them. Then, at $i+1$ step,
+a vertex $v$ will be visited from a vertex $u$, which is visited at $i$ 
+step, on the following two conditions:
+
+\begin{itemize}
+    \item Not visited vertices. Because a node $v$ is first visited, dist[$v$]
+    calculated in Line 11 is the currently shortest distance from $s$ via 
+    $u$. And $v$ will also inherit the amount of shortest paths from its
+    predecessor $u$.
+    \item Visited vertices. If a vertex $v$ is visited before $i+1$ step, it
+    means there is at least one alternative path from $s$ via $u$ to $v$.
+    If the path from $s$ via $u$ to $v$ is shorter than the previous path,
+    Line 14-16 will replace the distance and amount information about
+    the shortest path; if the path distance is the same, Line 17-18 will 
+    increase the amount of shortest paths; otherwise, the shortest path
+    information will maintain unchanged.
+\end{itemize}
+
+Finally, at vertex $t$, the shortest distance from $s$ and the number of
+this kind of paths will maintain.
 \end{proof}
 
 Because the algorithm just add some constant time operations, the
@@ -225,7 +276,7 @@ runtime is still $O(n+m)$.
 
 \begin{algorithm}
 \begin{algorithmic}[1]
-\STATE BFS-SHORTEST($s$)
+\STATE \textbf{BFS-SHORTEST}($s$)
 \STATE Set visited[$s$] = \TRUE \;and visited[$v$] = \FALSE \;for all
 other $v$
 \STATE Set dist[$s$] = 0 and dist[$v$] =$\infty$ for all other $v$
@@ -237,7 +288,7 @@ other $v$
 \IF{visited[$v$] == \FALSE}
 \STATE Enqueue($Q$, $v$)
 \STATE dist[$v$] = dist[$u$] + $w_{u,v}$
-\STATE num[$v$] = 1
+\STATE num[$v$] = num[$u$]
 \ELSE
 \IF{dist[$v$] $>$ dist[$u$] + $w_{u,v}$}
 \STATE dist[$v$] = dist[$u$] + $w_{u,v}$
