@@ -17,8 +17,48 @@ satisfying $b_i > rt_i$.
 
 \begin{proof}
 Suppose there are two streams ($b_1, t_1$) and ($b_2, t_2$), where
-$b_1 \le rt_1$.
+$b_1 \le rt_1$, and we just need to show it is possible that $b_2 > rt_2$.
+
+For first stream, the constraint is satisfied. So we just need to prove
+that after adding second stream which has $b_2 > rt_2$, the constraint
+is still satisfied. We need to show $b_1+b_2 \le r(t_1 + t_2)$. In order
+to facilitate our proof, we can replace the inequalities with some equations,
+$b_1 + \delta_1 = rt_1$ and $b_2 - \delta_2 = rt_2$, where $\delta_1,
+\delta_2 > 0$. Then $b_1+b_2 \le r(t_1 + t_2)$ will change to $rt_1 - 
+\delta_1 + rt_2 + \delta_2 \le rt_1 + rt_2$. Therefore, we need to show
+$\delta_2 - \delta_1 \le 0$. So it means if the amount of bits you send
+more than $rt_2$ while sending 2nd stream does not exceed the extra 
+amount that you can send while sending 1st stream, the constraint will
+still be satisfied. In sum, $b_2 > rt_2$ is possible.
 \end{proof}
 
 \paragraph*{(b)}
+The algorithm is that first we calculate the rate $r_i$ for each time period
+$t_i$ while sending $b_i$ bits, then put the streams with $r_i < r$ before
+those with $r_i \geq r$. The outcome result is the schedule.
+
+\begin{proof}
+We first split all streams into two group, one for their $r_i < r$, and the
+other for their $r_i \geq r$. Assume there are $k$ streams whose rates
+are below $r$, therefore first group of streams are $(b_{l_1}, t_{l_1})$ to
+$(b_{l_k}, t_{l_k})$, where $l_1, ..., l_k \in \{1, ..., n\}$, and $b_{l_i} \le 
+rt_{l_i}$ ($1 \le i \le k$), and second group of streams are $(b_{h_1}, 
+t_{h_1})$ to $(b_{h_{n-k}}, t_{h_{n-k}})$, where $h_1, ..., h_{n-k} \in 
+\{1, ..., n\}$, and $b_{h_i} > rt_{h_i}$ ($1 \le i \le (n-k)$). For two groups
+of streams, the inequalities can be rewritten as $b_{l_i} + \delta_{l_i} 
+= rt_{l_i}$ and $b_{h_j} - \delta_{h_j} = rt_{h_j}$, where $1 \le i \le k$,
+$1 \le j \le (n-k)$. And $\sum\limits_{j=1}^{n-k} \delta_{h_j} - \sum\limits_{i=1}^k \delta_{l_i} \le 0$.
+
+It is obvious that any schedule for the $(b_{l_i}, t_{l_i})$ streams will not
+violate the constraint, so we can arrange the those $k$ streams in any
+order. Then we need to take care of the $(b_{h_j}, t_{h_j})$ streams.
+Because we already have $\sum\limits_{j=1}^{n-k} \delta_{h_j} - \sum\limits_{i=1}^k \delta_{l_i} \le 0$, any order of arrangement of 
+the rest streams will not break it as well as the constraint.
+
+Consequently, the algorithm will give a valid schedule.
+\end{proof}
+
+The runtime consists of calculating the $r_i$ for each stream, which
+will take $O(n)$ time, and putting all $(b_{l_i}, t_{l_i})$ before any
+$(b_{h_j}, t_{h_j})$, which will use $O(n)$. So the total runtime is $O(n)$.
 \end{document}
