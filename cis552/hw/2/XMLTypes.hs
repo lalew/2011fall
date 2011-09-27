@@ -1,0 +1,25 @@
+-- Advanced Programming, HW 2
+-- CIS 552, Fall 2011, University of Pennsylvania
+
+-- DO NOT MODIFY THIS FILE
+
+{-# OPTIONS -Wall -fwarn-tabs -fno-warn-type-defaults #-}
+
+module XMLTypes where
+
+-- | A simplified datatype for storing XML
+data SimpleXML =
+          PCDATA  String
+        | Element ElementName [SimpleXML]
+      deriving Show
+
+type ElementName = String
+
+
+-- | Convert a SimpleXML value to a string
+xml2string :: SimpleXML -> String
+xml2string (PCDATA s) = s
+xml2string (Element tag []) =
+  "<" ++ tag ++ "/>" 
+xml2string (Element tag body) =
+  "<" ++ tag ++ ">" ++ (concat (map xml2string body)) ++ "</" ++ tag ++ ">"
