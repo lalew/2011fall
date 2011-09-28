@@ -34,7 +34,7 @@ set output "q4.png"
 plot "q4" using 2:xticlabels(1) notitle , \
      ''   using 0:2:2 with labels center offset 0,1 notitle
 
-set title "Question 5"
+set title "hw1b"
 set yrange [0:20]
 set xlabel "Total Speedup"
 set output "q5.png"

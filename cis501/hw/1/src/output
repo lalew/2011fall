@@ -3,56 +3,59 @@ Processing trace...
 Processed 10000000 trace records.
 Micro-ops: 10000000
 Macro-ops: 7569542
-Average number of micro-ops per macro-ops: 1.32
+Average number of micro-ops per macro-op: 1.32
 Micro per Macro		Percentage
               1		75.16
               2		19.75
               3		3.45
               4		1.09
               5		0.55
-Average number of micro-ops per macro-ops: 1.32
+Average number of micro-ops per macro-op: 1.32
 
+Average bytes per Macro-op: 4.04
 Bytes per Macro		Percentage
-              1		2.00
-              2		25.82
-              3		25.64
-              4		15.15
-              5		4.97
-              6		8.84
-              7		8.10
-              8		8.11
-              9		0.76
-             10		0.21
-             11		0.29
-             12		0.09
-             13		0.00
-             14		0.03
-             15		0.00
+              1		1.99717
+              2		25.82105
+              3		25.63944
+              4		15.15138
+              5		4.96922
+              6		8.84013
+              7		8.09828
+              8		8.11079
+              9		0.75554
+             10		0.20650
+             11		0.29168
+             12		0.08512
+             13		0.00083
+             14		0.03266
+             15		0.00021
 Average bytes per Macro-ops:4.04
 
 Cumulative number of bits per Macro		Percentage
-              3		3.17
-              4		15.29
-              5		38.38
-              6		46.80
-              7		61.56
-              8		72.73
-              9		81.01
-             10		85.26
-             11		91.52
-             12		93.07
-             13		93.70
-             14		96.56
-             15		99.52
-             16		100.00
+                                  4		3.17
+                                  5		15.29
+                                  6		38.38
+                                  7		46.80
+                                  8		61.56
+                                  9		72.73
+                                 10		81.01
+                                 11		85.26
+                                 12		91.52
+                                 13		93.07
+                                 14		93.70
+                                 15		96.56
+                                 16		99.52
+                                 17		100.00
+61.56 percent of branches can be encoded with 8 bits
+99.52 percent of branches can be encoded with 16 bits
 
-    Type of instructions		Percentage
+     Type of instructions		Percentage
                     Loads		20.13
                    Stores		6.91
    Unconditional branches		3.53
      Conditional branches		13.82
                     Other		55.62
 
-The increase of micro-ops for larger branch:0.00
+The increase of total micro-ops for larger branch:6.67%
 1328289 pairs (26.57 percent) of all micro-ops are eligible for such fusion.
-It will be 13.28 % faster.
+It will be 15.32 % faster.

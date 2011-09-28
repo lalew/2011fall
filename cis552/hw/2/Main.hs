@@ -57,15 +57,20 @@ t0a = "0a" ~: TestList [invert (Branch ("a", 1) Tip Tip) ~?= Branch (1,"a") Tip 
 tree1 :: Tree Int
 tree1 = Branch 1 (Branch 2 Tip Tip) (Branch 3 Tip Tip)
 
-takeWhileTree :: (Tree a -> Bool) -> Tree a -> Tree a
-takeWhileTree f = foldTree (\)
+takeWhileTree :: (a -> Bool) -> Tree a -> Tree a
+takeWhileTree p = foldTree Tip (\a n1 n2 -> if (p a) 
+                                            then Branch a n1 n2 
+                                            else Tip)
 
 --     takeWhileTree (< 3) tree1  returns Branch 1 (Branch 2 Tip Tip) Tip
 --     takeWhileTree (< 9) tree1  returns tree1
 --     takeWhileTree (< 0) tree1  returns Tip
 
 t0b :: Test
-t0b = "0b" ~: assertFailure "testcase for takeWhileTree"
+t0b = "0b" ~: TestList [takeWhileTree (< 3) tree1 ~?= Branch 1 
+                                                      (Branch 2 Tip Tip) Tip,
+                        takeWhileTree (< 9) tree1  ~?= tree1,
+                        takeWhileTree (< 0) tree1  ~?= Tip]
  
 
 -- 0 (c) 
@@ -75,8 +80,12 @@ t0b = "0b" ~: assertFailure "testcase for takeWhileTree"
 -- for example:
 --    allTree odd tree1 returns False
 
+allTree :: (a -> Bool) -> Tree a -> Bool
+allTree p = foldTree True (\a n1 n2 -> (p a) && n1 && n2)
+
 t0c :: Test
-t0c = "0c" ~: assertFailure "testcase for allTree"
+t0c = "0c" ~: TestList [allTree odd tree1 ~?= False,
+                        allTree (<9) tree1 ~?= True]
  
 
 -- 0 (d)
@@ -89,10 +98,30 @@ t0c = "0c" ~: assertFailure "testcase for allTree"
 --    map2Tree (+) (Branch 1 Tip (Branch 2 Tip Tip)) (Branch 3 Tip Tip)
 --        should return (Branch 4 Tip Tip)
 
+map2Tree :: (a->b->c) -> Tree a -> Tree b -> Tree c
+map2Tree f (Branch x l1 r1) (Branch y l2 r2) = Branch (f x y) (map2Tree f l1 l2) 
+                                                              (map2Tree f r1 r2)
+map2Tree _ Tip _ = Tip
+map2Tree _ _ Tip = Tip
+
+-- attempt
+--map2Tree f  = 
+--     foldTree Tip (helper)
+--     where helper (Branch x l1 r1) (Branch y l2 r2) = Branch (f x y) (l1 r1) (l2 r2)
+          
+--   where helper :: Tree a -> Tree b -> Tree c
+
+
+--map2Tree :: (a->b->c) -> Tree a -> Tree b -> Tree c
+
+--foldTree::Tree c ->(?->Tree c->Tree c->Tree c) -> Tree ? -> Tree c
+
 
 
 t0d :: Test
-t0d = "0d" ~: assertFailure "testcase for map2Tree"
+t0d = "0d" ~: TestList [map2Tree (+) (Branch 1 Tip (Branch 2 Tip Tip)) 
+                                     (Branch 3 Tip Tip) ~?= Branch 4 Tip Tip,
+                        map2Tree (-) Tip (Branch 3 Tip Tip) ~?= Tip] 
 
 -- 0 (e) 
 
@@ -103,10 +132,14 @@ t0d = "0d" ~: assertFailure "testcase for map2Tree"
 --    zipTree (Branch 1 (Branch 2 Tip Tip) Tip) (Branch True Tip Tip) returns 
 --            (Branch (1,True) Tip Tip)
 
-
+zipTree :: Tree a -> Tree b -> Tree (a,b)
+zipTree = map2Tree (,)
 
 t0e :: Test
-t0e = "0e" ~: assertFailure "testcase(s) for zip"
+t0e = "0e" ~: TestList [zipTree (Branch 1 (Branch 2 Tip Tip) Tip) 
+                                (Branch True Tip Tip) ~?= (Branch (1,True) Tip Tip),
+                        zipTree (Tip::Tree Int) (Branch True Tip Tip) 
+                            ~?= (Tip::Tree (Int,Bool))]
 
 test0 :: Test
 test0 = TestList [ t0a, t0b, t0c, t0d, t0e ]
@@ -158,7 +191,8 @@ drawSierpinski =
 -- 1 (a)
 
 calcSize :: Float -> Float -> Tree Float
-calcSize _ _ = error "calcSize: unimplemented"
+calcSize r s | s < minSize = Tip
+             | otherwise = Branch s (calcSize r (s*r)) (calcSize r (s*r))
 
 t1a :: Test
 t1a = "1a" ~: calcSize 0.5 25 ~=?
@@ -167,7 +201,13 @@ t1a = "1a" ~: calcSize 0.5 25 ~=?
 -- 1 (b)
 
 fractal :: Float -> Float -> Float -> Float -> Tree Float -> Tree Picture
-fractal _ _ _ _ _ = error "fractal: unimplemented" 
+fractal _ _ _ _ Tip                      = Tip
+fractal delta angle x y (Branch a n1 n2) = Branch (Line[(x,y), (x', y')])
+                                           (fractal delta (angle+delta) x' y' n1)
+                                           (fractal delta (angle-delta) x' y' n2)
+                                           where x' = a*(cos angle) + x
+                                                 y' = a*(sin angle) + y
+
 
 t1b :: Test
 t1b = "1b" ~: fractal (pi/2) 0 0 0 (calcSize 0.5 25) ~=? 
@@ -178,7 +218,7 @@ t1b = "1b" ~: fractal (pi/2) 0 0 0 (calcSize 0.5 25) ~=?
 -- 1 (c) 
 
 join :: Tree Picture -> Picture
-join = error "join: unimplemented"
+join = foldTree Blank (\a t1 t2 -> pictures ([a] ++ [t1] ++ [t2]))
 
 t1c :: Test
 t1c = "1c" ~: join (Branch Blank Tip Tip) ~?= Pictures [Blank, Blank, Blank]
@@ -233,8 +273,13 @@ test2 = TestCase $ do
 -- For example,
 --    intersperse ',' "abcde" == "a,b,c,d,e"
 
+intersperse :: a -> [a] -> [a]
+intersperse a = foldr step []
+                where step x [] = [x]
+                      step x xs = x:a:xs
 t3a :: Test
-t3a = "3a" ~: assertFailure "testcase for intersperse"
+t3a = "3a" ~: TestList [intersperse 'a' [] ~?= [],
+                        intersperse ',' "abcde" ~?= "a,b,c,d,e"]
 
 
 -- 3 (b)
@@ -243,8 +288,11 @@ t3a = "3a" ~: assertFailure "testcase for intersperse"
 -- for example:
 --   invert [("a",1),("a",2)] returns [(1,"a"),(2,"a")] 
 
+invert' :: [(a,b)] -> [(b,a)]
+invert' = map (\(x,y) -> (y,x))
+
 t3b :: Test
-t3b = "3b" ~: assertFailure "testcase for invert"
+t3b = "3b" ~: (invert' [("a",1),("a",2)]) ~?= [(1,"a"),(2,"a")]
  
 
 -- 3 (c)
@@ -257,8 +305,14 @@ t3b = "3b" ~: assertFailure "testcase for invert"
 --     takeWhile (< 9) [1,2,3] == [1,2,3]
 --     takeWhile (< 0) [1,2,3] == []
 
+takeWhile :: (a->Bool)->[a]->[a]
+takeWhile p = foldr (\x xs -> if (p x) then x:xs
+                                       else []) []
+
 t3c :: Test
-t3c = "3c" ~: assertFailure "testcase for takeWhile"
+t3c = "3c" ~: TestList [takeWhile (< 3) [1,2,3,4,1,2,3,4] ~?= [1,2],
+                        takeWhile (< 9) [1,2,3] ~?= [1,2,3],
+                        takeWhile (< 0) [1,2,3] ~?= []]
  
 
 -- 3 (d)
@@ -269,8 +323,13 @@ t3c = "3c" ~: assertFailure "testcase for takeWhile"
 -- for example: 
 --     find odd [0,2,3,4] returns Just 3
 
+find :: (a->Bool) -> [a] -> Maybe a
+find p = foldr (\x xs -> if (p x) then Just x
+                                  else xs) Nothing
+
 t3d :: Test
-t3d = "3d" ~: assertFailure "testcase for find"
+t3d = "3d" ~: TestList [find odd  [0,2,3,4] ~?= Just 3,
+                        find (>9) [0,2,3,4] ~?= Nothing]
  
 
 -- 3 (e)
@@ -280,8 +339,12 @@ t3d = "3d" ~: assertFailure "testcase for find"
 -- for example:
 --    all odd [1,2,3] returns False
 
+all :: (a->Bool)->[a]->Bool
+all p = foldr (\x xs -> (p x) && xs) True
+
 t3e :: Test
-t3e = "3e" ~: assertFailure "testcase for all"
+t3e = "3e" ~: TestList [all odd  [1,2,3]   ~?= False,
+                        all (>0) [1,2,3,4] ~?= True]
  
 
 test3 :: Test
