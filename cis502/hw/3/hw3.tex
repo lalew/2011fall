@@ -61,4 +61,38 @@ Consequently, the algorithm will give a valid schedule.
 The runtime consists of calculating the $r_i$ for each stream, which
 will take $O(n)$ time, and putting all $(b_{l_i}, t_{l_i})$ before any
 $(b_{h_j}, t_{h_j})$, which will use $O(n)$. So the total runtime is $O(n)$.
+
+\section*{Problem 2}
+\paragraph*{(a)}
+Use the Interval Scheduling algorithm to find as many disjoint intervals
+as possible, where the number of intervals is $n$. But slightly modify
+the algorithm by taking the finish time of each selected interval as
+the \textsf{status\_check} point (actually, any time point between the
+start time of latest incompatible interval and the finish time of selected
+interval is OK). After running the modified algorithm, all \textsf{status\_
+check} points are pointed out. 
+
+\begin{proof}
+Suppose not. There is a better way to detect by only using $n-1$ 
+\textsf{status\_check}. According to the Interval Scheduling algorithm,
+there can be as many as $n$ disjoint process intervals, and one 
+\textsf{status\_check} cannot detect any two disjoint process intervals.
+Therefore, it contradicts that $n-1$ \textsf{status\_check} can suffice 
+to check all the sensitive process intervals.
+\end{proof}
+
+The runtime of this algorithm is the same as Interval Scheduling 
+algorithm, namely $O(n\log n)$
+
+\paragraph*{(b)}
+The claim is true.
+\begin{proof}
+Because there are $k^*$ disjoint processes, and no 
+\textsf{status\_check} can detect any two disjoint processes, any
+number, which is less than $k^*$, of \textsf{status\_check} is sure
+not to detect all the sensitive processes. So there must be a set of
+$k^*$ \textsf{status\_check} for all sensitive processes.
+\end{proof}
+
+\section*{Problem 3}
 \end{document}
