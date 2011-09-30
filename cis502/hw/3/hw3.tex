@@ -95,4 +95,36 @@ $k^*$ \textsf{status\_check} for all sensitive processes.
 \end{proof}
 
 \section*{Problem 3}
+The algorithm is: divide the $n$ cards into two groups, then recursively 
+find the most duplicated cards in each group by dividing again and 
+finding the most duplicated cards in subgroups, finally merge the result.
+At the merging stage, we should choose the most duplicated cards in 
+each group, search the other group to find and merge any card which is 
+equivalent to the selected cards, and at last choose the group of cards 
+whose amount is larger as the most duplicated cards. After merging
+all the groups together, if the group of most duplicated cards has 
+more than $n/2$ cards, then return "Yes", otherwise "No".
+
+\begin{proof}
+Suppose not. Assume that if we choose a group of less duplicated cards
+while merging, we can still find out that if $n/2$ cards are equivalent 
+to each other. At level $i$, where $0 \le i \le \log n$ and level 0 means
+all cards are in one group, level $\log n$ means after $\log n$ divisions
+$n$ groups of one card, we have $2^i$ groups. We will choose a 
+group of less duplicated cards, which means the percentage $a_{i,k}$ of 
+the cards in group $k$ is fewer than 1/2, otherwise this group of cards
+will be most duplicated, if $a_{i,k} \geq 1/2$. Therefore, after any 
+merging, this kind of cards should still occupy fewer than half of the 
+amount in the merged group, otherwise we will choose the less 
+duplicated cards. Based on the assumption, we can say that, after each
+merging, the selected cards will always occupy fewer than half of the
+total cards in the merged group, so it is in the group after final merging.
+The result contradicts that we can find out $n/2$ cards are equivalent.
+\end{proof}
+
+We will use $O(n)$ time to scan each group to find the equivalent cards
+to the selected cards in the other group at merging. So the total runtime
+is $T(n) = 2T(n/2) + cn$, namely $T(n)= O(n\log n)$
+
+\section*{Problem 4}
 \end{document}
