@@ -9,6 +9,7 @@ import Test.HUnit      -- unit test support
 import Graphics.Gloss  -- graphics library for problem 1
 import XMLTypes        -- support file for problem 2 (provided)
 import Play            -- support file for problem 2 (provided)
+import Data.List (subsequences,elemIndex)
 
 doTests :: IO ()
 doTests = do 
@@ -239,7 +240,19 @@ test1 = TestList [t1a,t1b,t1c]
 -- 2 
 
 formatPlay :: SimpleXML -> SimpleXML
-formatPlay _ = PCDATA "WRITE ME"
+formatPlay (PCDATA xs) = PCDATA xs
+formatPlay (Element eName xs) = (
+                         case eName of
+                              "PLAY"     -> Element "html" [Element "body" res]
+                              "TITLE"    -> Element "h1" res
+                              "PERSONAE" -> Element "h2" [PCDATA "Dramatis Personae"]
+                              otherwise  -> Element eName res
+                         ) 
+                         where res :: [SimpleXML]
+                               res = map formatPlay xs  
+
+
+
 
 firstDiff :: Eq a => [a] -> [a] -> Maybe ([a],[a])
 firstDiff [] [] = Nothing
@@ -351,8 +364,27 @@ test3 :: Test
 test3 = TestList [t3a, t3b, t3c, t3d, t3e]
 
 lcs :: String -> String -> String 
-lcs = error "lcs: undefined"
+lcs xs ys = let xss = subsequences xs
+                yss = subsequences ys
+            in
+            foldr (\x res -> if (elemIndex x yss == Nothing)
+                             then res
+                             else if (length x > length res)
+                                  then x
+                                  else res ) 
+                  "" 
+                  xss
 
+{-lcs xs ys = aux (subsequences xs) (subsequences ys)
+          where aux :: [String]->[String]->String
+                aux [] _          = ""
+                aux (ss:ssx) ss'x = let ss' = aux ssx ss'x in
+                                    if (elemIndex ss ss'x == Nothing)
+                                    then ss'
+                                    else if (length ss) > (length ss')
+                                         then ss
+                                         else ss'
+-}
 test4 :: Test
 test4 = "4" ~: TestList [ lcs "Advanced" "Advantaged" ~?= "Advaned" ]
 
