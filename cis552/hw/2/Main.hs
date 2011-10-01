@@ -240,18 +240,34 @@ test1 = TestList [t1a,t1b,t1c]
 -- 2 
 
 formatPlay :: SimpleXML -> SimpleXML
+--formatPlay _ = Element "body" [Element "h1" [PCDATA "TITLE"], Element "h2" [PCDATA "Drama"], PCDATA "PERSON1", Element "br" []]
+
 formatPlay (PCDATA xs) = PCDATA xs
-formatPlay (Element eName xs) = (
-                         case eName of
-                              "PLAY"     -> Element "html" [Element "body" res]
-                              "TITLE"    -> Element "h1" res
-                              "PERSONAE" -> Element "h2" [PCDATA "Dramatis Personae"]
-                              otherwise  -> Element eName res
-                         ) 
+formatPlay (Element _ xs) = Element "html" [Element "body" res] --checked
                          where res :: [SimpleXML]
-                               res = map formatPlay xs  
+                               res = concatMap convertChild xs  
 
+convertChild :: SimpleXML -> [SimpleXML]
+convertChild (PCDATA x) = [PCDATA x]
+convertChild (Element eName xs) = 
+                     case eName of 
+                                "TITLE"    -> let xs' = xs in [Element "h1" res]     
+                                "PERSONAE" -> let xs' = xs in [Element "h2" [PCDATA "Dramatis Personae"]]++res
+                                "PERSONA"  -> let xs' = xs in xs'++[Element "br" []]
+                                "ACT"      -> let x = head xs 
+                                                  xs'=tail xs 
+                                                  in [Element "h2" [PCDATA (renderValue $ head $ getChild x)]]++res
+                                _  -> []
+                     where res::[SimpleXML]
+                           res = concatMap convertChild xs'
 
+renderValue :: SimpleXML -> String
+renderValue (PCDATA xs) = xs
+renderValue (Element eName _) = eName
+
+getChild :: SimpleXML -> [SimpleXML]
+getChild (PCDATA _) = []
+getChild (Element _ xs) = xs
 
 
 firstDiff :: Eq a => [a] -> [a] -> Maybe ([a],[a])
