@@ -11,7 +11,7 @@ import XMLTypes        -- support file for problem 2 (provided)
 import Play            -- support file for problem 2 (provided)
 --additional
 import Data.List (subsequences,elemIndex)
-import Data.Maybe
+
 
 doTests :: IO ()
 doTests = do 
@@ -243,74 +243,36 @@ test1 = TestList [t1a,t1b,t1c]
 
 formatPlay :: SimpleXML -> SimpleXML
 formatPlay (PCDATA xs) = PCDATA xs
-formatPlay (Element eName rest) =                  
+formatPlay (Element _ (t:p:a)) = Element "html" 
+                                     [Element "body" 
+                                     ((formatT t):(formatP p)++(concatMap formatA a))]
 
-{-let 
-                                  res = lookup eName encode1
-                                  func = if (isNothing res) 
-                                         then fromMaybe id (lookup eName encode2)
-                                         else fromMaybe id res
-                                  in
-                                  if (isNothing res)
-                                  then func addInfo rest' --act, scene
-                                  else func rest'
-                                  where rest' = map formatPlay rest
-                                        PCDATA addInfo = if (isNothing (lookup eName encode1))
-                                                         then getChild $ getChild rest
-                                                         else PCDATA ""
-            
--}
+formatPlay (Element _ _) = error "wrong format"
 
-encode0 :: [(ElementName, [SimpleXML] -> SimpleXML)]
-encode0 = [("PLAY", conv1to2 "html" "body")]
+formatT :: SimpleXML -> SimpleXML
+formatT (PCDATA xs) = PCDATA xs
+formatT (Element _ rest) = Element "h1" rest
 
-encode1 :: [(ElementName, [SimpleXML] -> [SimpleXML])]
-encode1 = [("TITLE", conv1to1 "h1"),
-           ("PERSONAE", conv1tosub "h2" "Dramatis Personae" "br"),
-           ("SPEECH", id),
-           ("SPEAKER", convbold "b" "br"),
-           ("LINE", convapp "br")]
+formatP :: SimpleXML -> [SimpleXML]
+formatP (PCDATA xs) = [PCDATA xs]
+formatP (Element _ rest) = [Element "h2" [PCDATA "Dramatis Personae"]]++rest'
+        where rest' = concatMap (\x -> (getChild x)++[Element "br" []]) rest
 
-encode2 :: [(ElementName, String -> [SimpleXML] -> [SimpleXML])]
-encode2 = [("ACT", conv2to1 "h2"),
-           ("SCENE", conv2to1 "h3")]
+formatA :: SimpleXML -> [SimpleXML]
+formatA (PCDATA xs) = [PCDATA xs]
+formatA (Element _ rest) = (Element "h2" (getChild $ head rest)):rest'
+        where rest' = concatMap formatS (tail rest)
 
-dump2 :: String -> [SimpleXML] -> [SimpleXML]
-dump2 _ _ = []
+formatS :: SimpleXML -> [SimpleXML]
+formatS (PCDATA xs) = [PCDATA xs]
+formatS (Element _ rest) = (Element "h3" (getChild $ head rest)):rest'
+        where rest' = concatMap formatSP (tail rest)
 
---for play
-conv1to2 :: String -> String -> [SimpleXML] -> SimpleXML
-conv1to2 to1 to2 rest = Element to1 [Element to2 rest]
-
---for title under play
-conv1to1 :: String -> [SimpleXML] -> [SimpleXML]
-conv1to1 to rest = [Element to rest]
-
---for personae
-conv1tosub :: String -> String -> String -> [SimpleXML] -> [SimpleXML]
-conv1tosub to add1 add2 rest = (Element to (PCDATA add1)):rest'
-           where rest'::[SimpleXML]
-                 rest' = concatMap 
-                         (\x -> (getChild x)++[Element add2 []])
-                         rest
---for act, scene
-conv2to1 :: String -> String -> [SimpleXML] -> [SimpleXML]
-conv2to1 to from rest = (Element to [PCDATA from]):rest
-
-getData :: [SimpleXML] -> String
-getData a = let PCDATA ret = head (getChild $ head a)
-            in ret
-
---for speech
---just return converted rest part
-
---for speaker
-convbold :: String -> String -> [SimpleXML] -> [SimpleXML]
-convbold to1 to2 rest = (Element to1 rest):[Element to2 []]
-
---for line
-convapp :: String -> [SimpleXML] -> [SimpleXML]
-convapp to rest = rest ++ [Element to []]
+formatSP :: SimpleXML -> [SimpleXML]
+formatSP (PCDATA xs) = [PCDATA xs]
+formatSP (Element _ (s:l)) = (Element "b" (getChild s)):(Element "br" []):
+                             (concatMap (\x -> (getChild x)++[Element "br" []]) l)
+formatSP (Element _ _) = error "wrong format"
 
 getChild :: SimpleXML -> [SimpleXML]
 getChild (PCDATA _) = []
