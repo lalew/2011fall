@@ -67,10 +67,9 @@ $(b_{h_j}, t_{h_j})$, which will use $O(n)$. So the total runtime is $O(n)$.
 Use the Interval Scheduling algorithm to find as many disjoint intervals
 as possible, where the number of intervals is $n$. But slightly modify
 the algorithm by taking the finish time of each selected interval as
-the \textsf{status\_check} point (actually, any time point between the
-start time of latest incompatible interval and the finish time of selected
-interval is OK). After running the modified algorithm, all \textsf{status\_
-check} points are pointed out. 
+the \textsf{status\_check} point and regarding incompatible intervals
+in Interval Scheduling algorithm as covered processes here . After 
+running the modified algorithm, all \textsf{status\_ check} points are out. 
 
 \begin{proof}
 Suppose not. There is a better way to detect by only using $n-1$ 
@@ -99,8 +98,9 @@ The algorithm is: divide the $n$ cards into two groups, then recursively
 find the most duplicated cards in each group by dividing again and 
 finding the most duplicated cards in subgroups, finally merge the result.
 At the merging stage, we should choose the most duplicated cards in 
-each group, search the other group to find and merge any card which is 
-equivalent to the selected cards, and at last choose the group of cards 
+each group (if there are equal-size groups, choose any one), search the 
+other group to find and merge any card which is equivalent to the 
+selected cards, and at last choose the group of cards 
 whose amount is larger as the most duplicated cards. After merging
 all the groups together, if the group of most duplicated cards has 
 more than $n/2$ cards, then return "Yes", otherwise "No".
@@ -127,4 +127,45 @@ to the selected cards in the other group at merging. So the total runtime
 is $T(n) = 2T(n/2) + cn$, namely $T(n)= O(n\log n)$
 
 \section*{Problem 4}
+\textbf{Observation 1: }If we sort the lines increasingly by slope, the first
+line and the last one will always be visible.
+
+\textbf{Observation 2: }Two lines intersected, then the smaller slope one
+will lie left to the larger slope one.
+
+
+First of all, we sort all the lines by slope in a increasing order, which 
+takes $O(n\log n)$ time. Then we divide all lines into two groups,
+and recursively divide groups until we meet the base case, at most 3
+lines in a group. 
+
+For base case, from \textbf{Observation 1}, we know first and third lines
+will be visible, so if the second line is above the intersection of first and
+third, then it is visible, otherwise the second is not visible.
+
+For merging case, we have two groups of lines, $\overline{L} = \{L_{l_1}, 
+..., L_{l_k}\}$, and $\overline{R}=\{L_{r_1}, ..., L_{r_k}\}$, where $k$  is 
+the amount of lines in each 
+sub-solution, and lines with subscripts $l_1$ to $l_k$ will always have
+smaller slopes than those with $r_1$ to $r_k$, in addition, both will in
+order of increasing slope. We also need the intersections between any
+two consecutive lines, where $node_{l_i}$ is the intersection between 
+$L_{l_i}$ and $L_{l_{i+1}}$, $node_{r_i}$ is the intersection between 
+$L_{r_i}$ and $L_{r_{i+1}}$. While merging, we merge two groups of 
+intersections $node_{l_i}$ and $node_{r_i}$ into one group of $N_j$, 
+where $i \in \{1..(k-1)\}, j \in \{1..2(k-1)\}$, in order of increasing $x$-
+coordinate. This will take $O(n)$, like merge sort. We start from left to 
+right along the $x$-axis, finding the smallest $N_s$ at whose $x$-
+coordinate the uppermost line from $\overline{R}$ is above the one from 
+$\overline{L}$, and let the lines be $L_l \in \overline{L}$ and $L_r \in 
+\overline{R}$. And let $(x_I,y_I)$ be the intersection of $L_l$ and $L_r$.
+Therefore, $x_I$ will be between the $x$-coordinates of $N_{s-1}$ and 
+$N_s$. From \textbf{Observation 2}, we know $L_l$ is to the left of 
+$L_r$. Thus, the merged result is that visible lines are $L_{l_1}$, ..., 
+$L_l$, $L_r$, ..., $L_{r_k}$ and intersections are $N_1$, ..., $N_{l-1}$,
+$(x_I, y_I)$, $N_{l}$, ..., $N_{2(k-1)}$. The algorithm is done.
+
+So the total runtime will be $O(n\log n)$, according to the algorithm 
+above.
+
 \end{document}
