@@ -11,7 +11,7 @@ import XMLTypes        -- support file for problem 2 (provided)
 import Play            -- support file for problem 2 (provided)
 --additional
 import Data.List (subsequences,elemIndex)
-
+import Data.Maybe
 
 doTests :: IO ()
 doTests = do 
@@ -21,7 +21,7 @@ doTests = do
 main :: IO ()
 main = do 
        doTests
-       drawCircles   --- graphics demo, change with drawTree for your HW
+       drawTree   --- graphics demo, change with drawTree for your HW
        return ()
 
 -- | a basic tree data structure
@@ -106,18 +106,6 @@ map2Tree f (Branch x l1 r1) (Branch y l2 r2) = Branch (f x y) (map2Tree f l1 l2)
                                                               (map2Tree f r1 r2)
 map2Tree _ Tip _ = Tip
 map2Tree _ _ Tip = Tip
-
--- attempt
---map2Tree f  = 
---     foldTree Tip (helper)
---     where helper (Branch x l1 r1) (Branch y l2 r2) = Branch (f x y) (l1 r1) (l2 r2)
-          
---   where helper :: Tree a -> Tree b -> Tree c
-
-
---map2Tree :: (a->b->c) -> Tree a -> Tree b -> Tree c
-
---foldTree::Tree c ->(?->Tree c->Tree c->Tree c) -> Tree ? -> Tree c
 
 
 
@@ -242,40 +230,70 @@ test1 = TestList [t1a,t1b,t1c]
 -- 2 
 
 formatPlay :: SimpleXML -> SimpleXML
-formatPlay (PCDATA xs) = PCDATA xs
-formatPlay (Element _ (t:p:a)) = Element "html" 
-                                     [Element "body" 
-                                     ((formatT t):(formatP p)++(concatMap formatA a))]
+formatPlay (PCDATA a) = PCDATA a
+formatPlay x = Element "html" [Element "body" (chooseFun x x) ]
 
-formatPlay (Element _ _) = error "wrong format"
+-- encode different translation methods for different ElementName
+encode :: [(ElementName, SimpleXML->[SimpleXML])]
+encode = [("PLAY",formatPL),
+          ("TITLE", formatT "h1"),
+          ("PERSONAE", formatP "h2" "Dramatis Personae" "br"),
+          ("ACT", formatA "h2"),
+          ("SPEECH", formatS "h3"),
+          ("SPEAKER", formatSP "b" "br" "br")]
 
-formatT :: SimpleXML -> SimpleXML
-formatT (PCDATA xs) = PCDATA xs
-formatT (Element _ rest) = Element "h1" rest
+-- choose a right function for a ElementName
+chooseFun :: SimpleXML -> SimpleXML -> [SimpleXML]
+chooseFun (Element eName _ ) = let res = lookup eName encode
+                               in if (isNothing res)
+                                  then error "bad format"
+                                  else fromMaybe (\a -> [a]) res
+chooseFun _ = error "cannot choose translation"
 
-formatP :: SimpleXML -> [SimpleXML]
-formatP (PCDATA xs) = [PCDATA xs]
-formatP (Element _ rest) = [Element "h2" [PCDATA "Dramatis Personae"]]++rest'
-        where rest' = concatMap (\x -> (getChild x)++[Element "br" []]) rest
+--for PLAY-like structure, title+persons+acts
+formatPL :: SimpleXML -> [SimpleXML]
+formatPL (PCDATA xs) = [PCDATA xs]
+formatPL (Element _ (t:p:a)) = ((chooseFun t t)
+                               ++(chooseFun p p)
+                               ++(concatMap (\x -> chooseFun x x) a))
 
-formatA :: SimpleXML -> [SimpleXML]
-formatA (PCDATA xs) = [PCDATA xs]
-formatA (Element _ rest) = (Element "h2" (getChild $ head rest)):rest'
-        where rest' = concatMap formatS (tail rest)
+formatPL _ = error "wrong format"
 
-formatS :: SimpleXML -> [SimpleXML]
-formatS (PCDATA xs) = [PCDATA xs]
-formatS (Element _ rest) = (Element "h3" (getChild $ head rest)):rest'
-        where rest' = concatMap formatSP (tail rest)
+--for TITLE-like, only need to change the ElementName
+formatT :: String -> SimpleXML -> [SimpleXML]
+formatT _ (PCDATA _) = error "wrong format"
+formatT to (Element _ rest) = [Element to rest]
 
-formatSP :: SimpleXML -> [SimpleXML]
-formatSP (PCDATA xs) = [PCDATA xs]
-formatSP (Element _ (s:l)) = (Element "b" (getChild s)):(Element "br" []):
-                             (concatMap (\x -> (getChild x)++[Element "br" []]) l)
-formatSP (Element _ _) = error "wrong format"
+--for PERSONAE-like, remove ElementName, pull all children one level up 
+--in the tree
+formatP :: String -> String -> String -> SimpleXML -> [SimpleXML]
+formatP _ _ _ (PCDATA _) = error "wrong format"
+formatP to1 to2 to3 (Element _ rest) = [Element to1 [PCDATA to2]]++rest'
+        where rest' = concatMap (\x -> (getChild x)++[Element to3 []]) rest
 
+--for ACT-like, pull all children one level up, with title
+formatA :: String -> SimpleXML -> [SimpleXML]
+formatA _ (PCDATA _) = error "wrong format"
+formatA to (Element _ rest) = (Element to (getChild $ head rest)):rest'
+        where rest' = concatMap (formatS "h3") (tail rest)--modify required
+
+--for SPEECH-like, pull all children one level up, with title
+formatS :: String -> SimpleXML -> [SimpleXML]
+formatS _ (PCDATA _) = error "wrong format"
+formatS to (Element _ rest) = (Element to (getChild $ head rest)):rest'
+        where rest' = concatMap (formatSP "b" "br" "br") (tail rest)
+
+--for SPEAKER-like, pull all children one level up, without title
+formatSP :: String -> String -> String -> SimpleXML -> [SimpleXML]
+formatSP _ _ _ (PCDATA _) = error "wrong format"
+formatSP to1 to2 to3 (Element _ (s:l)) = 
+                     (Element to1 (getChild s)):(Element to2 []):
+                     (concatMap (\x -> (getChild x)++[Element to3 []]) l)
+formatSP _ _ _ (Element _ _) = error "wrong format"
+
+--return the children of a Element tree
 getChild :: SimpleXML -> [SimpleXML]
-getChild (PCDATA _) = []
+getChild (PCDATA _) = error "no child"
 getChild (Element _ xs) = xs
 
 
@@ -388,11 +406,13 @@ t3e = "3e" ~: TestList [all odd  [1,2,3]   ~?= False,
 test3 :: Test
 test3 = TestList [t3a, t3b, t3c, t3d, t3e]
 
+-- enumerate all subsequences of both String, check each subsequence of 
+-- xs in ys, and find the longest one.
 lcs :: String -> String -> String 
 lcs xs ys = let xss = subsequences xs
                 yss = subsequences ys
             in
-            foldr (\x res -> if (elemIndex x yss == Nothing)
+            foldr (\x res -> if (isNothing $ elemIndex x yss)
                              then res
                              else if (length x > length res)
                                   then x
