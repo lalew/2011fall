@@ -105,6 +105,31 @@ The FFT way of the convolution will take $O(n\log n)$, and the
 multiplication will take $O(n)$. So total runtime is $O(n\log n)$.
 
 \section*{Problem 4}
+First, let $P(n)$ denote the parent of node $n$, $C_L(n)$ denote the
+left child of node $n$, and $C_R(n)$ denote the right child of node $n$.
 
+We start from the root $r$. If $x_{C_L(r)} > x_r$ and $x_{C_R(r)} > x_r$,
+then $r$ is a local minimum. If not, we choose a child that has its value 
+less than $x_r$ of $r$ to continue. For the condition that both of $r$'s 
+children have the less value than $r$, we choose either one. Then 
+recursively repeat the check procedure same as the root one, until we 
+come to a leaf. During this process, there will be two situations, first there 
+is a node $n$ satisfying $x_{C_L(n)} > x_n$ and $x_{C_R(n)} > x_n$, then 
+$n$ is a local minimum, second we reach a leaf $n'$, then $n'$ is a local 
+minimum. 
+
+\begin{proof}
+We have already proved the root. For internal nodes, once we reach a node
+$n$, we know $x_{P(n)} > x_n$, because our algorithm will only choose a 
+child with smaller value than its parent. Therefore, once we can provide
+$x_{C_L(n)} > x_n$ and $x_{C_R(n)} > x_n$, the node $n$ is a local 
+minimum. For leafs, because the implication of our algorithm makes it 
+have smaller value than its parent, and its parent is the only node jointed
+by edges to it, the leaf is a local minimum. 
+\end{proof}
+
+Because we only choose one child, and we probe three nodes, itself, its
+left child, and its right child, at one time, the runtime $T(n)=T(n/2)+c$,
+namely $T(n)=O(\log n)$
 
 \end{document}
