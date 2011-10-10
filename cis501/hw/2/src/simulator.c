@@ -93,11 +93,12 @@ void simulate(FILE* inputFile, FILE* outputFile)
     }
 
     //additional work
-    
     while ((sourceRegister1 != -1 && 
             scoreboard[sourceRegister1] != 0) ||
            (sourceRegister2 != -1 &&
-            scoreboard[sourceRegister2] != 0))
+            scoreboard[sourceRegister2] != 0) ||
+           (destinationRegister != -1 &&
+            scoreboard[destinationRegister] != 0)) 
     {
 
 #ifdef DEBUG
@@ -165,22 +166,20 @@ void logInst(FILE* outputFile,
 {
     const char rdy[]="(Ready)";
     const char nrdy[]="(NotReady)";
-    char sbRes[60];
 
-    memset(sbRes, 0, 60);
+    fprintf(outputFile, "%5d%6d %2d %-11s%2d %-11s -> %2d  %c  ",
+                     cycle, micro, src1, (rdy1?rdy:nrdy),
+                     src2, (rdy2?rdy:nrdy), dest, load);
 
     for (int i = 0; i < 50; ++i)
     {
         if (sb[i] == 0)
-            sbRes[i] = '-';
+            fprintf(outputFile, "%c", '-');
         else
-            sbRes[i] = '0' + sb[i];
+            fprintf(outputFile, "%d", sb[i]);
     }
 
-    fprintf(outputFile, "%5d%6d %2d %-11s%2d %-11s -> %2d  %c  %s\n",
-                     cycle, micro, src1, (rdy1?rdy:nrdy),
-                     src2, (rdy2?rdy:nrdy), dest, load,
-                     sbRes);
+    fprintf(outputFile, "\n");
 }
 
 int main(int argc, char *argv[]) 
