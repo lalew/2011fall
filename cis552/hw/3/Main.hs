@@ -25,10 +25,21 @@ data Seq a = Nil | Single a | Concat (Seq a) (Seq a)
 instance Show a => Show (Seq a) where
    show xs = show (toList xs)
 
+--instance Foldable Seq where
+--   foldMap f Nil = mempty
+--   foldMap f (Single x) = f x
+--   foldMap f (Concat l r) = foldMap f l  `mappend` foldMap f r
+
+foldSeq :: (a -> b -> b) -> b -> Seq a -> b
+foldSeq _ z Nil = z
+foldSeq f z (Single x) = f x z
+foldSeq f z (Concat l r) = foldSeq f (foldSeq f z r) l
+
 toList :: Seq a -> [a]
-toList Nil = []
-toList (Single x)     = [x]
-toList (Concat s1 s2) = toList s1 ++ toList s2
+toList = foldSeq (\x xs->x:xs) [] 
+--toList Nil = []
+--toList (Single x)     = [x]
+--toList (Concat s1 s2) = toList s1 ++ toList s2
  
 
 t0a :: Test
