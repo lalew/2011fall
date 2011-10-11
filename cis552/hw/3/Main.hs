@@ -1,5 +1,5 @@
 -- Advanced Programming, HW 3
--- by <YOUR NAME HERE> <pennid> (and  <YOUR PARTNERS NAME> <pennid>)
+-- by Zi Yan yanzi (and  Adrian Benton <pennid>)
 
 {-# OPTIONS -Wall -fwarn-tabs -fno-warn-type-defaults #-}
 {-# LANGUAGE NoImplicitPrelude #-}
@@ -12,9 +12,14 @@ import Data.Map (Map)
 import qualified Data.Map as Map
 import Control.Monad.State hiding (when, mapM, foldM)
 import Test.HUnit hiding (State)
+import Data.Maybe (fromMaybe)
+
 
 main :: IO ()
-main = return ()
+main = runTestTT allTest>>return ()
+
+allTest :: Test
+allTest = TestList [test0, test1, test2, test3, test4]
 
 -- Problem 0
 
@@ -33,7 +38,7 @@ instance Show a => Show (Seq a) where
 foldSeq :: (a -> b -> b) -> b -> Seq a -> b
 foldSeq _ z Nil = z
 foldSeq f z (Single x) = f x z
-foldSeq f z (Concat l r) = foldSeq f (foldSeq f z r) l
+foldSeq f z (Concat hd tl) = foldSeq f (foldSeq f z tl) hd
 
 toList :: Seq a -> [a]
 toList = foldSeq (\x xs->x:xs) [] 
@@ -52,70 +57,169 @@ t0a = toList (Concat (Concat (Concat (Concat (Single 0)
 -- (b)
 
 instance Functor Seq where
-   fmap _ _  = error "TBD"
+   fmap _ Nil = Nil
+   fmap f (Single a) = Single (f a)
+   fmap f (Concat hd tl) = Concat (fmap f hd) (fmap f tl)
 
 instance Monad Seq where
-   return = error "TBD"
+   -- return :: a -> Seq a
+   return a = Single a
  
-   _ >>= _ = error "TBD"
+   -- >>= :: Seq a -> (a -> Seq b) -> Seq b
+   Nil >>= _ = Nil
+   Single a >>= f = f a
+   Concat hd tl >>= f = Concat (hd >>= f) (tl >>= f)
+
+sngl2 :: Seq Int
+sngl2 = Single 2
+
+con04 :: Seq Int
+con04 = (Concat (Concat (Concat (Concat (Single 0) 
+                                             (Single 1)) 
+                                     (Single 2))
+                             (Single 3)) 
+                     (Single 4))
+
+t0b1 :: Test
+t0b1 = TestList [toList (fmap (+1) Nil) ~?= fmap (+1) (toList Nil),
+                 toList (fmap (+1) sngl2) ~?= fmap (+1) (toList sngl2),
+                 toList (fmap (+1) con04) ~?= fmap (+1) (toList con04)]
+
+t0b2 :: Test
+t0b2 = TestList [toList (return 9) ~?= return 9,
+                 toList (return [1,2]) ~?= return [1,2]]
+
+incSeq :: Int -> Seq Int
+incSeq a = Single (a+1)
+
+t0b3 :: Test
+t0b3 = TestList [(toList (Nil >>= incSeq)) ~?= (toList Nil >>= (toList . incSeq)),
+                 (toList (sngl2 >>= incSeq)) ~?= (toList sngl2 >>= (toList . incSeq)),
+                 (toList (con04 >>= incSeq)) ~?= (toList con04 >>= (toList .incSeq))]
 
 
-
+-- todo: need to use MonadPlus
 first :: Seq a -> Maybe a 
-first = error "TBD"
+first Nil = Nothing
+first (Single a) = Just a
+first (Concat hd _) = first hd
+
+t0b4 :: Test
+t0b4 = TestList[first (Nil::Seq Int) ~?= Nothing,
+                first (Single 8) ~?= Just 8,
+                first con04 ~?= Just 0,
+                first (Concat Nil sngl2) ~?= Nothing]
+
+test0 :: Test
+test0 = TestList [t0a, t0b1, t0b2, t0b3, t0b4]
 
 -- Problem 1
 
 -- (a)
 
 pickyMap2 :: (a -> b -> c) -> [a] -> [b] -> Maybe [c]
-pickyMap2 = error "TBD"
+pickyMap2 f (x:xs) (y:ys) = Just (f x y) `maybeCon` pickyMap2 f xs ys
+pickyMap2 _ [] [] = Just []
+pickyMap2 _ [] _ = Nothing
+pickyMap2 _ _ [] = Nothing
 
+maybeCon :: Maybe a -> Maybe [a] -> Maybe [a]
+maybeCon Nothing _ = Nothing
+maybeCon _ Nothing = Nothing
+maybeCon (Just a) (Just as) = Just (a:as)
 
+t1a :: Test
+
+t1a = TestList [pickyMap2 (+) [1,2] [3,4] ~?= Just [4,6],
+                pickyMap2 (+) [1,2] [3,4,5] ~?= Nothing,
+                pickyMap2 (+) [1,2,3] [3,4] ~?= Nothing]
 
 -- (b) 
 
 transpose :: [[a]] -> Maybe [[a]]
-transpose = error "TBD"
+transpose [] = Just []
+transpose (xs:xss) = aux (length xs) (xs:xss)
+  where aux n (ys:yss) = pickyMap2 (:) 
+                                   ys 
+                                   (fromMaybe (iter ((length ys) +1) []) 
+                                              (aux n yss))
+  -- in case ys is [], the default case of fromMaybe 
+  -- should incur Nothing in pickyMap2
+        aux n []       = Just (iter n [])
+        iter 0 _       = []
+        iter n z       = z:iter (n-1) z
 
-
+t1b :: Test
+t1b = TestList [transpose [[1,2,3], [4,5,6]] ~?= Just [[1,4],[2,5],[3,6]],
+                transpose [[1,2,3],[4,5]] ~?= Nothing,
+                transpose [[1,2],[4,5,6]] ~?= Nothing,
+                transpose [[], [1,2]] ~?= Nothing ]
 
 -- (c)
 
 partialPickyMap2 :: (a -> b -> Maybe c) -> [a] -> [b] -> Maybe [c]
-partialPickyMap2 = error "TBD"
+partialPickyMap2 f (x:xs) (y:ys) = f x y `maybeCon` partialPickyMap2 f xs ys
+partialPickyMap2 _ [] [] = Just []
+partialPickyMap2 _ [] _ = Nothing
+partialPickyMap2 _ _ [] = Nothing
 
+code :: [(Int, Char)]
+code = [(1,'a'),(2,'b'),(3,'c')]
 
+t1c :: Test
+t1c = TestList [partialPickyMap2 lookup [1,2,3] [code,code,code] ~?= Just "abc",
+                partialPickyMap2 lookup [1,4,3] [code,code,code] ~?= Nothing]
+
+test1 :: Test
+test1 = TestList [t1a, t1b, t1c]
 
 -- Problem 2
 -- (a)
 
 sumFirstHundred :: Int
-sumFirstHundred = error "TBD"
+sumFirstHundred = sum [x*x | x <-[1..100]]
 
+t2a :: Test
+t2a = sumFirstHundred ~?= 338350
 
 
 -- (b)
 
 pyths :: Int -> [(Int,Int,Int)]
-pyths = error "TBD"
+pyths n = [(x,y,z)| x<-[1..n], y<-[1..n], z<-[1..n], x*x+y*y==z*z]
 
+t2b :: Test
+t2b = TestList [pyths 1 ~?= [],
+                pyths 10 ~?= [(3,4,5),(4,3,5),(6,8,10),(8,6,10)]]
 
 
 -- (c)
 
 sieveSundaram :: Int -> [Int]
-sieveSundaram = error "TBD"
+sieveSundaram n = 2:[2*x+1| x<-[1..n], notElem x (ruleOut n) ]
 
+ruleOut:: Int ->[Int]
+ruleOut n = [i+j+2*i*j|i<-[1..n],j<-[1..n],i<=j,i+j+2*i*j<=n]
 
+t2c :: Test
+t2c = TestList [sieveSundaram 10 ~?= [2,3,5,7,11,13,17,19]]
 
+test2 :: Test
+test2 = TestList [t2a, t2b, t2c]
 -- Problem 3
 
 -- (a) Define another monadic generalization of map (do not use any 
 --     functions defined in Control.Monad for this problem). 
 
 mapM :: Monad m => (a -> m b) -> [a] -> m [b]
-mapM = error "TBD"
+mapM _ [] = return []
+mapM f (x:xs) = conM (f x) (mapM f xs)
+
+conM :: Monad m => m a -> m [a] -> m [a]
+conM a b = do
+           x <- a
+           xs <- b
+           return (x:xs)
 
 safeUpper :: Char -> Maybe Char
 safeUpper x = if isAlpha x then Just (toUpper x) else Nothing
@@ -127,8 +231,13 @@ t3a = TestList [ mapM safeUpper "sjkdhf"  ~?= Just "SJKDHF",
 -- (b) Define a monadic generalization of foldr (again, do not use any 
 --     functions defined in Control.Monad for this problem).
 
+-- this signature is foldl-like, not foldr-like
+
 foldM :: Monad m => (a -> b -> m a) -> a -> [b] -> m a
-foldM = error "TBD"
+foldM _ z [] = return z
+foldM f z (b:bs) = do
+                   res <- f z b
+                   foldM f res bs
 
 t3b :: Test
 t3b = TestList [ addEven [1,2,3]  ~=? Nothing, 
@@ -139,6 +248,9 @@ addEven xs = foldM f 0 xs where
                f x y | even x    = Just (x + y)
                      | otherwise = Nothing
 
+
+test3 :: Test
+test3 = TestList [t3a, t3b]
 -- Problem 4
 
 type Variable = String
@@ -177,23 +289,94 @@ type Store = Map Variable Value
 
 evalE :: Expression -> State Store Value
 
-evalE (Var _)    = error "TBD"
-evalE (Val _)    = error "TBD"
-evalE (Op _ _ _) = error "TBD"
- 
+--evalE (Var v)    = state (\pre -> (fromMaybe (IntVal 0) (Map.lookup v pre), pre))
+evalE (Var v) = do
+                  pre<-get
+                  return (fromMaybe (IntVal 0) (Map.lookup v pre))
+evalE (Val v)    = return v
+evalE (Op bop le re) = do
+                        --pre<-get
+                        l<- evalE le
+                        r<- evalE re
+                        return (case bop of
+                                Plus   -> bPlus l r
+                                Minus  -> bMinus l r
+                                Times  -> bTimes l r
+                                Divide -> bDivide l r
+                                Gt     -> bGt l r 
+                                Ge     -> bGe l r
+                                Lt     -> bLt l r
+                                Le     -> bLe l r
+                               )
+bPlus :: Value -> Value -> Value
+bPlus _ (BoolVal _) = IntVal 0
+bPlus (BoolVal _) _ = IntVal 0
+bPlus (IntVal a) (IntVal b) = IntVal (a+b)
 
+bMinus :: Value -> Value -> Value   -- -  :: Int  -> Int  -> Int
+bMinus _ (BoolVal _) = IntVal 0
+bMinus (BoolVal _) _ = IntVal 0
+bMinus (IntVal a) (IntVal b) = IntVal (a-b)
+
+bTimes :: Value -> Value -> Value   -- *  :: Int  -> Int  -> Int
+bTimes _ (BoolVal _) = IntVal 0
+bTimes (BoolVal _) _ = IntVal 0
+bTimes (IntVal a) (IntVal b) = IntVal (a*b)
+  
+bDivide :: Value -> Value -> Value  -- /  :: Int  -> Int  -> Int
+bDivide _ (BoolVal _) = IntVal 0
+bDivide (BoolVal _) _ = IntVal 0
+bDivide _ (IntVal 0)  = IntVal 0
+bDivide (IntVal a) (IntVal b) = IntVal (a `div` b)
+
+bGt :: Value -> Value -> Value -- >  :: Int -> Int -> Bool
+bGt _ (BoolVal _) = error "wrong typed"
+bGt (BoolVal _) _ = error "wrong typed"
+bGt (IntVal a) (IntVal b) = BoolVal (a>b)
+
+
+bGe :: Value -> Value -> Value       -- >= :: Int -> Int -> Bool
+bGe _ (BoolVal _) = error "wrong typed"
+bGe (BoolVal _) _ = error "wrong typed"
+bGe (IntVal a) (IntVal b) = BoolVal (a>=b)
+
+bLt :: Value -> Value -> Value       -- <  :: Int -> Int -> Bool
+bLt _ (BoolVal _) = error "wrong typed"
+bLt (BoolVal _) _ = error "wrong typed"
+bLt (IntVal a) (IntVal b) = BoolVal (a<b)
+
+bLe :: Value -> Value -> Value     -- <= :: Int -> Int -> Bool
+bLe _ (BoolVal _) = error "wrong typed"
+bLe (BoolVal _) _ = error "wrong typed"
+bLe (IntVal a) (IntVal b) = BoolVal (a<=b)
+
+bIsTrue :: Value -> Bool
+bIsTrue (IntVal _) = error "wrong typed"
+bIsTrue (BoolVal a) = a
+                             
 
 
 evalS :: Statement -> State Store ()
+evalS (While cond stmt)= do
+                            res <- evalE cond
+                            if (bIsTrue res)
+                            then evalS (Sequence stmt (While cond stmt)) 
+                            else return ()
+evalS Skip             = return ()
+evalS (Sequence s1 s2) = evalS s1>>evalS s2
+evalS (Assign v e)     = do 
+                           val<- evalE e
+                           pre<- get
+                           put (Map.insert v val pre)
 
-evalS (While _ _)      = error "TBD" 
-evalS Skip             = error "TBD"
-evalS (Sequence _ _  ) = error "TBD"
-evalS (Assign _ _)     = error "TBD"
-evalS (If _ _ _ )      = error "TBD"
+evalS (If cond s1 s2)  = do
+                           res <- evalE cond
+                           if (bIsTrue res)
+                           then evalS s1
+                           else evalS s2
 
 execS :: Statement -> Store -> Store
-execS = error "TBD"
+execS stmt = execState $ evalS stmt
 
 run :: Statement -> IO ()
 run stmt = do putStrLn "Output Store:" 
@@ -213,3 +396,14 @@ t4b :: Test
 t4b = execS w_fact Map.empty ~?=
         Map.fromList [("F",IntVal 2),("N",IntVal 0),("X",IntVal 1),("Z",IntVal 2)]
 
+t4c :: Test
+t4c = execS (Sequence t_1 t_2) Map.empty ~?= Map.fromList [("X",IntVal 8),("Y", IntVal 8)]
+
+t_1 :: Statement
+t_1 = Assign "X" (Val (IntVal 8))
+
+t_2 :: Statement
+t_2 = Assign "Y" (Var "X")
+
+test4 :: Test
+test4 = TestList [t4a, t4b, t4c]
