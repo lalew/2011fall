@@ -1,0 +1,7 @@
+gcc -Wall -Wextra -pedantic -std=c99 -O2 -lm -D LSTALL=1 -o simulator simulator.c
+gzcat sjeng-10M.trace.gz | ./simulator
+Processing trace...
+Processed 10000000 trace records.
+Micro-ops: 10000000
+Macro-ops: 7569542
+TotalCycles: 10000000

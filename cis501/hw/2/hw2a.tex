@@ -1,0 +1,149 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage[utf8x]{inputenc}
+\usepackage{ucs}
+\author{Zi Yan}
+\date{}
+\title{CIS501 Homework 2a}
+\begin{document}
+\maketitle
+
+\section*{Question 1}
+The percentage of loads is 20.13\%.
+
+If loads take $n$ cycles, the CPI is $1+20.13\% \times (n-1)$.
+
+If loads take 2 cycles, the CPI is 1.2013.
+
+If loads take 3 cycles, the CPI is 1.4026.
+
+\section*{Question 2}
+\begin{tabular}{|c|c|}
+\hline 
+Loads cycles & CPI \\ 
+\hline 
+1 & 1 \\ 
+\hline 
+2 & 1.2013 \\ 
+\hline 
+3 & 1.4026 \\ 
+\hline 
+4 & 1.6039 \\ 
+\hline 
+5 & 1.8052 \\ 
+\hline 
+6 & 2.0065 \\ 
+\hline 
+7 & 2.2078 \\ 
+\hline 
+8 & 2.4091 \\ 
+\hline 
+9 & 2.6104 \\ 
+\hline 
+10 & 2.8117 \\ 
+\hline 
+11 & 3.013 \\ 
+\hline 
+12 & 3.2143 \\ 
+\hline 
+13 & 3.4156 \\ 
+\hline 
+14 & 3.6169 \\ 
+\hline 
+15 & 3.8182 \\ 
+\hline 
+\end{tabular} 
+
+\section*{Question 3}
+\begin{tabular}{|c|c|}
+\hline 
+Loads cycles & CPI \\ 
+\hline 
+1 & 1 \\ 
+\hline 
+2 & 1.1493 \\ 
+\hline 
+3 & 1.3125 \\ 
+\hline 
+4 & 1.4795 \\ 
+\hline 
+5 & 1.6471 \\ 
+\hline 
+6 & 1.8146 \\ 
+\hline 
+7 & 1.9822 \\ 
+\hline 
+8 & 2.1498 \\ 
+\hline 
+9 & 2.3173 \\ 
+\hline 
+10 & 2.4849 \\ 
+\hline 
+11 & 2.6525 \\ 
+\hline 
+12 & 2.8201 \\ 
+\hline 
+13 & 2.9877 \\ 
+\hline 
+14 & 3.1553 \\ 
+\hline 
+15 & 3.3229 \\ 
+\hline 
+\end{tabular} 
+
+\section*{Question 4}
+\paragraph*{Two cycles}
+The CPI of not allowing independent instructions is $1+20.13\% \times
+ (2-1) = 1.2013$. The CPI of allowing independent instructions is 1.1493.
+ The percentage of speed up is $(1.2013-1.1493)/1.1493=4.56\%$
+ 
+ \paragraph*{Three cycles}
+ The CPI of not allowing independent instructions is $1+20.13\% \times
+ (3-1) = 1.4026 $. The CPI of allowing independent instructions is 1.3125.
+ The percentage of speed up is $(1.4026 -1.3125)/1.3125=6.86\%$
+ 
+ \section*{Question 5}
+\begin{tabular}{|c|c|c|c|}
+\hline 
+Loads cycles & CPI w/ write order & CPI w/o write order & Speed up 
+(times)\\ 
+\hline 
+1 & 1 &  1 & 1\\ 
+\hline 
+2 & 1.1493 & 1.1489 & 1.0003\\ 
+\hline 
+3 & 1.3125 & 1.3118 & 1.0005\\ 
+\hline 
+4 & 1.4795 & 1.4784 & 1.0007\\ 
+\hline 
+5 & 1.6471 & 1.6455 & 1.0009\\ 
+\hline 
+6 & 1.8146 & 1.8127 & 1.0010\\ 
+\hline 
+7 & 1.9822 & 1.9799 & 1.0012\\ 
+\hline 
+8 & 2.1498 & 2.1471 & 1.0013\\ 
+\hline 
+9 & 2.3173 & 2.3142 & 1.0013\\ 
+\hline 
+10 & 2.4849 & 2.4814 & 1.0014\\ 
+\hline 
+11 & 2.6525 & 2.6486 & 1.0015\\ 
+\hline 
+12 & 2.8201 & 2.8158 & 1.0015\\ 
+\hline 
+13 & 2.9877 & 2.9830 & 1.0016\\ 
+\hline 
+14 & 3.1553 & 3.1503 & 1.0016\\ 
+\hline 
+15 & 3.3229 & 3.3175 & 1.0016\\ 
+\hline 
+\end{tabular} 
+
+ \textbf{Reason:} Because some instruction may need the result from its
+immediate predecessor, if register write order is not enforced, 
+ the results from the immediate predecessor will be overwritten by 
+a previous instruction, if some previous instruction finished quicker than
+this predecessor. Consequently the whole running of a program will 
+ be wrong, due to the wrong producer-consumer relation.
+  
+\end{document}

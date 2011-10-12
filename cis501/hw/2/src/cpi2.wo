@@ -1,0 +1,6 @@
+gzcat sjeng-10M.trace.gz | ./simulator
+Processing trace...
+Processed 10000000 trace records.
+Micro-ops: 10000000
+Macro-ops: 7569542
+TotalCycles: 11493146

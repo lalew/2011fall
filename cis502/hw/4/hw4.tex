@@ -11,7 +11,7 @@ Assignment: HW4 \\
 %Write your content here
 
 \section*{Problem 1}
-Assume the sorted array is in decreasing order, if not use $n-i$ to access
+Assume the sorted array is in decreasing order, if not, use $n-i$ to access
 element $i$. Let $s = 1, e = n, 
 mid=\lfloor (s+e)/2 \rfloor$, then compare $A[mid]$ with $mid^2$.
 If $A[mid] > mid^2$, let $s = mid +1, mid = \lfloor (s+e)/2 \rfloor$;
@@ -40,15 +40,16 @@ $T(n) = T(n/2) + c$, namely $T(n) = O(\log n)$.
 \section*{Problem 2}
 The algorithm is:
 \begin{itemize}
-    \item[1)] divide the array into two groups recursively.
+    \item[1)] divide the array into two groups $g_L, g_R$ recursively.
     \item[2)] find the largest-sum subinterval in each group.
     \item[3)] while merging, first we should find the largest-sum 
-    subinterval in the merged group, starting from the middle $mid$ of the 
-    group. From middle to the left of the group, we find a index $a$, where 
-    the sum of interval $[a, mid]$ is the largest one in the left half, only if 
-    not negative. Similarly, we can find a index $b$ which makes $[mid, b]$
-    the interval with largest non-negative sum. Finally, we will get the 
-    largest-sum interval $[a,b]$ by concatenating $[a, mid]$ and $[mid, b]$.
+    subinterval in the merged group, starting from the middle of the 
+    merged group. Starting from the last element $g_L[l]$ to the left of the   
+    group $g_L$, we find a index $a$, where the sum of interval $[a, l]$ is 
+    the largest one in $g_L$, only if not negative. Similarly, we can find a 
+    index $b$ which makes $[r, b]$ the interval with largest non-negative 
+    sum, where $g_R[r]$ is the first element of $g_R$. Finally, we will get 
+    the largest-sum interval $[a,b]$ by concatenating $[a, l]$ and $[r, b]$.
     \item[4)] then we choose the largest sum subinterval from those three, 
     pushing it to the upper level of merging.
 \end{itemize}
@@ -71,7 +72,7 @@ also consider the intervals which cross both groups, because at level $i$, we on
 both. 
 
 By combining the largest-sum interval ending in the last element of
-$g_L$ with the one starting at the first element of $g_R$, we can get the 
+$g_L$ with another starting at the first element of $g_R$, we can get the 
 largest-sum interval across two group. Suppose not. Assume the 
 combined interval is $[a,b]$, then there must be another interval $[a',b']$ 
 which also cross two groups has larger sum than $[a,b]$. In accordance 
