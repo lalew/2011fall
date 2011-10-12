@@ -1,4 +1,5 @@
 set autoscale
+set title "Question 5"
 set xlabel "Die area of the chip"
 set ylabel "Per-die cost"
 set xtics 25

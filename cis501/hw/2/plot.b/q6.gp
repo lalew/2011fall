@@ -1,4 +1,6 @@
 set autoscale
+set xtics 0.25
+set title "Question 6, 7, 9"
 set ylabel "Dollars per billion transistors"
 set xlabel "Number of transistors(in billions)"
 set terminal png size 1000,500
