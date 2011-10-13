@@ -48,11 +48,13 @@ toList = foldSeq (\x xs->x:xs) []
  
 
 t0a :: Test
-t0a = toList (Concat (Concat (Concat (Concat (Single 0) 
+t0a = TestList [toList (Concat (Concat (Concat (Concat (Single 0) 
                                              (Single 1)) 
                                      (Single 2))
                              (Single 3)) 
-                     (Single 4)) ~?= [0,1,2,3,4]
+                     (Single 4)) ~?= [0,1,2,3,4],
+                toList (Concat (Concat (Single 1) (Single 2))
+                               (Concat (Single 3) (Single 4))) ~?= [1,2,3,4]]
 
 -- (b)
 
@@ -102,13 +104,13 @@ t0b3 = TestList [(toList (Nil >>= incSeq)) ~?= (toList Nil >>= (toList . incSeq)
 first :: Seq a -> Maybe a 
 first Nil = Nothing
 first (Single a) = Just a
-first (Concat hd _) = first hd
+first (Concat hd tl) = first hd `mplus` first tl
 
 t0b4 :: Test
 t0b4 = TestList[first (Nil::Seq Int) ~?= Nothing,
                 first (Single 8) ~?= Just 8,
                 first con04 ~?= Just 0,
-                first (Concat Nil sngl2) ~?= Nothing]
+                first (Concat Nil sngl2) ~?= Just 2]
 
 test0 :: Test
 test0 = TestList [t0a, t0b1, t0b2, t0b3, t0b4]
