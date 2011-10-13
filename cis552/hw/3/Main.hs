@@ -292,9 +292,9 @@ type Store = Map Variable Value
 evalE :: Expression -> State Store Value
 
 --evalE (Var v)    = state (\pre -> (fromMaybe (IntVal 0) (Map.lookup v pre), pre))
-evalE (Var v) = do
+evalE (Var x) = do
                   pre<-get
-                  return (fromMaybe (IntVal 0) (Map.lookup v pre))
+                  return (fromMaybe (IntVal 0) (Map.lookup x pre))
 evalE (Val v)    = return v
 evalE (Op bop le re) = do
                         --pre<-get
@@ -311,50 +311,42 @@ evalE (Op bop le re) = do
                                 Le     -> bLe l r
                                )
 bPlus :: Value -> Value -> Value
-bPlus _ (BoolVal _) = IntVal 0
-bPlus (BoolVal _) _ = IntVal 0
 bPlus (IntVal a) (IntVal b) = IntVal (a+b)
+bPlus _ _ = IntVal 0
 
 bMinus :: Value -> Value -> Value   -- -  :: Int  -> Int  -> Int
-bMinus _ (BoolVal _) = IntVal 0
-bMinus (BoolVal _) _ = IntVal 0
 bMinus (IntVal a) (IntVal b) = IntVal (a-b)
+bMinus _ _ = IntVal 0
 
 bTimes :: Value -> Value -> Value   -- *  :: Int  -> Int  -> Int
-bTimes _ (BoolVal _) = IntVal 0
-bTimes (BoolVal _) _ = IntVal 0
 bTimes (IntVal a) (IntVal b) = IntVal (a*b)
+bTimes _ _ = IntVal 0
   
 bDivide :: Value -> Value -> Value  -- /  :: Int  -> Int  -> Int
-bDivide _ (BoolVal _) = IntVal 0
-bDivide (BoolVal _) _ = IntVal 0
-bDivide _ (IntVal 0)  = IntVal 0
+bDivide _ (IntVal 0) = error "divided by 0"
 bDivide (IntVal a) (IntVal b) = IntVal (a `div` b)
+bDivide _ _ = IntVal 0
 
 bGt :: Value -> Value -> Value -- >  :: Int -> Int -> Bool
-bGt _ (BoolVal _) = error "wrong typed"
-bGt (BoolVal _) _ = error "wrong typed"
 bGt (IntVal a) (IntVal b) = BoolVal (a>b)
+bGt _ _ = error "wrong typed"
 
 
 bGe :: Value -> Value -> Value       -- >= :: Int -> Int -> Bool
-bGe _ (BoolVal _) = error "wrong typed"
-bGe (BoolVal _) _ = error "wrong typed"
 bGe (IntVal a) (IntVal b) = BoolVal (a>=b)
+bGe _ _ = error "wrong typed"
 
 bLt :: Value -> Value -> Value       -- <  :: Int -> Int -> Bool
-bLt _ (BoolVal _) = error "wrong typed"
-bLt (BoolVal _) _ = error "wrong typed"
 bLt (IntVal a) (IntVal b) = BoolVal (a<b)
+bLt _ _ = error "wrong typed"
 
 bLe :: Value -> Value -> Value     -- <= :: Int -> Int -> Bool
-bLe _ (BoolVal _) = error "wrong typed"
-bLe (BoolVal _) _ = error "wrong typed"
 bLe (IntVal a) (IntVal b) = BoolVal (a<=b)
+bLe _ _ = error "wrong typed"
 
 bIsTrue :: Value -> Bool
-bIsTrue (IntVal _) = error "wrong typed"
 bIsTrue (BoolVal a) = a
+bIsTrue _ = error "wrong typed"
                              
 
 
