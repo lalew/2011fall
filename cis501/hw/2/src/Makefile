@@ -1,5 +1,5 @@
 GCC=gcc
-CFLAG=-Wall -Wextra -pedantic -std=c99 -O2 -lm -D LSTALL=1
+CFLAG=-Wall -Wextra -pedantic -std=c99 -O2 -lm -D LSTALL=15
 UNZIP=gzcat
 
 simulator: simulator.c
@@ -21,4 +21,4 @@ run2_d: sjeng-10M.trace.gz simulator_d
 	$(UNZIP) $< | ./simulator_d
 
 clean:
-	rm -f simulator
+	rm -f simulator simulator_d

@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <strings.h>
 
+//this will be provided in Makefile macro
 //#define LSTALL 2
 void logInst(FILE* outputFile,
              int cycle, int micro, 
@@ -39,6 +40,7 @@ void simulate(FILE* inputFile, FILE* outputFile)
   
   uint32_t scoreboard[60];
   uint32_t cycle = 0;
+  uint32_t latency = 0;
 
   memset(scoreboard, 0, 50*sizeof(uint32_t));
 
@@ -93,12 +95,23 @@ void simulate(FILE* inputFile, FILE* outputFile)
     }
 
     //additional work
+    //calculate latency of current instruction
+    if (loadStore == 'L')
+    {
+        latency = LSTALL;//default value is 2
+    }
+    else 
+    {
+        latency = 1;//others are 1
+    }
+
     while ((sourceRegister1 != -1 && 
             scoreboard[sourceRegister1] != 0) ||
            (sourceRegister2 != -1 &&
             scoreboard[sourceRegister2] != 0) ||
+           //preserve dest register write order
            (destinationRegister != -1 &&
-            scoreboard[destinationRegister] != 0)) 
+            scoreboard[destinationRegister] >= latency)) 
     {
 
 #ifdef DEBUG
