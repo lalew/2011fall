@@ -1,5 +1,5 @@
 -- Advanced Programming, HW 3
--- by Zi Yan yanzi (and  Adrian Benton <pennid>)
+-- by Zi Yan yanzi (and  Adrian Benton adrianb)
 
 {-# OPTIONS -Wall -fwarn-tabs -fno-warn-type-defaults #-}
 {-# LANGUAGE NoImplicitPrelude #-}
@@ -100,7 +100,9 @@ t0b3 = TestList [(toList (Nil >>= incSeq)) ~?= (toList Nil >>= (toList . incSeq)
                  (toList (con04 >>= incSeq)) ~?= (toList con04 >>= (toList .incSeq))]
 
 
--- todo: need to use MonadPlus
+-- Works correctly because the definition of `mplus` states that
+-- the first value that if both arguments evaluate to Just, then
+-- the first will be returned.   By Adrian
 first :: Seq a -> Maybe a 
 first Nil = Nothing
 first (Single a) = Just a
@@ -203,6 +205,7 @@ sieveSundaram n = 2:[2*x+1| x<-[1..n], notElem x (ruleOut n) ]
 ruleOut:: Int ->[Int]
 ruleOut n = [i+j+2*i*j|i<-[1..n],j<-[1..n],i<=j,i+j+2*i*j<=n]
 
+
 t2c :: Test
 t2c = TestList [sieveSundaram 10 ~?= [2,3,5,7,11,13,17,19]]
 
@@ -243,7 +246,8 @@ foldM f z (b:bs) = do
 
 t3b :: Test
 t3b = TestList [ addEven [1,2,3]  ~=? Nothing, 
-                 addEven [2,4]    ~=? Just 6]
+                 addEven [2,4]    ~=? Just 6,
+                 addEven [2]      ~?= Just 2]
 
 addEven :: [Int] -> Maybe Int
 addEven xs = foldM f 0 xs where 
