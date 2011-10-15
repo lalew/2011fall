@@ -1,6 +1,7 @@
 *.aux
 *.log
 *.synctex.gz
+.DS_Store
 
 # Packages #
 ############

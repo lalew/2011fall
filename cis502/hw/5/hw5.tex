@@ -1,0 +1,58 @@
+\documentclass[letter,12pt]{article}
+\usepackage[margin=2.3cm]{geometry}
+\usepackage{parskip}
+\begin{document}
+Name: Yan, Zi \\
+Course: CIS 502 \\
+Assignment: HW5 \\
+\line(1,0){400}
+%Write your content here
+
+\section*{Problem 1}
+\paragraph*{(a)} 
+The example is below ($D_i$ is the optimal solution until day $i$):
+
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline 
+Day & 1 & \underline{2} & 3 & \underline{4} & 5 & 6 \\ 
+\hline 
+$x$ & 70 & 71 & 65 & 86 & 77 & 66 \\ 
+\hline 
+$s$ & 64 & 32 & 16 & 8 & 4 & 2 \\ 
+\hline 
+$D_i$ & 64 & 96 & 128 & 160 & 192 & 224 \\ 
+\hline 
+\end{tabular} 
+
+The optimal solution will process 224 TB data, and system will reboot on day 
+2 and day 4.
+
+\paragraph*{(b)}
+We use $D_i$ to represent the amount of TB data the system can process at 
+maximum till day $i$.
+
+For any reboot of the system, the benefit cannot reveal itself on the day of
+rebooting. Therefore, we need to consider it the second day. For any 
+day $i$, except first day, we find the larger amount of data can be 
+processed between the system was rebooted the day before and that was 
+not. Then the algorithm is described:
+
+First, we use $k$ to represent that $s_k$ TB data can be processed by the
+system today. Let $D_0 = 0$ denote on day 0 no data is processed and $k 
+= 0$. Then on day 1, $D_1 =\min\{x_1, s_k\}$, and then let $k = k+1$.
+Afterwards, on day $i$, $D_i = \max\{\min\{x_i, s_1\} + D_{i_2}, D_{i-1} + 
+ \min\{x_i, s_k\}\}$, if first part in $\max$ function is larger, we set $k$ to
+ 2, otherwise we increase $k$ by 1. At last, $D_n$ is the total number of 
+ terabytes processed by the optimal solution.
+ 
+ Because every $D_i$ uses a constant time to process, including $k$, and 
+ there are $n+1$ elements. Therefore, the runtime of this algorithm is
+ $O(n)$.
+
+\section*{Problem 2}
+
+\section*{Problem 3}
+
+\section*{Problem 4}
+
+\end{document}
