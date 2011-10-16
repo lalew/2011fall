@@ -50,9 +50,93 @@ Afterwards, on day $i$, $D_i = \max\{\min\{x_i, s_1\} + D_{i_2}, D_{i-1} +
  $O(n)$.
 
 \section*{Problem 2}
+For two company $i$, $j$, the rate between them is $r_{ij}$, then for $n_i$
+shares of company $i$, we can trade for $n_i \times r_{ij}$ shares of 
+company $j$. Thus, for a sequence of companies $i_1, i_2, ..., i_k$, the rate
+between $i_n$ and $i_o$ is $r_{i_n i_o}$, where $i, o \in [1..k]$, if we want
+to trade $i_1$ for $i_k$ via $i_2, i_3, ..., i_{k-1}$, the rate between $i_1$
+and $i_k$ is $\prod\limits_{j=1}^{k-1} r_{i_j i_{j+1}}$. So for an opportunity
+cycle, from $i_1$ via $i_2, i_3, ..., i_{k-1}$, to $i_k$ then finally back to 
+$i_1$, the product of the rate, $\prod\limits_{j=1}^{k-1} r_{i_j i_{j+1}} 
+\times r_{i_k i_1}$, should be greater than 1. When we apply $\log$ function
+on both side, we can get $\log(\prod\limits_{j=1}^{k-1} r_{i_j i_{j+1}} 
+\times r_{i_k i_1}) > 0$, namely $\sum\limits_{j=1}^{k-1} 
+\log(r_{i_j i_{j+1}}) + \log(r_{i_k i_1}) > 0$. Or we can say 
+$\sum\limits_{j=1}^{k-1} (-\log(r_{i_j i_{j+1}})) + (-\log(r_{i_k i_1})) < 0$.
+Therefore, we can use the algorithm for finding a negative cycle in a graph.
+
+For a graph $G=(V,E)$, let each vertex $v_{i_j}$ denote each company $i_j$,
+where $j \in [1..n]$. Each edge $e_{i_j i_k}$ represents that there is a share 
+trading between company $i_j$ and $i_k$, and the weight of the edge is 
+$-\log(r_{i_j i_k})$, otherwise no edge is there. Then we can apply 
+Negative Cycle Algorithm in the book to find out whether there is a negative
+cycle in the constructed graph. If so, we can say an opportunity cycle exists
+in those companies, otherwise, we say no.
+
+The construction of such a graph takes $O(n+m)$ times, and the Negative
+Cycle Algorithm takes $O(nm)$, so the total runtime is $O(nm)$.
 
 \section*{Problem 3}
+Because anyone can only notify his direct subordinates one at a time, and
+after he notified one direct subordinate, the notification by this subordinate
+can be performed with other notification by other subordinates in parallel.
+Let $r(T)$ denote the rounds it will take to notify all people, or say nodes,
+in tree $T$ recursively, and for leaf $T$, $r(T)=0$. If two subtrees $T_1$ and 
+$T_2$ are the direct subordinates of a node $x$, and $r(T_1) > r(T_2)$, it 
+will be better to notify $T_1$ first. Since if we notify $T_2$ first, it will take 
+$\max\{1+r(T_2), 2+r(T_1)\}=2+r(T_1)$ rounds to get everybody notified, 
+which is more than $\max\{1+r(T_1), 2+r(T_2)\}=1+r(T_1)$, the rounds
+necessary for former case.
+
+Here is the algorithm. For each leaf node $T$, we let $r(T) = 0$. For each
+node $v$, including the root, or say the ranking office, we first sort all its  
+$n$ direct subordinates, $T_1$ to $T_n$, by $r(T_i)$ in decreasing order. 
+Then, $r(v) = \max\limits_{j \in [1..n]}\{j+r(T_j)\}$. So this recurrence can 
+provide the minimum number of rounds each node needs to take to notify
+all people in the tree that is rooted by this node.
+
+While output the calling sequence, we can start from the ranking officer who
+is notified at round 0. Each direct subordinate $T_i$ of the ranking officer 
+will be notified at round $0+i$, where $i$ is the index of sorted direct 
+subordinates. For each of those direct subordinates $T_i$, its direct 
+subordinates $T'_j$ will be notified at round $b+j$, where $b$ is the round 
+number at which $T_i$ is notified, and $j$ is the index of sorted direct 
+subordinates of $T_i$. This procedure will be performed recursively, until
+we reach all the leaves. And the output is all the people with the round
+numbers at which they are notified.
+
+At each node, if it has $m$ children, or say direct subordinates, it will take
+$O(m\log m)$ to sort the children and $O(m)$ time to find the 
+$\max\limits_{j \in [1..m]}\{j+r(T_j)\}$. Thus, for the root, it has at most
+$n-1$ children, then the runtime of the algorithm is $O(n\log n)$.
 
 \section*{Problem 4}
+We have to choose $n/2$ precincts
+from $n$, and ensure the chosen precincts have more than half voters for
+a party and the rest $n/2$ precincts also have more than half voters for
+the same party. 
+
+We build a matrix $M[j, p_1, v_a^1, v_a^2]$, where $j$ is the number of
+precincts already considered, $p_1$ is the number of precincts in partition
+1, $v_a^1$ is the number of voters voting for party A in partition 1,  
+$v_a^2$ is the number of voters voting for party A in partition 2, and if
+this situation is possible, we set $M[j, p_1, v_a^1, v_a^2]$ to 1, otherwise
+0. For first precinct, if there are $m$ voters voting for party A, then 
+$M[1, 1, m, 0]=M[1, 0, 0, m] = 1$ and others will be 0. While considering
+$j$th precinct with $k$ voters voting for party A, any element 
+$M[j, p_1, v_a^1, v_a^2]$ will be set to 1, if $M[j-1, p_1-1,v_a^1-k, 
+v_a^2]=1$ or $M[j-1,p_1, v_a^1,v_a^2-k]=1$, others will be set to 0.
+After the procedure is finished, we scan the 2D matrix $M[n,n/2]$, for any
+$M[n,n/2, x, y] = 1$, if both of $x$, $y$ are greater than $mn/4$ 
+(then the combination will be more than $mn/2$, namely party A will win) or 
+both of them are less than $mn/4$ (then the combination will be less than 
+$mn/2$, namely party B will win), we can say the set of precincts is 
+susceptible to gerrymandering.
+
+In order to build the matrix, we will need $O(n^2m^2)$ time. And for the
+final scan, we need $O(m^2)$ time. So total runtime is $O(n^2m^2)$.
+
+
+
 
 \end{document}
