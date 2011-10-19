@@ -28,26 +28,35 @@ The optimal solution will process 224 TB data, and system will reboot on day
 2 and day 4.
 
 \paragraph*{(b)}
-We use $D_i$ to represent the amount of TB data the system can process at 
-maximum till day $i$.
+We use $D(i,j)$ to represent the amount of TB data the system can process at 
+maximum till day $i$ and the most recent reboot is $j$ days ago.
 
 For any reboot of the system, the benefit cannot reveal itself on the day of
-rebooting. Therefore, we need to consider it the second day. For any 
+rebooting. Therefore, we need to consider it the days before. For any 
 day $i$, except first day, we find the larger amount of data can be 
-processed between the system was rebooted the day before and that was 
-not. Then the algorithm is described:
+processed between the system was rebooted between the current day
+and the previous reboot and that was not. Then the algorithm is described:
 
-First, we use $k$ to represent that $s_k$ TB data can be processed by the
-system today. Let $D_0 = 0$ denote on day 0 no data is processed and $k 
-= 0$. Then on day 1, $D_1 =\min\{x_1, s_k\}$, and then let $k = k+1$.
-Afterwards, on day $i$, $D_i = \max\{\min\{x_i, s_1\} + D_{i_2}, D_{i-1} + 
- \min\{x_i, s_k\}\}$, if first part in $\max$ function is larger, we set $k$ to
- 2, otherwise we increase $k$ by 1. At last, $D_n$ is the total number of 
- terabytes processed by the optimal solution.
+Let $D(0,0) = 0$ for the base case. When on day $i$ the system is not
+rebooted, we know $\min\{x_i, s_j\}$ TB data will be processed, so
+$D(i, j) = D(i-1, j-1) + \min\{x_i, s_j\}$. However, if the system reboots,
+or say $j=0$, we have to look back to find the maximum amount of 
+processed data because of the previous reboot. So $D(i, 0) = 
+\max\limits_{k\in[0..i-1]}\{D(i-1,k)\}$. In sum, the $i$ will run from 1 to
+$n$, and the $j$ will run from 0 to $i$, thus $D(i, j)$ can be calculated 
+according to the two formulas above.
+
+%First, we use $k$ to represent that $s_k$ TB data can be processed by the
+%system today. Let $D_0 = 0$ denote on day 0 no data is processed and $k 
+%= 1$. Then on day 1, $D_1 =\min\{x_1, s_k\}$, and then let $k = k+1$.
+%Afterwards, on day $i$, $D_i = \max\{\min\{x_i, s_1\} + D_{i-2}, D_{i-1} + 
+% \min\{x_i, s_k\}\}$, if first part in $\max$ function is larger, we set $k$ to
+% 2, otherwise we increase $k$ by 1. At last, $D_n$ is the total number of 
+% terabytes processed by the optimal solution.
  
- Because every $D_i$ uses a constant time to process, including $k$, and 
- there are $n+1$ elements. Therefore, the runtime of this algorithm is
- $O(n)$.
+For $j \neq 0$, $D(i, j)$ will be calculated in constant time, otherwise, 
+$D(i,0)$ takes $O(n)$ time, therefore, the total runtime is $\frac{n^2}{2} 
+\times O(1) + n \times O(n) = O(n^2)$
 
 \section*{Problem 2}
 For two company $i$, $j$, the rate between them is $r_{ij}$, then for $n_i$
