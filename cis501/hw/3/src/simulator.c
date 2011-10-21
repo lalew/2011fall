@@ -203,7 +203,7 @@ void simulate(FILE* inputFile, FILE* outputFile)
   uint32_t historyQ4[2] = {0};
   uint32_t historyQ5[19] = {0};
   
-  uint32_t historyG = 0;
+  //uint32_t historyG = 0;
     
   int64_t staticT = 0;
   int64_t bMiss[21] = {0};//bimodal predictor miss rates
@@ -227,9 +227,9 @@ void simulate(FILE* inputFile, FILE* outputFile)
   
   int8_t **ToCounterQ7;
   
-  int8_t pred[1<<20];
-  int8_t predB[1<<20];
-  int8_t predG[1<<20];
+  //int8_t pred[1<<20];
+  //int8_t predB[1<<20];
+  //int8_t predG[1<<20];
 
   BiCounter = (int8_t **)malloc(21*sizeof(int8_t*));
   for (int i = 0; i <= 20; ++i)
@@ -354,11 +354,11 @@ void simulate(FILE* inputFile, FILE* outputFile)
 
 		
 		//Question 3
-        int hisLen = 3;
+        int hisLen = 8;
         int bRes = 0, gRes = 0;
         int indexQ7 = 0;
         
-        uint8_t resQ2, resQ5;
+        //uint8_t resQ2, resQ5;
         //from 2^2 to 2^20
         for (int i = 0; i <= 20; ++i)
         {       	
@@ -432,8 +432,8 @@ void simulate(FILE* inputFile, FILE* outputFile)
         //Question 5: Gshare history length is equal to predictor size
             int gIndex5 = xorNBit(index, historyQ5[i], i);
             
-            if (i == 4)
-            	memcpy(predG, GsCounterQ5[i], (1<<i)*sizeof(int8_t));
+            /*if (i == 4)
+            	memcpy(predG, GsCounterQ5[i], (1<<i)*sizeof(int8_t));*/
             //0, 1 not taken; 2, 3 taken
 			//prediction wrong
 			if (TNnotBranch == 'T')
@@ -503,7 +503,7 @@ void simulate(FILE* inputFile, FILE* outputFile)
         	if (i >= 2)
         	{
         		indexQ7 = lastNbit(instructionAddress, i-2);
-        		memcpy(pred, ToCounterQ7[i-2], (1<<(i-2))*sizeof(int8_t));
+        		//memcpy(pred, ToCounterQ7[i-2], (1<<(i-2))*sizeof(int8_t));
 				if (ToCounterQ7[i-2][indexQ7] <= 1 && (bRes&4) != 4)//use bimodal, miss
 				{
 					tMissQ7[i-2]++;
