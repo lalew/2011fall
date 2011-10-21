@@ -1,0 +1,49 @@
+gzcat sjeng-10M.trace.gz | ./simulator
+Processing trace...
+Processed 10000000 trace records.
+Micro-ops: 10000000
+Macro-ops: 7569542
+Total conditional branches: 1381905
+Static branch predictor miss rate: Alwasy taken: 0.553909, always not taken 0.446091
+Bimodal predictor miss rates:
+hisotry length    miss rate
+2                  0.319424
+3                  0.290443
+4                  0.249152
+5                  0.231611
+6                  0.220855
+7                  0.189726
+8                  0.169934
+9                  0.152380
+10                 0.138740
+11                 0.134757
+12                 0.131543
+13                 0.130280
+14                 0.129356
+15                 0.129104
+16                 0.129081
+17                 0.129081
+18                 0.129081
+19                 0.129081
+20                 0.129081
+Gshare predictor miss rates:
+hisotry length    miss rate
+2                  0.331052
+3                  0.332810
+4                  0.313585
+5                  0.274732
+6                  0.269225
+7                  0.261084
+8                  0.225050
+9                  0.214740
+10                 0.177872
+11                 0.142847
+12                 0.121783
+13                 0.105546
+14                 0.097574
+15                 0.094858
+16                 0.090761
+17                 0.090760
+18                 0.090760
+19                 0.090760
+20                 0.090760

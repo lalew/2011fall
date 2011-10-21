@@ -9,7 +9,7 @@
 #include <strings.h>
 
 
-int16_t satureOp(int16_t counter, int16_t change)
+inline int16_t satureOp(int16_t counter, int16_t change)
 {
     int16_t res = counter + change;
     if (res < 0)
@@ -19,7 +19,7 @@ int16_t satureOp(int16_t counter, int16_t change)
     return res;
 }
 
-uint32_t lastNbit(uint64_t pc, int nBit)
+inline uint32_t lastNbit(uint64_t pc, int nBit)
 {
     uint64_t mask;
     
@@ -28,7 +28,7 @@ uint32_t lastNbit(uint64_t pc, int nBit)
     return (uint32_t)(pc & mask);
 }
 
-uint32_t xorNBit(uint32_t addr, uint8_t his, int aLen, int hLen)
+inline uint32_t xorNBit(uint32_t addr, uint8_t his, int aLen, int hLen)
 {
    int aMask;
    int hMask;
@@ -44,7 +44,7 @@ uint32_t xorNBit(uint32_t addr, uint8_t his, int aLen, int hLen)
    return addr;
 }
 
-uint16_t histShift(uint16_t old, char ifTake, int len)
+inline uint16_t histShift(uint16_t old, char ifTake, int len)
 {
     uint16_t mask;
     mask = (1<<len) - 1;
@@ -119,68 +119,73 @@ void logFile(FILE *outputFile,
                         pc, branch, pred, res, miss);
 }
 
-void bimodal(int8_t **BiCounter, int64_t *bMiss, int cntBits, 
+inline void bimodal(int8_t *BiCounter, int64_t *bMiss, int cntBits, 
              uint64_t instructionAddress, char TNnotBranch)
 {
     int index = lastNbit(instructionAddress, cntBits);
     int8_t pred[1<<20];
 
-    memcpy(pred, BiCounter[cntBits-2], (1<<cntBits)*sizeof(int8_t));
+    memcpy(pred, BiCounter, (1<<cntBits)*sizeof(int8_t));
     //0, 1 not taken; 2, 3 taken
     //prediction wrong
     if (TNnotBranch == 'T')
     {
-        if (BiCounter[cntBits-2][index] <= 1)
-            bMiss[cntBits-2]++;
+        if (BiCounter[index] <= 1)
+            (*bMiss)++;
 
-        BiCounter[cntBits-2][index] = 
-            satureOp(BiCounter[cntBits-2][index], 1);
+        BiCounter[index] = 
+            satureOp(BiCounter[index], 1);
     }
     if (TNnotBranch == 'N')
     {
-         if (BiCounter[cntBits-2][index] >= 2)
-             bMiss[cntBits-2]++;
+         if (BiCounter[index] >= 2)
+             (*bMiss)++;
 
-         BiCounter[cntBits-2][index] = 
-             satureOp(BiCounter[cntBits-2][index],-1);
+         BiCounter[index] = 
+             satureOp(BiCounter[index],-1);
     }
         
 #ifdef DEBUG
     logFile(outputFile, pred, 1<<3, instructionAddress,
-                    TNnotBranch, pred[index], bMiss[cntBits-2]);
+                    TNnotBranch, pred[index], (*bMiss));
 #endif
 
 }
 
-void gshare(int8_t **GsCounter, int64_t *gMiss, uint32_t history, int cntBits,
-            int hisLen, uint64_t instructionAddress, char TNnotBranch)
+inline void gshare(int8_t *GsCounter, 
+                   int64_t *gMiss, 
+                   uint32_t history, 
+                   int cntBits,
+                   int hisLen, 
+                   uint64_t instructionAddress, 
+                   char TNnotBranch)
 {
     int index = lastNbit(instructionAddress, cntBits);
     int8_t pred[1<<20];
 
     index = xorNBit(index, history, cntBits, hisLen);
 
-    memcpy(pred, GsCounter[cntBits-2], (1<<cntBits)*sizeof(int8_t));
+    memcpy(pred, GsCounter, (1<<cntBits)*sizeof(int8_t));
     //0, 1 not taken; 2, 3 taken
     //prediction wrong
     if (TNnotBranch == 'T')
     {
-        if (GsCounter[cntBits-2][index] <= 1)
-            gMiss[cntBits-2]++;
+        if (GsCounter[index] <= 1)
+            (*gMiss)++;
 
-        GsCounter[cntBits-2][index] = satureOp(GsCounter[cntBits-2][index], 1);
+        GsCounter[index] = satureOp(GsCounter[index], 1);
     }
     if (TNnotBranch == 'N')
     {
-        if (GsCounter[cntBits-2][index] >= 2)
-            gMiss[cntBits-2]++;
+        if (GsCounter[index] >= 2)
+            (*gMiss)++;
 
-        GsCounter[cntBits-2][index] = satureOp(GsCounter[cntBits-2][index],-1);
+        GsCounter[index] = satureOp(GsCounter[index],-1);
      }
 
 #ifdef DEBUG
      logFile(outputFile, pred, 1<<4, instructionAddress,
-                    TNnotBranch, pred[index], gMiss[cntBits-2]);
+                    TNnotBranch, pred[index], (*gMiss));
 #endif
 }
 
@@ -208,11 +213,13 @@ void simulate(FILE* inputFile, FILE* outputFile)
   
   //additional work
   int64_t totalConBranch = 0;
-  uint8_t history = 0;
+  uint32_t history = 0;
+  uint32_t historyQ4[20] = {0};
     
   int64_t staticT = 0;
   int64_t bMiss[19] = {0};//bimodal predictor miss rates
   int64_t gMiss[19] = {0};//gshare predictor miss rates
+  int64_t gMissQ4[20][2] = {{0}};//gshare 0 to 19 history and 10 & 16 entry bit 
   int64_t tMiss[19] = {0};//tournament predictor miss rates
 
   int8_t **BiCounter;   //0--strongly nt, 3--strongly t
@@ -291,7 +298,6 @@ void simulate(FILE* inputFile, FILE* outputFile)
     }
     //additional work
 
-    int8_t pred[1<<20];
     //only conditional branches will be processed   
     if (conditionRegister == 'R' && TNnotBranch != '-')
     {
@@ -304,20 +310,39 @@ void simulate(FILE* inputFile, FILE* outputFile)
         //from 2^2 to 2^20
         for (int i = 2; i <= 20; ++i)
         {
-            bimodal(BiCounter, bMiss, i, instructionAddress, TNnotBranch);
+            bimodal(BiCounter[i-2], &(bMiss[i-2]), 
+                    i, instructionAddress, TNnotBranch);
         }
 
         //Question 3: Gshare predictor
         int hisLen = 8;
         for (int i = 2; i <= 20; ++i)
         {
-            gshare(GsCounter, gMiss, history, i, hisLen,
+            gshare(GsCounter[i-2], &(gMiss[i-2]), history, i, hisLen,
                    instructionAddress, TNnotBranch);
         }
         history = histShift(history, TNnotBranch, hisLen);
 
         //Question 4: Gshare history length
-        
+        for (int i = 2; i <= 20; ++i)
+        {
+            memset(GsCounter[i-2], 0, (1<<i)*sizeof(int8_t));
+        }
+        for (int i = 0; i < 20; ++i)
+        {
+            for (int j = 10; j <= 16; j=j+6)
+            {
+            int bits;
+            if (j == 10)
+                bits = 0;
+            else if (j == 16)
+                bits = 1;
+
+            gshare(GsCounter[j-2], &(gMissQ4[i][bits]), historyQ4[i], j, i,
+                   instructionAddress, TNnotBranch);
+            }
+            historyQ4[i] = histShift(historyQ4[i], TNnotBranch, i);
+        }
         //Question 5: Gshare history length is equal to predictor size
 
         //Question 5: Tournament predictor
