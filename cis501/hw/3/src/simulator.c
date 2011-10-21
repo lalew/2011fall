@@ -28,18 +28,13 @@ inline uint32_t lastNbit(uint64_t pc, int nBit)
     return (uint32_t)(pc & mask);
 }
 
-inline uint32_t xorNBit(uint32_t addr, uint8_t his, int aLen, int hLen)
+inline uint32_t xorNBit(uint32_t addr, uint32_t his, int len)
 {
-   int aMask;
-   int hMask;
-   uint32_t xorHis;
+   uint32_t mask;
 
-   aMask = ((1<<aLen) - 1) << hLen;
-   hMask = (1<<hLen) - 1;
+   mask = (1<<len) - 1;
 
-   xorHis = (addr & hMask) ^ his;
-
-   addr = (addr & aMask) | xorHis;
+   addr = addr ^ (his & mask);
 
    return addr;
 }
@@ -57,7 +52,7 @@ inline uint16_t histShift(uint16_t old, char ifTake, int len)
     }
     else if (ifTake == 'N')//not taken
     {
-        old = old & (mask - 1);
+        old = old & ~1;
     }
     old = old & mask;
 
@@ -139,7 +134,7 @@ inline int bimodal(int8_t *BiCounter, int64_t *bMiss, int cntBits,
 
         correct = 0;
     }
-    if (TNnotBranch == 'N')
+    else if (TNnotBranch == 'N')
     {
         if (BiCounter[index] >= 2)
             (*bMiss)++;
@@ -151,7 +146,7 @@ inline int bimodal(int8_t *BiCounter, int64_t *bMiss, int cntBits,
     }
         
 #ifdef DEBUG
-    logFile(outputFile, pred, 1<<3, instructionAddress,
+    logFile(stdout, pred, 1<<3, instructionAddress,
                     TNnotBranch, pred[index], (*bMiss));
 #endif
 
@@ -163,7 +158,6 @@ inline int gshare(int8_t *GsCounter,
                    int64_t *gMiss, 
                    uint32_t history, 
                    int cntBits,
-                   int hisLen, 
                    uint64_t instructionAddress, 
                    char TNnotBranch)
 {
@@ -171,7 +165,7 @@ inline int gshare(int8_t *GsCounter,
     int8_t pred[1<<20];
     int correct = 1;
 
-    index = xorNBit(index, history, cntBits, hisLen);
+    index = xorNBit(index, history, cntBits);
 
     memcpy(pred, GsCounter, (1<<cntBits)*sizeof(int8_t));
     //0, 1 not taken; 2, 3 taken
@@ -185,7 +179,7 @@ inline int gshare(int8_t *GsCounter,
 
         correct = 0;
     }
-    if (TNnotBranch == 'N')
+    else if (TNnotBranch == 'N')
     {
         if (GsCounter[index] >= 2)
             (*gMiss)++;
@@ -196,7 +190,7 @@ inline int gshare(int8_t *GsCounter,
      }
 
 #ifdef DEBUG
-     logFile(outputFile, pred, 1<<4, instructionAddress,
+     logFile(stdout, pred, 1<<4, instructionAddress,
                     TNnotBranch, pred[index], (*gMiss));
 #endif
 
@@ -269,7 +263,7 @@ void simulate(FILE* inputFile, FILE* outputFile)
   }
 
   //for 2^10 and 2^16
-  GsCounterQ4 = (int8_t ***)malloc(20*sizeof(int8_t**));
+  /*GsCounterQ4 = (int8_t ***)malloc(20*sizeof(int8_t**));
   for (int i = 0; i < 20; ++i)
   {
       GsCounterQ4[i] = (int8_t **)malloc(2*sizeof(int8_t*));
@@ -293,7 +287,7 @@ void simulate(FILE* inputFile, FILE* outputFile)
       memset(GsCounterQ5[i-2], 0, (1<<i)*sizeof(int8_t));
   }
 
-  /*BiCounterQ6 = (int8_t **)malloc(19*sizeof(int8_t*));
+  BiCounterQ6 = (int8_t **)malloc(19*sizeof(int8_t*));
   for (int i = 2; i <= 20; ++i)
   {
       BiCounterQ6[i-2] = (int8_t *)malloc((1<<i)*sizeof(int8_t));
@@ -305,14 +299,14 @@ void simulate(FILE* inputFile, FILE* outputFile)
   {
       GsCounterQ5[i-2] = (int8_t *)malloc((1<<i)*sizeof(int8_t));
       memset(GsCounterQ5[i-2], 0, (1<<i)*sizeof(int8_t));
-  }*/
+  }
 
   ToCounterQ6 = (int8_t **)malloc(19*sizeof(int8_t*));
   for (int i = 2; i <= 20; ++i)
   {
       ToCounterQ6[i-2] = (int8_t *)malloc((1<<i)*sizeof(int8_t));
       memset(ToCounterQ6[i-2], 0, (1<<i)*sizeof(int8_t));
-  }
+  }*/
 
   fprintf(outputFile, "Processing trace...\n");
   
@@ -373,67 +367,80 @@ void simulate(FILE* inputFile, FILE* outputFile)
         if (TNnotBranch == 'T')
             staticT++;
 
-        //Question 2: bimodal predictor
+        
         //from 2^2 to 2^20
         for (int i = 2; i <= 20; ++i)
         {
-            bimodal(BiCounter[i-2], &(bMiss[i-2]), 
-                    i, instructionAddress, TNnotBranch);
+        	int index = lastNbit(instructionAddress, i);
+            int bRes = 1, gRes = 1;
+
+			//Question 2: bimodal predictor
+            //0, 1 not taken; 2, 3 taken
+			//prediction wrong
+			if (TNnotBranch == 'T')
+			{
+				if (BiCounter[i-2][index] <= 1)
+					bMiss[i-2]++;
+		
+				BiCounter[i-2][index] = 
+					satureOp(BiCounter[i-2][index], 1);
+		
+				bRes = 0;
+			}
+			else if (TNnotBranch == 'N')
+			{
+				if (BiCounter[i-2][index] >= 2)
+					bMiss[i-2]++;
+		
+				BiCounter[i-2][index] = 
+					satureOp(BiCounter[i-2][index],-1);
+		
+				bRes = 0;
+			}
         
 
         //Question 3: Gshare predictor
-            int hisLen = 8;
-            gshare(GsCounter[i-2], &(gMiss[i-2]), history, i, hisLen,
-                   instructionAddress, TNnotBranch);
+            int hisLen = 3;
+            int gIndex = xorNBit(index, history, hisLen);
+            
+            int8_t pred[1<<20];
 
-            history = histShift(history, TNnotBranch, hisLen);
+            memcpy(pred, GsCounter[i-2], (1<<i)*sizeof(int8_t));
+            //0, 1 not taken; 2, 3 taken
+			//prediction wrong
+			if (TNnotBranch == 'T')
+			{
+				if (GsCounter[i-2][gIndex] <= 1)
+					gMiss[i-2]++;
+		
+				GsCounter[i-2][gIndex] = satureOp(GsCounter[i-2][gIndex], 1);
+		
+				gRes = 0;
+			}
+			else if (TNnotBranch == 'N')
+			{
+				if (GsCounter[i-2][gIndex] >= 2)
+					gMiss[i-2]++;
+		
+				GsCounter[i-2][gIndex] = satureOp(GsCounter[i-2][gIndex],-1);
+		
+				gRes = 0;
+			 }
 
-        //Question 4: Gshare history length
-        for (int i = 0; i < 20; ++i)
-        {
-            for (int j = 10; j <= 16; j=j+6)
-            {
-            int bits;
-            if (j == 10)
-                bits = 0;
-            else if (j == 16)
-                bits = 1;
-
-            gshare(GsCounterQ4[i][bits], 
-                   &(gMissQ4[i][bits]), 
-                   historyQ4[i], 
-                   j, 
-                   i,
-                   instructionAddress, 
-                   TNnotBranch);
-            }
-            historyQ4[i] = histShift(historyQ4[i], TNnotBranch, i);
-        }
+			 if (i == 4)
+			 logFile(outputFile, pred, 1<<4, instructionAddress,
+                    TNnotBranch, pred[gIndex], gMiss[i-2]);
+                    
+             history = histShift(history, TNnotBranch, hisLen);
+/*
         //Question 5: Gshare history length is equal to predictor size
-        for (int i = 2; i <= 20; ++i)
-        {
-            gshare(GsCounterQ5[i-2], &(gMissQ5[i-2]), historyQ5[i-2], i, i,
-                   instructionAddress, TNnotBranch);
+            gRes = gshare(GsCounterQ5[i-2], 
+                          &(gMissQ5[i-2]), historyQ5[i-2], i, i,
+                          instructionAddress, TNnotBranch);
             
             historyQ5[i-2] = histShift(historyQ5[i-2], TNnotBranch, i);
-        }
 
         //Question 6: Tournament predictor
-        for (int i = 2; i <= 20; ++i)
-        {
-            memset(GsCounter[i-2], 0, (1<<i)*sizeof(int8_t));
-            memset(BiCounter[i-2], 0, (1<<i)*sizeof(int8_t));
-        }
-        for (int i = 2; i <= 20; ++i)
-        {
-            int bRes, gRes;
-
-            bRes = bimodal(BiCounter[i-2], &(bMissQ6[i-2]),
-                           i, instructionAddress, TNnotBranch);
-
-            gRes = gshare(GsCounter[i-2], &(gMissQ6[i-2]), historyQ6[i-2],
-                          i, i, instructionAddress, TNnotBranch);
-            historyQ6[i-2] = histShift(historyQ6[i-2], TNnotBranch, i);
 
             int index = lastNbit(instructionAddress, i);
             int8_t pred[1<<20];
@@ -457,52 +464,33 @@ void simulate(FILE* inputFile, FILE* outputFile)
                 ToCounterQ6[i-2][index] = satureOp(ToCounterQ6[i-2][index], 1);
             }
             
-        }
-
         //Question 7: fair tournament
-        for (int i = 2; i <= 20; ++i)
-        {
-            memset(GsCounter[i-2], 0, (1<<i)*sizeof(int8_t));
-            memset(BiCounter[i-2], 0, (1<<i)*sizeof(int8_t));
-            memset(ToCounterQ6[i-2], 0, (1<<i)*sizeof(int8_t));
-        }
-        for (int i = 3; i <= 20; ++i)
-        {
-            int bRes, gRes;
-
-            bRes = bimodal(BiCounter[i-3], &(bMissQ7[i-3]),
-                           i-2, instructionAddress, TNnotBranch);
-
-            gRes = gshare(GsCounter[i-3], &(gMissQ6[i-3]), historyQ6[i-3],
-                          i-2, i-2, instructionAddress, TNnotBranch);
-            historyQ6[i-3] = histShift(historyQ6[i-3], TNnotBranch, i);
-
-            int index = lastNbit(instructionAddress, i-1);
-            int8_t pred[1<<20];
-
-            memcpy(pred, ToCounterQ6[i-3], (1<<i)*sizeof(int8_t));
-            if (ToCounterQ6[i-3][index] <= 1 && bRes != 1)//use bimodal
-            {
-                tMissQ7[i-3]++;
-            }
-            else if (ToCounterQ6[i-3][index] >= 2 && gRes != 1)//use gshare
-            {
-                tMissQ7[i-3]++;
-            }
-            
-            if (bRes == 1 && gRes != 1)//bimodal is right, but gshare is wrong
-            {
-                ToCounterQ6[i-3][index] = satureOp(ToCounterQ6[i-3][index], -1);
-            }
-            if (gRes == 1 && bRes != 1)//gshare is right, but bimodal is wrong
-            {
-                ToCounterQ6[i-3][index] = satureOp(ToCounterQ6[i-3][index], 1);
-            }
-            
 
         }
 
+        //Question 4: Gshare history length
+        for (int i = 0; i < 20; ++i)
+        {
+            for (int j = 10; j <= 16; j=j+6)
+            {
+            int bits;
+            if (j == 10)
+                bits = 0;
+            else if (j == 16)
+                bits = 1;
 
+            gshare(GsCounterQ4[i][bits], 
+                   &(gMissQ4[i][bits]), 
+                   historyQ4[i], 
+                   j, 
+                   i,
+                   instructionAddress, 
+                   TNnotBranch);
+            }
+            historyQ4[i] = histShift(historyQ4[i], TNnotBranch, i);
+        }
+*/
+    }
     }
 
   }
@@ -511,19 +499,19 @@ void simulate(FILE* inputFile, FILE* outputFile)
   {
       free(BiCounter[i-2]);
       free(GsCounter[i-2]);
-      free(GsCounterQ5[i-2]);
+   //   free(GsCounterQ5[i-2]);
   //    free(BiCounterQ6[i-2]);
   //    free(GsCounterQ6[i-2]);
-      free(ToCounterQ6[i-2]);
+  //    free(ToCounterQ6[i-2]);
   }
   free(BiCounter);
   free(GsCounter);
-  free(GsCounterQ5);
+  //free(GsCounterQ5);
   //free(BiCounterQ6);
   //free(GsCounterQ6);
-  free(ToCounterQ6);
+  //free(ToCounterQ6);
 
-  for (int i = 0; i < 20; ++i)
+  /*for (int i = 0; i < 20; ++i)
   {
       for (int j = 10; j <= 16; j=j+6)
       {
@@ -537,7 +525,7 @@ void simulate(FILE* inputFile, FILE* outputFile)
       }
       free(GsCounterQ4[i]);
   }
-  free(GsCounterQ4);
+  free(GsCounterQ4);*/
   
   fprintf(outputFile, "Processed %" PRIi64 " trace records.\n", totalMicroops);
 
@@ -566,7 +554,7 @@ void simulate(FILE* inputFile, FILE* outputFile)
                           i+2, (double)gMiss[i]/totalConBranch);
   }
 
-  fprintf(outputFile, "Gshare History Length:\n"
+  /*fprintf(outputFile, "Gshare History Length:\n"
                       "Hisotry Length | 2^10 miss rate | 2^16 miss rate\n");
   for (int i = 0; i < 20; ++i)
   {
@@ -574,7 +562,7 @@ void simulate(FILE* inputFile, FILE* outputFile)
                            i, 
                            (double)gMissQ4[i][0]/totalConBranch,
                            (double)gMissQ4[i][1]/totalConBranch);
-  }
+  }*/
 }
 
 int main(int argc, char *argv[]) 
