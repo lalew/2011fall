@@ -1,0 +1,70 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage[utf8x]{inputenc}
+\usepackage{ucs}
+\author{Zi Yan}
+\title{CIS501 Homework 3a}
+\date{}
+\begin{document}
+\maketitle
+
+\section{Performance and CPI}
+I will choose multiplies. Because making multiplies fast will reduce CPI
+from 4.88 to 4.24, more significant than the other choices.
+
+\section{Averaging}
+The total number of branches is $\frac{1M}{4}+\frac{2M}{8} = 0.5M$.
+So in every $\frac{3M}{0.5M} = 6$ instructions, there is one branch.
+
+\section{Amdahl's Law}
+\paragraph*{a}
+The CPI of this program is $1 \times (1-10\%) + 20 \times 10\% = 2.9$.
+
+\paragraph*{b}
+Assume there are $x$ instructions. So $\frac{20\times10\%\times x}{2.9x}
+=69.0\%$.
+
+\paragraph*{c}
+The CPI after speedup is $1\times (1-10\%) + \frac{20}{2}\times 10\% = 1.9$.
+So it is $\frac{2.9}{1.9}=1.53$ times faster.
+
+\paragraph*{d}
+The CPI after speedup is $1\times (1-10\%) + \frac{20}{5}\times 10\% = 1.3$.
+So it is $\frac{2.9}{1.3}=2.23$ times faster.
+
+\paragraph*{e}
+The CPI after speedup is $1\times (1-10\%) + \frac{20}{20}\times 10\% = 1$.
+So it is $\frac{2.9}{1}=2.9$ times faster.
+
+\paragraph*{f}
+The CPI after speedup is $1\times (1-10\%) = 0.9$.
+So it is $\frac{2.9}{0.9}=3.22$ times faster.
+
+\section{Performance and ISA}
+\paragraph*{a}
+Assume there are $I$ instructions in x86 version P1, then there are $1.5I$ 
+instructions in ARM version.
+Chip A uses $T_A = \frac{1.5I \times 2}{2.5 \times 10^9} = 
+1.2\times 10^{-9}I$ sec, and Chip B uses $T_B = \frac{I\times 3}{3\times10^9}
+ = 1\times10^{-9}I$
+sec. So B is $\frac{1.2\times 10^{-9}I}{1\times10^{-9}I} = 1.2$ times faster.
+
+\paragraph*{b}
+Assume there are $I$ instructions in x86 version P1, then there are $1.5I$ 
+instructions in ARM version.
+Chip A uses $T'_A = \frac{1.5I \times 1}{2.5 \times 10^9} = 
+0.6\times 10^{-9}I$ sec, and Chip B uses $T'_B = \frac{I\times 2}{3\times10^9}
+ = 0.67\times10^{-9}I$
+sec. So A is $\frac{0.67\times 10^{-9}I}{0.6\times10^{-9}I} = 1.12$ times 
+faster.
+
+\paragraph*{c}
+Assume there are $I$ instructions in x86 version P1, then there are $1.5I$ 
+instructions in ARM version.
+Chip A uses $T''_A =  T_A + T'_A = 1.8\times 10^{-9}I$ sec, and Chip B uses 
+$T''_B = T_B + T'_B  = 1.67\times10^{-9}I$ sec. So B is $\frac{1.8\times 
+10^{-9}I}{1.67\times10^{-9}I} = 1.078$ times faster altogether.
+
+
+\section{ISA modification and Performance Metrics}
+
+\end{document}
