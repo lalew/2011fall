@@ -1,0 +1,106 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage[utf8x]{inputenc}
+\usepackage{ucs}
+\author{Zi Yan\\PennID:14137362}
+\title{CIS501 Homework 3b}
+\date{}
+\begin{document}
+\maketitle
+\section{Static Branch Predictor}
+\paragraph*{a}
+The prediction accuracy for "always taken" is 55.39\%.
+\paragraph*{b}
+The prediction accuracy for "always not taken" is 44.61\%.
+
+\section{Bimodal Accuracy vs Predictor Size}
+\paragraph*{a}
+The best mis-prediction rate obtainable by the bimodal predictor is 12.91\%,
+when the predictor number is no less than $2^{16}$.
+
+\paragraph*{b}
+For "always taken", when the predictor number is $2^{4}$, or say the size is
+$2^4 \times 2 \mathrm{bits} = 2^5 \mathrm{bits} = 4 \mathrm{bytes}$, the 
+mis-prediction rate is 24.92\%, about half of "always taken".
+
+For "always not taken", when the predictor number is $2^6$, or say the size is
+$2^6 \times 2 \mathrm{bits} = 2^7 \mathrm{bits} = 16 \mathrm{bytes}$, the
+mis-prediction rate is 22.09\%, about half of "always not taken".
+
+\paragraph*{c}
+When the predictor number reaches $2^{16}$, the benefit reaches its top point.
+
+\section{Gshare Accuracy vs Predictor Size}
+\paragraph*{a}
+The best mis-prediction rate obtainable with 8 history bits is 9.08\%, when
+the predictor number is no less than $2^{16}$.
+
+\paragraph*{b}
+When the predictor number is $2^{12}$, the gshare predictor is generally better
+than he simple bimodal predictor.
+
+\paragraph*{c}
+When the predictor number is no less than $2^{12}$, the gshare one is better.
+Because in gshare predictor, XOR operation of the index and the global history 
+can provide more information, both the location of it and the context it resides,
+about a branch.
+
+\paragraph*{d}
+When the predictor number is less than $2^{12}$, the bimodal one is better 
+than the gshare one. Because the predictor gets enough conflicts below the size
+of $2^12$, adding information of branch history does not help, or even worsen
+the situation.
+
+\section{Gshare History Length vs Prediction Accuracy}
+\paragraph*{a}
+For $2^{10}$-counter predictor, when there is no history bit, the 
+mis-prediction rate is the lowest. 
+
+For $2^16$-counter predictor, when the number of history bits is 16, the
+mis-prediction rate is the lowest.
+
+\paragraph*{b}
+When picking a history length, if the total number of predictor counters is 
+small, like less than $2^{12}$, the history bits do not help, so do not use then,
+but if the total number of predictor counters is large, like more than $2^{12}$,
+the history bits can provide useful information about a branch, so use as many
+history bits as you can, i.e. the same number of index bits. 
+
+\section{Gshare Accuracy vs Predictor Size Revisited}
+\paragraph*{a}
+The best mis-prediction rate for gshare-n is at size of $2^{20}$.
+
+\paragraph*{b}
+The crossover point between gshare-n and bimodal is at size of $2^{12}$, 
+and it is the same crossover point of gshare-8 and bimodal.
+
+\paragraph*{c}
+One property could be the connections among the adjacent branches, or say 
+the global outcomes of the branches executed ahead of a branch. Because the
+history bits represents the connection.
+
+\section{Tournament Predictor Accuracy}
+\paragraph*{a}
+At most of time, the tournament predictor outperforms both bimodal and 
+gshare, except at the size of $2^4$ and $2^5$, where bimodal is a little bit
+better.
+
+\paragraph*{b}
+The tournament predictor does improve the overall peak accuracy. Because
+it chooses the better predictor between bimodal and gshare. When the branch
+history does not matter that much, the location might be enough, so bimodal
+is better, but when the branch history matters, gshare will be selected.
+
+\section{Tournament Predictor Accuracy -- Same Size Comparison}
+\paragraph*{a}
+The impact of shrinking the table sizes causes the accuracy decreased.
+
+\paragraph*{b}
+Only when the table size is larger than $2^{11}$, the tournament-fair 
+outperforms both bimodal and gshare-n.
+
+\paragraph*{c}
+If the budget is tight, or say less than 4KB, I will use bimodal predictor, if
+I can use more transistors, I will choose tournament of bimodal and gshare
+predictor, which would outperform other predictors, like bimodal or gshare.
+
+\end{document}

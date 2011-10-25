@@ -1,7 +1,7 @@
 \documentclass[12pt,letterpaper]{article}
 \usepackage[utf8x]{inputenc}
 \usepackage{ucs}
-\author{Zi Yan}
+\author{Zi Yan\\PennID:14137362}
 \title{CIS501 Homework 3a}
 \date{}
 \begin{document}
@@ -66,5 +66,39 @@ $T''_B = T_B + T'_B  = 1.67\times10^{-9}I$ sec. So B is $\frac{1.8\times
 
 
 \section{ISA modification and Performance Metrics}
+\paragraph*{a}
+Let $p_{MA}$ denote the percentage of pairs of multiply/add instructions of all
+instructions, $c$ denote the CPI, and $t$ denote the clock period.
 
+So the time of executing $I$ instructions should be decrease, that is 
+$I\times(1-p_{MA})\times1.1c\times1.05t < I \times c \times t$. Therefore,
+$p_{MA}>13.4\%$.
+
+Consequently, when there are more than 13.4\% multiply/add instruction pairs
+in all instructions, adding the fused instruction will increase the overall 
+performance.
+
+\paragraph*{b}
+Because the CPI and the clock period are both increased, it will more time to 
+execute some certain amount of instruction. Therefore, the overall MIPS is
+decreased.
+
+\paragraph*{c}
+In this example, even the MIPS is decreased, but the total execution time of
+programs will be decreased because the total number of instructions is 
+decreased. Thus, MIPS cannot be used as a general-purposed performance
+metric.
+
+\section{Caching}
+\paragraph*{a}
+The average memory access latency is $T_{hit1} + 20\%\times T_{miss1} = 21$
+
+\paragraph*{b}
+The average memory access latency is $T_{hit1} + (20\%\times (T_{hit2} +
+(20\%\times T_{miss2}))) = 7$.
+
+\paragraph*{c}
+We want the average memory access latency to be lower, thus $T_{hit3} + 5\%
+\times 100 < 7$, that is $T_{hit3} < 2$. So we need the cache hit time to be
+less than 2 cycle.
 \end{document}

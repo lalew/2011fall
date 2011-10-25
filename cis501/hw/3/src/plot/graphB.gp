@@ -1,7 +1,7 @@
 set autoscale
 set title "Graph B"
 set xlabel "The number of history bits"
-set ylabel "Miss rate"
+set ylabel "Mis-prediction rate"
 set xrange [0:22]
 set xtics 1
 set yrange [0:40]
