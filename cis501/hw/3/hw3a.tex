@@ -8,6 +8,24 @@
 \maketitle
 
 \section{Performance and CPI}
+\begin{tabular}{|l|c|}
+\hline 
+  & CPI \\ 
+\hline 
+Origin & 4.88 \\ 
+\hline 
+Reduce loads & 4.28 \\ 
+\hline 
+Reduce stores & 4.68 \\ 
+\hline 
+Reduce adds & 4.38 \\ 
+\hline 
+Reduce multiplies & 4.24 \\ 
+\hline 
+Reduce divides & 4.38 \\ 
+\hline 
+\end{tabular} 
+
 I will choose multiplies. Because making multiplies fast will reduce CPI
 from 4.88 to 4.24, more significant than the other choices.
 
@@ -100,5 +118,5 @@ The average memory access latency is $T_{hit1} + (20\%\times (T_{hit2} +
 \paragraph*{c}
 We want the average memory access latency to be lower, thus $T_{hit3} + 5\%
 \times 100 < 7$, that is $T_{hit3} < 2$. So we need the cache hit time to be
-less than 2 cycle.
+less than 2 cycles.
 \end{document}

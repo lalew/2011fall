@@ -1,7 +1,7 @@
 set autoscale
 set title "Graph C"
-set xlabel "The number of predictor bits"
-set ylabel "Mis-prediciton rate"
+set xlabel "Predictor size (bits)"
+set ylabel "Mis-prediciton rate (%)"
 set xrange [0:22]
 set xtics 1
 set yrange [0:40]

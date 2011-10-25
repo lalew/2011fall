@@ -103,4 +103,155 @@ If the budget is tight, or say less than 4KB, I will use bimodal predictor, if
 I can use more transistors, I will choose tournament of bimodal and gshare
 predictor, which would outperform other predictors, like bimodal or gshare.
 
+
+\clearpage
+\section*{Appendix}
+
+\begin{table}[!ht]
+\caption{Mis-prediction rate in Graph A}
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline 
+Predictor size (bit) & bimodal (\%) & gshare-8(\%) & gshare-n(\%) \\ 
+\hline 
+2 & 31.94 & 34.46 & 34.46 \\ 
+\hline 
+3 & 29.04 & 33.58 & 33.58 \\ 
+\hline 
+4 & 24.92 & 32.84 & 32.84 \\ 
+\hline 
+5 & 23.16 & 30.78 & 30.78 \\ 
+\hline 
+6 & 22.09 & 30.06 & 30.06 \\ 
+\hline 
+7 & 18.97 & 27.23 & 27.23 \\ 
+\hline 
+8 & 16.99 & 25.37 & 25.37 \\ 
+\hline 
+9 & 15.24 & 21.47 & 22.39 \\ 
+\hline 
+10 & 13.87 & 17.79 & 19.05 \\ 
+\hline 
+11 & 13.48 & 14.28 & 15.74 \\ 
+\hline 
+12 & 13.15 & 12.18 & 12.77 \\ 
+\hline 
+13 & 13.03 & 10.55 & 10.30 \\ 
+\hline 
+14 & 12.94 & 9.76 & 8.76 \\ 
+\hline 
+15 & 12.91 & 9.49 & 7.79 \\ 
+\hline 
+16 & 12.91 & 9.08 & 6.86 \\ 
+\hline 
+17 & 12.91 & 9.08 & 6.53 \\ 
+\hline 
+18 & 12.91 & 9.08 & 6.44 \\ 
+\hline 
+19 & 12.91 & 9.08 & 6.54 \\ 
+\hline 
+20 & 12.91 & 9.08 & 6.35 \\ 
+\hline 
+\end{tabular} 
+\end{table}
+
+\begin{table}[!ht]
+\caption{Mis-prediction rate in Graph B}
+\centering
+\begin{tabular}{|c|c|c|}
+\hline 
+History register length (bits) & $2^{10}$ predictors (\%) & $2^{16}$ 
+predictors (\%) \\ 
+\hline 
+0 & 13.87 & 12.91 \\ 
+\hline 
+1 & 14.13 & 12.79 \\ 
+\hline 
+2 & 14.46 & 12.50 \\ 
+\hline 
+3 & 15.00 & 12.25 \\ 
+\hline 
+4 & 16.07 & 12.52 \\ 
+\hline 
+5 & 16.54 & 11.64 \\ 
+\hline 
+6 & 17.48 & 11.15 \\ 
+\hline 
+7 & 17.61 & 10.36 \\ 
+\hline 
+8 & 17.79 & 9.08 \\ 
+\hline 
+9 & 18.50 & 8.68 \\ 
+\hline 
+10 & 19.05 & 8.22 \\ 
+\hline 
+11 & 19.05 & 7.63 \\ 
+\hline 
+12 & 19.05 & 7.51 \\ 
+\hline 
+13 & 19.05 & 7.29 \\ 
+\hline 
+14 & 19.05 & 7.18 \\ 
+\hline 
+15 & 19.05 & 7.28 \\ 
+\hline 
+16 & 19.05 & 6.86 \\ 
+\hline 
+17 & 19.05 & 6.86 \\ 
+\hline 
+18 & 19.05 & 6.86 \\ 
+\hline 
+19 & 19.05 & 6.86 \\ 
+\hline 
+\end{tabular} 
+\end{table}
+
+\begin{table}
+\caption{Mis-prediction rate in Graph C}
+\centering
+\begin{tabular}{|c|c|c|}
+\hline 
+Predictor size (bits) & Tournament (\%) & Tournament-fair (\%) \\ 
+\hline 
+2 & 30.09 & 37.11 \\ 
+\hline 
+3 & 28.40 & 32.13 \\ 
+\hline 
+4 & 25.33 & 30.41 \\ 
+\hline 
+5 & 23.50 & 28.64 \\ 
+\hline 
+6 & 22.01 & 24.91 \\ 
+\hline 
+7 & 18.44 & 22.94 \\ 
+\hline 
+8 & 15.71 & 20.42 \\ 
+\hline 
+9 & 13.26 & 17.72 \\ 
+\hline 
+10 & 11.33 & 14.78 \\ 
+\hline 
+11 & 9.90 & 12.34 \\ 
+\hline 
+12 & 8.66 & 10.19 \\ 
+\hline 
+13 & 7.62 & 8.82 \\ 
+\hline 
+14 & 6.86 & 7.68 \\ 
+\hline 
+15 & 6.22 & 6.90 \\ 
+\hline 
+16 & 5.62 & 6.23 \\ 
+\hline 
+17 & 5.34 & 5.62 \\ 
+\hline 
+18 & 5.19 & 5.34 \\ 
+\hline 
+19 & 5.12 & 5.19 \\ 
+\hline 
+20 & 4.80 & 5.12 \\ 
+\hline 
+\end{tabular} 
+\end{table}
+
 \end{document}
