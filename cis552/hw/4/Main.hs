@@ -12,6 +12,8 @@ import ParserCombinators
 
 import Test.HUnit
 
+import Data.Char (toLower)
+
 type Variable = String
  
 data Value =
@@ -36,6 +38,71 @@ data Bop =
   | Le       
   deriving (Show, Eq)
 
+{- for precedence use, but not working
+   with test.imp, so I commented it.
+instance Ord Bop where
+   compare Gt Plus      = LT
+   compare Gt Minus     = LT
+   compare Gt Times     = LT
+   compare Gt Divide    = LT
+   compare Ge Plus      = LT
+   compare Ge Minus     = LT
+   compare Ge Times     = LT
+   compare Ge Divide    = LT
+   compare Lt Plus      = LT
+   compare Lt Minus     = LT
+   compare Lt Times     = LT
+   compare Lt Divide    = LT
+   compare Le Plus      = LT
+   compare Le Minus     = LT
+   compare Le Times     = LT
+   compare Le Divide    = LT
+   compare Plus Times   = LT
+   compare Plus Divide  = LT
+   compare Minus Times  = LT
+   compare Minus Divide = LT
+   compare Plus Gt      = GT
+   compare Minus Gt     = GT
+   compare Times Gt     = GT
+   compare Divide Gt    = GT
+   compare Plus Ge      = GT
+   compare Minus Ge     = GT
+   compare Times Ge     = GT
+   compare Divide Ge    = GT
+   compare Plus Lt      = GT
+   compare Minus Lt     = GT
+   compare Times Lt     = GT
+   compare Divide Lt    = GT
+   compare Plus Le      = GT
+   compare Minus Le     = GT
+   compare Times Le     = GT
+   compare Divide Le    = GT
+   compare Times Plus   = GT
+   compare Divide Plus  = GT
+   compare Times Minus  = GT
+   compare Divide Minus = GT
+   compare Gt Ge        = EQ
+   compare Gt Lt        = EQ
+   compare Gt Le        = EQ
+   compare Ge Gt        = EQ
+   compare Ge Lt        = EQ
+   compare Ge Le        = EQ
+   compare Lt Ge        = EQ
+   compare Lt Gt        = EQ
+   compare Lt Le        = EQ
+   compare Le Ge        = EQ
+   compare Le Gt        = EQ
+   compare Le Lt        = EQ
+   compare Plus Plus    = EQ
+   compare Plus Minus   = EQ
+   compare Minus Minus  = EQ
+   compare Minus Plus   = EQ
+   compare Times Divide = EQ
+   compare Times Times  = EQ
+   compare Divide Times = EQ
+   compare Divide Divide= EQ
+-}
+
 data Statement =
     Assign Variable Expression          
   | If Expression Statement Statement
@@ -46,8 +113,8 @@ data Statement =
 
 main :: IO () 
 main = do _ <- runTestTT (TestList [ t0, 
-                                     t11, t12, t13, 
-                                     t2 ])
+                                     t11, t11', t12, t13, 
+                                     t2, t21 ])
           return ()
 
 -- Problem 0
@@ -67,13 +134,69 @@ instance PP Bop where
   pp Le     = PP.text "<="
 
 instance PP Value where
-  pp _ = error "TBD"
+  pp (IntVal a) = PP.text (show a)
+  pp (BoolVal True) = PP.text "true"
+  pp (BoolVal False) = PP.text "false"
 
+-- I add parenthesis to all expressions but not a single variable
+-- or a value
 instance PP Expression where
-  pp _ = error "TBD"
+  pp (Var var) = PP.text var
+  pp (Val val) = pp val
+  pp (Op bop exp1@(Op _ _ _) exp2@(Op _ _ _)) = 
+     (PP.text "(") <> (pp exp1) <> (PP.text ")") <+> 
+     (pp bop) <+> 
+     (PP.text "(") <> (pp exp2) <> (PP.text ")")
+  pp (Op bop exp1@(Op _ _ _) exp2) = 
+     (PP.text "(") <> (pp exp1) <> (PP.text ")") <+> 
+     (pp bop) <+> 
+     (pp exp2)
+  pp (Op bop exp1 exp2@(Op _ _ _)) = 
+     (pp exp1) <+> 
+     (pp bop) <+> 
+     (PP.text "(") <> (pp exp2) <> (PP.text ")")
+  pp (Op bop exp1 exp2) = (pp exp1) <+> (pp bop) <+> (pp exp2)
+
+{- the following will make precedences work, but not working
+   with test.imp file, so I commented it.
+  pp  (Op bop exp1@(Op bop1 _ _) exp2@(Op bop2 _ _)) 
+    | compare bop bop1 == GT && compare bop bop2 == GT =
+     (PP.text "(") <> (pp exp1) <> (PP.text ")") <+> 
+     (pp bop) <+> 
+     (PP.text "(") <> (pp exp2) <> (PP.text ")") 
+    | compare bop bop1 == GT = 
+     (PP.text "(") <> (pp exp1) <> (PP.text ")") <+> 
+     (pp bop) <+> 
+     (pp exp2)
+    | compare bop bop2 == GT = 
+     (pp exp1) <+> 
+     (pp bop) <+> 
+     (PP.text "(") <> (pp exp2) <> (PP.text ")")
+  pp (Op bop exp1@(Op bop1 _ _) exp2) 
+    | compare bop bop1 == GT = 
+     (PP.text "(") <> (pp exp1) <> (PP.text ")") <+> 
+     (pp bop) <+> 
+     (pp exp2)
+    | compare bop bop1 == LT || compare bop bop1 == EQ =
+     (pp exp1) <+> (pp bop) <+> (pp exp2)
+  pp (Op bop exp1 exp2@(Op bop2 _ _))
+    | compare bop bop2 == GT = 
+     (pp exp1) <+> 
+     (pp bop) <+> 
+     (PP.text "(") <> (pp exp2) <> (PP.text ")")
+    | compare bop bop2 == LT || compare bop bop2 == EQ =
+     (pp exp1) <+> (pp bop) <+> (pp exp2)
+  pp (Op bop exp1 exp2) = (pp exp1) <+> (pp bop) <+> (pp exp2)-}
 
 instance PP Statement where
-  pp _ = error "TBD"
+  pp (Assign var exp) = (pp (Var var)) <+> (PP.text ":=") <+> (pp exp)
+  pp (If exp stmt1 stmt2) = (PP.text "if") <+> (pp exp) <+> (PP.text "then\n ") <+>
+                            (pp stmt1) <> (PP.text "\nelse\n ") <+> (pp stmt2) <>
+                            (PP.text "\nendif\n")
+  pp (While exp stmt) = (PP.text "while") <+> (pp exp) <+> (PP.text "do\n ") <+>
+                        (pp stmt) <> (PP.text "\nendwhile\n")
+  pp (Sequence stmt1 stmt2) = (pp stmt1) <> (PP.text ";\n") <> (pp stmt2)
+  pp (Skip) = (PP.text "skip")
 
 display :: PP a => a -> String
 display = show . pp
@@ -91,9 +214,18 @@ t0 = TestList [display oneV ~?= "1",
       display (Var "X") ~?= "X",
       display (Op Plus oneV twoV) ~?= "1 + 2",
       display (Op Plus oneV (Op Plus twoV threeV)) ~?= "1 + (2 + 3)", 
-      display (Op Plus (Op Plus oneV twoV) threeV) ~?= "1 + 2 + 3",
+      display (Op Plus (Op Plus oneV twoV) threeV) ~?= "(1 + 2) + 3",
+      display (Op Times (Op Plus oneV twoV) threeV) ~?= "(1 + 2) * 3",
+      display (Op Divide (Op Plus oneV twoV) threeV) ~?= "(1 + 2) / 3",
+      display (Op Ge (Op Plus oneV twoV) threeV) ~?= "(1 + 2) >= 3",
+      display (Op Lt (Op Plus oneV twoV) (Op Times oneV twoV)) ~?= 
+              "(1 + 2) < (1 * 2)",
       display (Assign "X" threeV) ~?= "X := 3",
-      display Skip ~?= "skip"  ]
+      display Skip ~?= "skip", 
+      display (Sequence Skip Skip) ~?= "skip;\nskip",
+      t0b'',
+      display (While (Op Lt (Var "x") (Val (IntVal 12))) Skip) ~?= 
+              "while x < 12 do\n  skip\nendwhile\n" ]
 
 --- Your own test cases
 
@@ -105,58 +237,296 @@ t0b' :: Test
 t0b' = display (If (Val (BoolVal True)) Skip Skip) ~?=
       "if true then\n  skip\nelse  skip\nendif"
 
+t0b'' :: Test
+t0b'' = display (If (Val (BoolVal True)) Skip Skip) ~?=
+      "if true then\n  skip\nelse\n  skip\nendif\n"
 
 
 -- Problem 1
 ---------------------------------------------
 
-valueP :: Parser Value
+valueP :: Parser Char Value
 valueP = intP <|> boolP
 
-intP :: Parser Value
-intP = error "TBD"
+intP :: Parser Char Value
+intP = do val <- int
+          return (IntVal val)
 
-constP :: String -> a -> Parser a
-constP _ _ = error "TBD"
+constP :: String -> a -> Parser Char a
+constP s t = do xs <- string s
+                return t
 
-boolP :: Parser Value
-boolP = error "TBD"
+boolP :: Parser Char Value
+boolP = do res <- constP "true" True `choose` (constP "false" False)
+           return (BoolVal res)
 
-opP :: Parser Bop 
-opP = error "TBD"
+opP :: Parser Char Bop 
+opP = ineqP `choose` addP `choose` mulP
 
-varP :: Parser Variable
+opP' :: Parser Token Bop
+opP' = ineqP' `choose` addP' `choose` mulP'
+
+ineqP :: Parser Char Bop
+ineqP = gt `choose` ge `choose` lt `choose` le
+    where gt = char '>'    >> return Gt
+          ge = string ">=" >> return Ge
+          lt = char '<'    >> return Lt
+          le = string "<=" >> return Le
+
+ineqP' :: Parser Token Bop
+ineqP' = gt' `choose` ge' `choose` lt' `choose` le'
+    where gt' = bopP Gt >> return Gt
+          ge' = bopP Ge >> return Ge
+          lt' = bopP Lt >> return Lt
+          le' = bopP Le >> return Le
+
+addP :: Parser Char Bop
+addP = plus `choose` minus
+ where plus  = char '+'    >> return Plus
+       minus = char '-'    >> return Minus
+
+addP' :: Parser Token Bop
+addP' = plus' `choose` minus'
+  where plus'  = bopP Plus >> return Plus
+        minus' = bopP Minus >> return Minus
+
+mulP :: Parser Char Bop
+mulP = times `choose` divide
+ where times  = char '*' >> return Times
+       divide = char '/' >> return Divide
+            
+mulP' :: Parser Token Bop
+mulP' = times' `choose` divide'
+  where times'  = bopP Times  >> return Times
+        divide' = bopP Divide >> return Divide
+
+varP :: Parser Char Variable
 varP = many1 upper
 
-wsP :: Parser a -> Parser a
-wsP p = error "TBD"
+wsP :: Parser Char a -> Parser Char a
+wsP p = do xs <- p
+           _  <- many space 
+           return xs
 
-exprP :: Parser Expression
-exprP = error "TBD"
+---todo: left associativity finished
+---todo: add generic solution for this, change Char to b, finished
+charParsers :: [Parser Char Expression]
+charParsers = [ineqExp, sumExp]
+
+tokParsers :: [Parser Token Expression]
+tokParsers = [ineqExp', sumExp']
+
+exprP :: [Parser b Expression] -> Parser b Expression
+exprP parsers = choice parsers
+
+ineqExp :: Parser Char Expression
+ineqExp = do l <- sumExp
+             o <- wsP ineqP
+             r <- exprP charParsers
+             return (Op o l r)
+
+ineqExp' :: Parser Token Expression
+ineqExp' = do l <- sumExp'
+              o <- ineqP'
+              r <- exprP tokParsers
+              return (Op o l r)
+
+sumExp :: Parser Char Expression
+sumExp = do l <- prodExp
+            f <- addExp
+            return (f l)
+
+sumExp' :: Parser Token Expression
+sumExp' = do l <- prodExp'
+             f <- addExp'
+             return (f l)
+
+addExp :: Parser Char (Expression -> Expression)
+addExp = (do o <- wsP addP
+             r <- prodExp
+             f <- addExp
+             return (\l -> f (Op o l r)) ) <|> epsilonP
+
+addExp' :: Parser Token (Expression -> Expression)
+addExp' = (do o <- addP'
+              r <- prodExp'
+              f <- addExp'
+              return (\l -> f (Op o l r)) ) <|> epsilonP
+
+epsilonP :: Parser b (Expression -> Expression)
+epsilonP = return id
+
+
+prodExp :: Parser Char Expression
+prodExp = do l <- factorExp
+             f <- mulExp
+             return (f l)
+
+prodExp' :: Parser Token Expression
+prodExp' = do l <- factorExp'
+              f <- mulExp'
+              return (f l)
+
+
+mulExp :: Parser Char (Expression -> Expression)
+mulExp = (do o <- wsP mulP
+             r <- factorExp
+             f <- mulExp
+             return (\l -> f (Op o l r)) ) <|> epsilonP
+        
+mulExp' :: Parser Token (Expression -> Expression)
+mulExp' = (do o <- mulP'
+              r <- factorExp'
+              f <- mulExp'
+              return (\l -> f (Op o l r)) ) <|> epsilonP
+
+factorExp :: Parser Char Expression
+factorExp = parExp <|> valExp <|> varExp
+  where valExp = do x <- wsP valueP
+                    return (Val x)
+        varExp = do y <- wsP varP
+                    return (Var y)
+        parExp = do exp <- between (wsP (char '(')) 
+                                   (exprP charParsers) 
+                                   (wsP (char ')'))
+                    return exp
+
+factorExp' :: Parser Token Expression
+factorExp' = parExp' <|> valExp' <|> varExp'
+       where valExp' = do (TokVal a)<- valP'  
+                          return (Val a)
+             varExp' = do (TokVar a)<- varP'
+                          return (Var a)
+             parExp' = do exp <-between (keyP "(") 
+                                        (exprP tokParsers)
+                                        (keyP ")")         
+                          return exp
+                           
 
 t11 :: Test
-t11 = TestList ["s1" ~: succeed (parse exprP "1 "),
-                "s2" ~: succeed (parse exprP "1  + 2") ] where
+t11 = TestList ["s1" ~: succeed (parse (exprP charParsers)"1 "),
+                "s2" ~: succeed (parse (exprP charParsers) "1  + 2"),
+                "s3" ~: succeed (parse (exprP charParsers) "Z+F+1-T*4"),
+                "s4" ~: succeed (parse (exprP charParsers) "(Z+F)*(1-T)"),
+                "s5" ~: succeed (parse (exprP charParsers) "X>4+R") ] where
   succeed (Left _)  = assert False
   succeed (Right _) = assert True
 
-statementP :: Parser Statement
-statementP = error "TBD"
+
+zT :: Token
+zT = TokVar "Z"
+
+fT :: Token
+fT = TokVar "F"
+
+tT :: Token
+tT = TokVar "T"
+
+oneT :: Token
+oneT = TokVal (IntVal 1)
+
+twoT :: Token
+twoT = TokVal (IntVal 2)
+
+lP :: Token
+lP = Keyword "("
+
+rP :: Token
+rP = Keyword ")"
+
+t11' :: Test
+t11' = TestList [ "s1" ~: succeed (parse (exprP tokParsers) [oneT]),
+                  "s2" ~: succeed (parse (exprP tokParsers) 
+                                   [oneT, TokBop Plus, twoT]),
+                  "s3" ~: succeed (parse (exprP tokParsers) 
+                                   [zT, TokBop Plus, fT, TokBop Plus, oneT, 
+                                    TokBop Minus, tT, TokBop Times, twoT]),
+                  "s4" ~: succeed (parse (exprP tokParsers) 
+                                   [lP, zT, TokBop Plus, fT, rP, TokBop Times, lP,
+                                    oneT, TokBop Minus, tT, rP]),
+                  "s5" ~: succeed (parse (exprP tokParsers) 
+                                   [zT, TokBop Gt, oneT, TokBop Plus, fT]) 
+                  ] where
+  succeed (Left _)  = assert False
+  succeed (Right _) = assert True
+
+
+charParsers' :: [Parser Char Statement]
+charParsers' = [assignP, ifP, whileP, seqP, skipP]
+
+tokParsers' :: [Parser Token Statement]
+tokParsers' = [assignP', ifP', whileP', seqP', skipP']
+
+statementP :: [Parser b Statement] -> Parser b Statement
+statementP l = choice l
+
+assignP, ifP, whileP, seqP, skipP :: Parser Char Statement
+assignP = do var <- wsP varP
+             _   <- wsP (string ":=")
+             exp <- wsP (exprP charParsers)
+             return (Assign var exp)
+ifP     = do _     <- wsP (string "if")
+             exp   <- wsP (exprP charParsers)
+             _     <- wsP (string "then")
+             stmt1 <- statementP charParsers'
+             _     <- wsP (string "else")
+             stmt2 <- statementP charParsers'
+             _     <- wsP (string "endif")
+             return (If exp stmt1 stmt2)
+whileP  = do _     <- wsP (string "while")
+             exp   <- wsP (exprP charParsers)
+             _     <- wsP (string "do")
+             stmt  <- statementP charParsers'
+             _     <- wsP (string "endwhile")
+             return (While exp stmt)
+seqP    = do stmt1 <- statementP charParsers'
+             _     <- wsP (string ";")
+             stmt2 <- statementP charParsers'
+             return (Sequence stmt1 stmt2)
+skipP   = do _     <- wsP (string "skip")
+             return Skip
+
+assignP', ifP', whileP', seqP', skipP' :: Parser Token Statement
+assignP' = do (TokVar var) <- varP'
+              _   <- keyP ":="
+              exp <- exprP tokParsers
+              return (Assign var exp)
+ifP'     = do _     <- keyP "if"
+              exp   <- exprP tokParsers
+              _     <- keyP "then"
+              stmt1 <- statementP tokParsers'
+              _     <- keyP "else"
+              stmt2 <- statementP tokParsers'
+              _     <- keyP "endif"
+              return (If exp stmt1 stmt2)
+whileP'  = do _     <- keyP "while"
+              exp   <- exprP tokParsers
+              _     <- keyP "do"
+              stmt  <- statementP tokParsers'
+              _     <- keyP "endwhile"
+              return (While exp stmt)
+seqP'    = do stmt1 <- statementP tokParsers'
+              _     <- keyP ";"
+              stmt2 <- statementP tokParsers'
+              return (Sequence stmt1 stmt2)
+skipP'   = do _     <- keyP "skip"
+              return Skip
+
 
 t12 :: Test
 t12 = TestList ["s1" ~: p "fact.imp",
                 "s2" ~: p "test.imp", 
                 "s3" ~: p "abs.imp" ,
                 "s4" ~: p "times.imp" ] where
-  p s = do { y <- parseFromFile statementP s ; succeed y }
+  p s = do { y <- parseFromFile (statementP charParsers') s ; succeed y }
   succeed (Left _)  = assert False
   succeed (Right _) = assert True
 
 testRT :: String -> Assertion
 testRT filename = do 
-   x <- parseFromFile statementP filename 
+   x <- parseFromFile (statementP charParsers') filename 
    case x of 
-     Right ast -> case parse statementP (display ast) of
+     Right ast -> case parse (statementP charParsers') (display ast) of
        Right ast' -> assert (ast == ast')
        Left _ -> assert False
      Left _ -> assert False                             
@@ -177,12 +547,12 @@ data Token =
    | Keyword String    -- keywords        
       deriving (Eq, Show)
 
-keywords :: [ Parser Token ]
+keywords :: [ Parser Char Token ]
 keywords = map (\x -> constP x (Keyword x)) 
              [ "(", ")", ":=", ";", "if", "then", "else",
              "endif", "while", "do", "endwhile", "skip" ]
 
-type Lexer = Parser [Token]
+type Lexer = Parser Char [Token]
 
 lexer :: Lexer 
 lexer = sepBy1
@@ -197,4 +567,42 @@ t2 = parse lexer "X := 3" ~?=
         Right [TokVar "X", Keyword ":=", TokVal (IntVal 3)]
 
 
+varP', valP' :: Parser Token Token
+varP' = satisfy id (\a -> case a of 
+                             TokVar _ -> True
+                             _        -> False)
+valP' = satisfy id (\a -> case a of 
+                             TokVal _ -> True
+                             _        -> False)
+
+bopP :: Bop -> Parser Token Token
+bopP op = satisfy id (\a -> case a of
+                                TokBop op' -> (op' == op)
+                                _          -> False)
+
+keyP :: String -> Parser Token Token
+keyP str = satisfy id (\a -> case a of
+                                 Keyword b -> (b == str)
+                                 _         -> False)
+
+
+-- here I use lexer to parse the file, then parse the result,
+-- and at last do the same comparison as above
+testRT' :: String -> Assertion
+testRT' filename = do 
+   x' <- parseFromFile lexer filename 
+   case x' of 
+     Right tokens -> 
+           case (parse (statementP tokParsers') tokens) of
+             Right ast -> case parse (statementP charParsers') (display ast) of
+               Right ast' -> assert (ast == ast')
+               Left _ -> assert False
+             Left _ -> assert False                             
+     Left _ -> assert False
+
+t21 :: Test
+t21 = TestList ["s1" ~: testRT' "fact.imp",
+                "s2" ~: testRT' "test.imp", 
+                "s3" ~: testRT' "abs.imp" ,
+                "s4" ~: testRT' "times.imp" ]
 

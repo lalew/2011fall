@@ -10,25 +10,25 @@ module Parser (Parser,
 
 import Control.Monad
 
-newtype Parser a = P (String -> [(a, String)])
+newtype Parser b a = P ([b]  -> [(a, [b])])
 
-doParse :: Parser a -> String -> [(a, String)] 
+doParse :: Parser b a -> [b] -> [(a, [b])] 
 doParse (P p) s = p s
 
 -- | Return the next character
 -- (this was called 'oneChar' in lecture)
-get :: Parser Char
-get = P (\cs -> case cs of 
-                (x:xs) -> [ (x,xs) ]
-                []     -> [])
+get :: (b -> a) -> Parser b a
+get f = P (\cs -> case cs of 
+                  (x:xs) -> [ (f x,xs) ]
+                  []     -> [])
 
 -- | Return the next character if it satisfies the given predicate
 -- (this was called satP in lecture)
-satisfy :: (Char -> Bool) -> Parser Char
-satisfy p = do c <- get
-               if (p c) then return c else fail "End of input"
+satisfy :: (b->a) -> (a -> Bool) -> Parser b a
+satisfy f p = do c <- get f
+                 if (p c) then return c else fail "End of input"
 
-instance Monad Parser where
+instance Monad (Parser b) where
    p1 >>= fp2 = P (\cs -> do (a,cs') <- doParse p1 cs 
                              doParse (fp2 a) cs') 
 
@@ -36,19 +36,19 @@ instance Monad Parser where
 
    fail _     = P (\_ ->  [ ] )
 
-instance Functor Parser where
+instance Functor (Parser b) where
    fmap f p = do x <- p
                  return (f x)
 
 -- | Combine two parsers together in parallel, producing all 
 -- possible results from either parser.                 
-choose :: Parser a -> Parser a -> Parser a
+choose :: Parser b a -> Parser b a -> Parser b a
 p1 `choose` p2 = P (\cs -> doParse p1 cs ++ doParse p2 cs)
 
 -- | Combine two parsers together in parallel, but only use the 
 -- first result. This means that the second parser is used only 
 -- if the first parser completely fails. 
-(<|>) :: Parser a -> Parser a -> Parser a
+(<|>) :: Parser b a -> Parser b a -> Parser b a
 p1 <|> p2 = P $ \cs -> case doParse (p1 `choose` p2) cs of
                           []   -> []
                           x:_ -> [x]
