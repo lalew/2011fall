@@ -1,6 +1,6 @@
 
 -- Advanced Programming, HW 4
--- by <YOUR NAME HERE> <pennkey>, <YOUR PARTNER'S NAME> <pennkey>
+-- by <Zi Yan> <yanzi>, <Adrian Benton> <adrianb>
 
 import Control.Monad
 
@@ -11,15 +11,29 @@ import Parser
 import ParserCombinators
 
 import Test.HUnit
+import Test.QuickCheck
+
 
 import Data.Char (toLower)
 
 type Variable = String
  
+--generate
+upperAbcGen :: Gen Char
+upperAbcGen = Test.QuickCheck.choose ('A', 'Z')
+
+varGen :: Gen Variable
+varGen = liftM2 (:) upperAbcGen $ listOf upperAbcGen
+
 data Value =
     IntVal Int
   | BoolVal Bool
   deriving (Show, Eq)
+
+instance Arbitrary Value where
+  arbitrary = oneof [fmap IntVal (arbitrary :: Gen Int), 
+                     fmap BoolVal (arbitrary :: Gen Bool)]
+
  
 data Expression =
     Var Variable
@@ -27,6 +41,28 @@ data Expression =
   | Op  Bop Expression Expression
   deriving (Show, Eq)
  
+-- Inspired by RealWorld Haskell Ch. 11
+-- Seems like there is an elegant way to do some of this using liftM.
+-- ...have yet to figure it out.
+instance Arbitrary Expression where
+  arbitrary = do n <- (Test.QuickCheck.choose (0, 2) :: Gen Int)
+                 case n of
+                   0 -> do s   <- varGen
+                           return $ Var s
+                   1 -> do val <- (arbitrary :: Gen Value)
+                           return $ Val val
+                   2 -> do op  <- (arbitrary :: Gen Bop)
+                           e1  <- (arbitrary :: Gen Expression)
+                           e2  <- (arbitrary :: Gen Expression)
+                           return $ Op op e1 e2
+  shrink e = case e of
+    Var _       -> []
+    Val _       -> []
+    Op  o e1 e2 -> map (\e1' -> Op o e1' e2) (shrink e1) ++ 
+                   map (\e2' -> Op o e1 e2') (shrink e2) ++ 
+                   (shrink e1) ++ (shrink e2) ++ [e1, e2]
+
+
 data Bop = 
     Plus     
   | Minus    
@@ -37,6 +73,10 @@ data Bop =
   | Lt       
   | Le       
   deriving (Show, Eq)
+
+
+instance Arbitrary Bop where 
+  arbitrary = elements [Plus, Minus, Times, Divide, Gt, Ge, Lt, Le]
 
 {- for precedence use, but not working
    with test.imp, so I commented it.
@@ -111,10 +151,58 @@ data Statement =
   | Skip
   deriving (Show, Eq)
 
+nonSeqGen :: Gen Statement
+nonSeqGen = do n <- (Test.QuickCheck.choose (0, 10)) :: Gen Int
+               case n of
+                   n | n < 7 -> do v <- varGen
+                                   e <- (arbitrary :: Gen Expression)
+                                   return $ Assign v e
+                   7 -> do g  <- (arbitrary :: Gen Expression)
+                           s1 <- (arbitrary :: Gen Statement)
+                           s2 <- (arbitrary :: Gen Statement)
+                           return $ If g s1 s2
+                   8 -> do g  <- (arbitrary :: Gen Expression)
+                           s  <- (arbitrary :: Gen Statement)
+                           return $ While g s
+                   _ -> return Skip
+
+instance Arbitrary Statement where
+  arbitrary = do n <- (Test.QuickCheck.choose (0, 10)) :: Gen Int
+                 case n of
+                   n | n < 7 -> do v <- varGen
+                                   e <- (arbitrary :: Gen Expression)
+                                   return $ Assign v e
+                   7 -> do g  <- (arbitrary :: Gen Expression)
+                           s1 <- (arbitrary :: Gen Statement)
+                           s2 <- (arbitrary :: Gen Statement)
+                           return $ If g s1 s2
+                   8 -> do g  <- (arbitrary :: Gen Expression)
+                           s  <- (arbitrary :: Gen Statement)
+                           return $ While g s
+                   9 -> do s1 <- nonSeqGen
+                           s2 <- (arbitrary :: Gen Statement)
+                           return $ Sequence s1 s2
+                   _ -> return Skip
+  shrink s = case s of
+    Skip           -> []
+    Assign v e     -> map (Assign v) (shrink e)
+    If g s1 s2     -> map (\s1' -> If g s1' s2) (shrink s1) ++ 
+                      map (\s2' -> If g s1 s2') (shrink s2) ++
+                      map (\g' -> If g' s1 s2) (shrink g) ++ 
+                      shrink s1 ++ shrink s2 ++ [s1, s2]
+    While g s      -> map (\s' -> While g s') (shrink s) ++
+                      map (\g' -> While g' s) (shrink g) ++
+                      (shrink s) ++ [s]
+    Sequence s1 s2 -> map (\s1' -> Sequence s1' s2) (shrink s1) ++
+                      map (\s2' -> Sequence s1 s2') (shrink s2) ++
+                      (shrink s1) ++ (shrink s2) ++ [s1, s2]
+
 main :: IO () 
 main = do _ <- runTestTT (TestList [ t0, 
                                      t11, t11', t12, t13, 
                                      t2, t21 ])
+          quickCheck qcRoundTripExp
+          quickCheck qcRoundTripState
           return ()
 
 -- Problem 0
@@ -257,46 +345,46 @@ constP s t = do xs <- string s
                 return t
 
 boolP :: Parser Char Value
-boolP = do res <- constP "true" True `choose` (constP "false" False)
+boolP = do res <- constP "true" True <|> (constP "false" False)
            return (BoolVal res)
 
 opP :: Parser Char Bop 
-opP = ineqP `choose` addP `choose` mulP
+opP = ineqP <|> addP <|> mulP
 
 opP' :: Parser Token Bop
-opP' = ineqP' `choose` addP' `choose` mulP'
+opP' = ineqP' <|> addP' <|> mulP'
 
 ineqP :: Parser Char Bop
-ineqP = gt `choose` ge `choose` lt `choose` le
+ineqP = ge <|> gt <|> le <|> lt
     where gt = char '>'    >> return Gt
           ge = string ">=" >> return Ge
           lt = char '<'    >> return Lt
           le = string "<=" >> return Le
 
 ineqP' :: Parser Token Bop
-ineqP' = gt' `choose` ge' `choose` lt' `choose` le'
+ineqP' = gt' <|> ge' <|> lt' <|> le'
     where gt' = bopP Gt >> return Gt
           ge' = bopP Ge >> return Ge
           lt' = bopP Lt >> return Lt
           le' = bopP Le >> return Le
 
 addP :: Parser Char Bop
-addP = plus `choose` minus
+addP = plus <|> minus
  where plus  = char '+'    >> return Plus
        minus = char '-'    >> return Minus
 
 addP' :: Parser Token Bop
-addP' = plus' `choose` minus'
+addP' = plus' <|> minus'
   where plus'  = bopP Plus >> return Plus
         minus' = bopP Minus >> return Minus
 
 mulP :: Parser Char Bop
-mulP = times `choose` divide
+mulP = times <|> divide
  where times  = char '*' >> return Times
        divide = char '/' >> return Divide
             
 mulP' :: Parser Token Bop
-mulP' = times' `choose` divide'
+mulP' = times' <|> divide'
   where times'  = bopP Times  >> return Times
         divide' = bopP Divide >> return Divide
 
@@ -452,15 +540,15 @@ t11' = TestList [ "s1" ~: succeed (parse (exprP tokParsers) [oneT]),
 
 
 charParsers' :: [Parser Char Statement]
-charParsers' = [assignP, ifP, whileP, seqP, skipP]
+charParsers' = [seqP, singleP]
 
 tokParsers' :: [Parser Token Statement]
-tokParsers' = [assignP', ifP', whileP', seqP', skipP']
+tokParsers' = [seqP', singleP']
 
 statementP :: [Parser b Statement] -> Parser b Statement
 statementP l = choice l
 
-assignP, ifP, whileP, seqP, skipP :: Parser Char Statement
+assignP, ifP, whileP, seqP, skipP, singleP :: Parser Char Statement
 assignP = do var <- wsP varP
              _   <- wsP (string ":=")
              exp <- wsP (exprP charParsers)
@@ -479,14 +567,16 @@ whileP  = do _     <- wsP (string "while")
              stmt  <- statementP charParsers'
              _     <- wsP (string "endwhile")
              return (While exp stmt)
-seqP    = do stmt1 <- statementP charParsers'
+skipP   = do _     <- wsP (string "skip")
+             return Skip
+singleP = skipP <|> assignP <|> ifP <|> whileP
+seqP    = do stmt1 <- singleP
              _     <- wsP (string ";")
              stmt2 <- statementP charParsers'
              return (Sequence stmt1 stmt2)
-skipP   = do _     <- wsP (string "skip")
-             return Skip
 
-assignP', ifP', whileP', seqP', skipP' :: Parser Token Statement
+
+assignP', ifP', whileP', seqP', skipP', singleP' :: Parser Token Statement
 assignP' = do (TokVar var) <- varP'
               _   <- keyP ":="
               exp <- exprP tokParsers
@@ -505,12 +595,13 @@ whileP'  = do _     <- keyP "while"
               stmt  <- statementP tokParsers'
               _     <- keyP "endwhile"
               return (While exp stmt)
-seqP'    = do stmt1 <- statementP tokParsers'
+skipP'   = do _     <- keyP "skip"
+              return Skip
+singleP' = do skipP' <|> assignP' <|> ifP' <|> whileP'
+seqP'    = do stmt1 <- singleP'
               _     <- keyP ";"
               stmt2 <- statementP tokParsers'
               return (Sequence stmt1 stmt2)
-skipP'   = do _     <- keyP "skip"
-              return Skip
 
 
 t12 :: Test
@@ -530,6 +621,17 @@ testRT filename = do
        Right ast' -> assert (ast == ast')
        Left _ -> assert False
      Left _ -> assert False                             
+
+--quick check
+qcRoundTripExp :: Expression -> Bool
+qcRoundTripExp exp = case (parse (exprP charParsers) $ display exp) of
+  Right exp' -> exp == exp'
+  Left  _    -> False
+
+qcRoundTripState :: Statement -> Bool
+qcRoundTripState s = case (parse (statementP charParsers') $ display s) of
+  Right s' -> s == s'
+  Left  _  -> False
 
 t13 :: Test
 t13 = TestList ["s1" ~: testRT "fact.imp",
@@ -605,4 +707,5 @@ t21 = TestList ["s1" ~: testRT' "fact.imp",
                 "s2" ~: testRT' "test.imp", 
                 "s3" ~: testRT' "abs.imp" ,
                 "s4" ~: testRT' "times.imp" ]
+
 
