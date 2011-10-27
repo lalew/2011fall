@@ -151,38 +151,27 @@ data Statement =
   | Skip
   deriving (Show, Eq)
 
-nonSeqGen :: Gen Statement
-nonSeqGen = do n <- (Test.QuickCheck.choose (0, 10)) :: Gen Int
-               case n of
-                   n | n < 7 -> do v <- varGen
-                                   e <- (arbitrary :: Gen Expression)
-                                   return $ Assign v e
-                   7 -> do g  <- (arbitrary :: Gen Expression)
-                           s1 <- (arbitrary :: Gen Statement)
-                           s2 <- (arbitrary :: Gen Statement)
-                           return $ If g s1 s2
-                   8 -> do g  <- (arbitrary :: Gen Expression)
-                           s  <- (arbitrary :: Gen Statement)
-                           return $ While g s
-                   _ -> return Skip
 
 instance Arbitrary Statement where
-  arbitrary = do n <- (Test.QuickCheck.choose (0, 10)) :: Gen Int
-                 case n of
-                   n | n < 7 -> do v <- varGen
-                                   e <- (arbitrary :: Gen Expression)
-                                   return $ Assign v e
-                   7 -> do g  <- (arbitrary :: Gen Expression)
-                           s1 <- (arbitrary :: Gen Statement)
-                           s2 <- (arbitrary :: Gen Statement)
-                           return $ If g s1 s2
-                   8 -> do g  <- (arbitrary :: Gen Expression)
-                           s  <- (arbitrary :: Gen Statement)
-                           return $ While g s
-                   9 -> do s1 <- nonSeqGen
-                           s2 <- (arbitrary :: Gen Statement)
-                           return $ Sequence s1 s2
-                   _ -> return Skip
+  arbitrary = frequency [(5, nonSeqGen), (1, seqGen)]
+              where nonSeqGen :: Gen Statement
+                    nonSeqGen = do n <- (Test.QuickCheck.choose (0, 10)) :: Gen Int
+                                   case n of
+                                     n | n < 7 -> do v <- varGen
+                                                     e <- arbitrary
+                                                     return $ Assign v e
+                                     7 -> do g  <- (arbitrary :: Gen Expression)
+                                             s1 <- (arbitrary :: Gen Statement)
+                                             s2 <- (arbitrary :: Gen Statement)
+                                             return $ If g s1 s2
+                                     8 -> do g  <- (arbitrary :: Gen Expression)
+                                             s  <- (arbitrary :: Gen Statement)
+                                             return $ While g s
+                                     _ -> return Skip
+                    seqGen :: Gen Statement
+                    seqGen = do s1 <- nonSeqGen
+                                s2 <- (arbitrary :: Gen Statement)
+                                return $ Sequence s1 s2
   shrink s = case s of
     Skip           -> []
     Assign v e     -> map (Assign v) (shrink e)
