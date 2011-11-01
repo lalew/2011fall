@@ -1,0 +1,41 @@
+*Group members: Zi Yan <yanzi>, Christian DeLozier <>
+
+*Goal of our project
+We are planning to modify HARM project, which emulates a ARM virtual machine. HARM uses IOArray to store the CPU information and memory content. We are going to change it, using State Monad to store CPU information and memory content. Additionally, if we have enought time, we may add a branch predictor in this virtual machine to accelerate the execution speed.
+
+*Use cases
+1) In HARM package, there are two existing .arm files, which are simple programs. After modification, we will reexecute the .arm files, and compare the running result, to see whether our implementation is correct or not.
+
+2) 
+
+
+*Modularity of the problem
+The HARM project is already well formed as several modules, we will follow the modularity of HARM. 
+
+-Module ARM: run and debug ARM assembly code
+-Module Assembler: resolve labels, text and symbols in assembly code
+-Module BinaryNumbers: 32bit binary number operations
+-Module CPU: CPU information storage
+-Module Debugger: debugger of assembly code
+-Module Decoder: decode a word into an ARM instruction, where this word is the intermediate representation of instruction in HARM
+-Module Encoder: encode an ARM instruction into a word
+-Module ExecutionUnit: execution of each instruction
+-Module Format: convert a number to a hex/dec string
+-Module Instruction: supported instructions
+-Module Loader: load a program into memory
+-Module Memory: memory content storage
+-Module Operand: supported operand types
+-Module ParseLib, Parser: parser of ARM assembly code
+-Module Program: program information 
+-Module Register: register storage
+-Module RegisterName: register name data type
+-Module Swi: software interruption, for read and write
+
+*Effort budget
+The following files are required to be modified: CPU.hs, Debugger.hs, ExecutionUnit.hs, Loader.hs, Memory.hs, Register.hs, Swi.hs.
+
+1) Go through all the code and make a good design of using Monad instead of IOArray.     (8 hrs)
+2) Reimplement HARM by using State Monad.    (10 hrs)
+3) Test and debug  modified HARM by using some simple assembly program.    (8 hrs)
+4) Refactor the modified code to make it beautiful and abstract.   (8 hrs)
+5) Write documentation for the modified code and the rest.     (4 hrs)
