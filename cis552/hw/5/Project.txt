@@ -1,41 +1,56 @@
-*Group members: Zi Yan <yanzi>, Christian DeLozier <>
+CIS 552 Project Proposal
 
-*Goal of our project
-We are planning to modify HARM project, which emulates a ARM virtual machine. HARM uses IOArray to store the CPU information and memory content. We are going to change it, using State Monad to store CPU information and memory content. Additionally, if we have enought time, we may add a branch predictor in this virtual machine to accelerate the execution speed.
+*Group members*
+    Zi Yan <yanzi>, Christian DeLozier <delozier>
 
-*Use cases
-1) In HARM package, there are two existing .arm files, which are simple programs. After modification, we will reexecute the .arm files, and compare the running result, to see whether our implementation is correct or not.
+*Project Goal*
 
-2) 
+    We plan to develop a simulator for the ARM micro-architecture based on the HARM project.  An architectural simulator is composed of many stateful components, including a processor, register file, branch predictor, and memory hierarchy.  The HARM project manages the state of these components using IOArray.  We plan to refactor this design to use the State Monad instead.  By using this simple abstraction, the simulator should be easier to extend and modify.  We also plan to modify the simulator’s design to allow users to develop, modify, and plug in architectural components.  Currently, the simulation algorithm used by HARM is overly simplified, and the program design does not allow for easy modifications to this algorithm.  We aim to provide a design that allows users to easily add, modify, and remove components from the simulation process.
 
+*Use Cases*
 
-*Modularity of the problem
-The HARM project is already well formed as several modules, we will follow the modularity of HARM. 
+    With our simulator, users will be able to measure the performance effects of executing sample programs on a modified ARM architecture.  To start, the user will modify and replace existing architectural components to match his required system specifications.  For example, if the user wishes to replace the existing memory hierarchy with a new novel memory model, he will create a new memory module that derives from the Stage type-class.  This new memory module will implement an execute function, which takes an Instruction as input and updates the architecture’s state.
+    Once the user has modified the architecture to fit his specifications, the simulator will be able to execute a stream of instructions, which will be parsed from a file.  The HARM package provides two sample .arm files that could be used by the user as benchmarks.  We may also provide some simple microbenchmarks such as linked list traversal and vector addition.  After the simulator completes execution, the user will be able to review detailed performance statistics including total cycles, cache misses, and branch mispredictions.
+    Another possible use case for our simulator would be to identify performance bottlenecks in a program.  In this case, the user would use a compiler to produce ARM assembly code for his program.  The user would also need to modify the simulator to match the system specifications for his target platform.  Then the user could simulate his program on the target architecture.  After execution, the user would be able to identify performance issues such as cache line conflicts.
 
--Module ARM: run and debug ARM assembly code
--Module Assembler: resolve labels, text and symbols in assembly code
--Module BinaryNumbers: 32bit binary number operations
--Module CPU: CPU information storage
--Module Debugger: debugger of assembly code
--Module Decoder: decode a word into an ARM instruction, where this word is the intermediate representation of instruction in HARM
--Module Encoder: encode an ARM instruction into a word
--Module ExecutionUnit: execution of each instruction
--Module Format: convert a number to a hex/dec string
--Module Instruction: supported instructions
--Module Loader: load a program into memory
--Module Memory: memory content storage
--Module Operand: supported operand types
--Module ParseLib, Parser: parser of ARM assembly code
--Module Program: program information 
--Module Register: register storage
--Module RegisterName: register name data type
--Module Swi: software interruption, for read and write
+*Program Design*
 
-*Effort budget
-The following files are required to be modified: CPU.hs, Debugger.hs, ExecutionUnit.hs, Loader.hs, Memory.hs, Register.hs, Swi.hs.
+    Our starting point, the HARM project, is already divided into a reasonable set of modules.  HARM features two execution modes:  running and debug.  In running mode, an instruction stream is executed until the end of a program is reached.  In debug mode, the program stops after each instruction is executed, allowing the user to check CPU state and memory contents.  An instance of CPU consists of registers, memory, running state, and debug state.  While executing an instruction, registers and memory are updated accordingly. Thus, the instance of CPU will run as a state machine, where both registers and memory are two separate state units.
 
-1) Go through all the code and make a good design of using Monad instead of IOArray.     (8 hrs)
-2) Reimplement HARM by using State Monad.    (10 hrs)
-3) Test and debug  modified HARM by using some simple assembly program.    (8 hrs)
-4) Refactor the modified code to make it beautiful and abstract.   (8 hrs)
-5) Write documentation for the modified code and the rest.     (4 hrs)
+    Our design will re-use the parser, encoder, decoder, and other modules from the HARM project that do not effect program execution.  For any ARM assembly code, we will use the existing parser to convert the source code into a list of instructions, which is a internal data structure.  Before running the program, the list of instructions will be written into memory in form of 32 bit binaries.  After the program has been loaded, the CPU will run the program in memory.
+
+    We plan to abstract instruction execution as a set of stages in the pipeline of a processor.  Each stage will implement an execute function that takes an instruction and updates the state of the simulator.  Each instruction will be passed through all stages of the pipeline.  As in an actual pipeline, multiple instructions will be in-flight during each cycle.  
+
+*Tasks and Time Budget*
+
+    1) Refactor existing code to use the State Monad (8 hours)
+    2) Develop code to allow for plug-in components and more advanced simulation (16 hours)
+    3) Use QuickCheck to generate random assembly programs for testing purposes (6 hours)
+    4) Generate assembly code for microbenchmarks (4 hours)
+    5) Test and debug modified simulator using some simple assembly programs (6 hours)
+    6) Refactor the modified code to make it beautiful and abstract.   (6 hours)
+    7) Write documentation for the modified code (4 hours)
+
+*Modules to Use*
+
+    ARM: Runs and debugs ARM assembly code
+    Assembler: Resolve labels, text and symbols in assembly code
+    BinaryNumbers: 32bit binary number operations
+    Debugger: Debugger for assembly code
+    Decoder: Decode a word into an ARM instruction, where this word is the intermediate representation of instruction in HARM
+    Encoder: Encode an ARM instruction into a word
+    Format: convert a number to a hex/dec string
+    Instruction: Supported instructions
+    Loader: load a program into memory
+    Operand: supported operand types
+    ParseLib, Parser: parser of ARM assembly code
+    Register: Register storage
+    RegisterName: Register name data type
+    Swi: Software interruption, for read and write
+
+*Modules to Modify*
+
+    CPU: CPU information storage
+    ExecutionUnit: Execution of each instruction
+    Memory: Memory contents
+    Program: Program information
