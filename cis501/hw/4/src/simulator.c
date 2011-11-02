@@ -7,6 +7,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <strings.h>
+#include <math.h>
+
+#define ADDRLEN 64
 
 void simulate(FILE* inputFile, FILE* outputFile)
 {
@@ -28,6 +31,29 @@ void simulate(FILE* inputFile, FILE* outputFile)
 
   int64_t totalMicroops = 0;
   int64_t totalMacroops = 0;
+
+  //additional work
+  int64_t totalMemAccess = 0;
+
+  int logSmax = 22;
+  int logSmin = 8;
+  int logB    = 6;
+
+
+  uint64_t **Q4cache;
+  int64_t *Q4miss;
+
+  Q4cache = (uint64_t **)malloc((logSmax - logSmin + 1) * sizeof(uint64_t*));
+  for (int i = logSmin; i <= logSmax; ++i)
+  {
+      int S = (int)(pow(2, i)/pow(2,logB));
+
+      Q4cache[i-logSmin] = (uint64_t *)malloc(S*sizeof(uint64_t));
+      memset(Q4cache[i-logSmin], 0, S*sizeof(uint64_t));
+  }
+  Q4miss = (int64_t *)malloc((logSmax - logSmin + 1)*sizeof(int64_t));
+  memset(Q4miss, 0, (logSmax - logSmin + 1)*sizeof(int64_t));
+
   
   fprintf(outputFile, "Processing trace...\n");
   
@@ -78,12 +104,54 @@ void simulate(FILE* inputFile, FILE* outputFile)
     if (microOpCount == 1) {
       totalMacroops++;
     }
+
+    //additional work
+    //only deal with load and store
+    if (loadStore == 'L' || loadStore == 'R')
+    {
+        totalMemAccess++;
+    //Question 4: direct-mapped cache, block size 64 bytes, cache size
+    //from 256 bytes (2^8) to 4MB (2^22)
+        int lowerI = logSmin - logB, upperI = logSmax - logB; 
+        for (int i = lowerI; i <= upperI; ++i)
+        {
+            int logT = ADDRLEN - i - logB;//number of tag bits
+            uint64_t tag;
+            int index;
+
+            tag = (addressForMemoryOp>>(i+logB)) & ((1<<logT) - 1);
+            index = (addressForMemoryOp>>logB) & ((1<<i) - 1);
+
+            if (Q4cache[i - lowerI][index] != tag)
+            {
+                Q4miss[i - lowerI]++;
+                Q4cache[i - lowerI][index] = tag;
+            }
+        }
+
+    }
   }
   
+
+  for (int i = logSmin; i <= logSmax; ++i)
+  {
+      free(Q4cache[i-logSmin]);
+  }
+  free(Q4cache);
+  free(Q4miss);
+
   fprintf(outputFile, "Processed %" PRIi64 " trace records.\n", totalMicroops);
 
   fprintf(outputFile, "Micro-ops: %" PRIi64 "\n", totalMicroops);
   fprintf(outputFile, "Macro-ops: %" PRIi64 "\n", totalMacroops);
+
+  fprintf(outputFile, "Question 4:\nCache size (log)\tCache miss rate\n");
+  for (int i = logSmin; i <= logSmax; ++i)
+  {
+      fprintf(outputFile, "%16d\t%15f\n", 
+                          i, (double)Q4miss[i-logSmin]/totalMemAccess);
+  }
+  
 
 }
 
