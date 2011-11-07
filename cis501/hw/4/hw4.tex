@@ -1,0 +1,98 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage[utf8x]{inputenc}
+\usepackage{ucs}
+\author{Zi Yan\\PennID:14137362}
+\title{CIS501 Homework 4}
+\date{}
+\begin{document}
+\maketitle
+
+\section*{Question 1}
+\paragraph*{a}
+The number of bits in the block offset is 6.
+\paragraph*{b}
+The number of ``sets" in the cache is 256
+\paragraph*{c}
+The total number of block frames in the cache is $256\times2=512$.
+\paragraph*{d}
+The number of index bits is 8.
+\paragraph*{e}
+The number of tag bits is $32-6-8=18$.
+
+\section*{Question 2}
+\paragraph*{a}
+The number of bits in the block offset is $\log_2B$.
+\paragraph*{b}
+The number of ``sets" in the cache is $\frac{S}{B\times A}$.
+\paragraph*{c}
+The total number of block frames in the cache is $\frac{S}{B}$.
+\paragraph*{d}
+The number of index bits is $\log_2\frac{S}{B\times A}$.
+\paragraph*{e}
+The number of tag bits is $32-\log_2B-\log_2\frac{S}{B\times A}$.
+\section*{Question 3}
+\paragraph*{a}
+tag = 
+(address$>>$(num\_index\_bits$+$num\_offset\_bits))$\&$((1$<<$num\_tag\_bits)$-$1).
+\paragraph*{b}
+index =
+(address$>>$(num\_offset\_bits))$\&$((1$<<$num\_index\_bits)$-$1).
+\section*{Question 4}
+\paragraph*{a}
+When the cache size is $2^{13}=8$K bytes, the miss rate is less than 10\%. When the cache
+size is $2^{15}=32$K bytes, the miss rate is less than 5\%.
+\paragraph*{b}
+The ratio is $\frac{0.2343}{0.1533}=1.528$.
+\section*{Question 5}
+\paragraph*{a}
+When the cache size is $2^{12}=4$K bytes, the miss rate is less than 10\%. When the cache 
+size is $2^{13}=8$K bytes, the miss rate is less than 5\%.
+\paragraph*{b}
+The direct-mapped cache must be at most 32KB before it equals or exceeds the performance 
+of the 16KB two-way set-associative cache.
+\paragraph*{c}
+Because direct-mapped cache has more conflict misses than set-associative cache, the
+gap is mainly caused by conflict misses, and the increasing cache sizes can reduce the
+conflict misses, therefore the gap narrows as the cache size increases.
+\section*{Question 6}
+\paragraph*{a}
+When cache size is $2^{13}=8$K bytes, two write policies generate approximately the same
+amount of traffic.
+\paragraph*{b}
+Because at large cache sizes cache misses are reduced, and write-back of dirty blocks is also
+reduced, but write-through traffic does not change, therefore write-back traffic is less than
+write-through.
+\paragraph*{c}
+Because at small cache sizes write-back of dirty block is a lot due to the high cache misses
+rate, therefore write-back traffic is more than write-through.
+\section*{Question 7}
+\paragraph*{a}
+64-byte block has the lowest miss rate.
+\paragraph*{b}
+8-byte block has the lowest traffic.
+\paragraph*{c}
+\begin{itemize}
+    \item As block size increases, each write-back has to write more bytes back to lower-level
+    memory.
+    \item As block size increases, the set number decreases, therefore more conflict misses
+    cause more write-back.
+\end{itemize}
+\paragraph*{d}
+Today's caches are designed to minimize miss rate, because reducing the miss rate can also
+reduce the traffic, and there is enough bandwidth for current cache traffic.
+
+\section*{Question 8}
+\paragraph*{a}
+The accuracy of a single-entry way predictor is 65.83\%. It was more accurate than I anticipated.
+Because 1) the way is either 0 or 1, thus the accuracy should be around 50\%, 2) all cache way 
+information is squeezed into one predictor, then the predictor actually does not learn and 
+record information about any access, therefore the predictor works no better than simply
+always predicting way 0 or way 1.
+\paragraph*{b}
+When the predictor size is $2^{10}=1$K bytes, the two-way set associative cache is certainly
+better than a direct-mapped cache.
+\paragraph*{c}
+There are $32\times1024\div64=512$block frames. The number of tag bits is $64-6-8=50$. 
+The overhead is $2^{10}\times1+512\times50=26624\mbox{bits}=3328\mbox{bytes}$, and it 
+is $3328\div32K=10.16\%$ (including predictors and tags).
+\end{document}

@@ -72,6 +72,7 @@ void simulate(FILE* inputFile, FILE* outputFile)
   twoWaySet *Q8cache;
   int **wayPred;
   int64_t *Q8misPred;
+  int64_t Q8miss = 0;
 
   Q4cache = (uint64_t **)malloc((logSmax - logSmin + 1) * sizeof(uint64_t*));
   for (int i = logSmin; i <= logSmax; ++i)
@@ -317,7 +318,7 @@ void simulate(FILE* inputFile, FILE* outputFile)
                     Q5cache[i - lowerI][index].dirty[1] = 1;
                 }
             
-                //Q6: write through miss
+                //Q6: write through, namely store times 
                 Q6WriteThr[i - lowerI]++;
             }
         }
@@ -408,6 +409,7 @@ void simulate(FILE* inputFile, FILE* outputFile)
                     //update predictor
                     wayPred[i][indexP] = wayP^1;
                 }
+                //if cache miss, store data to LRU cache, update predictor
                 if (Q8cache[index].tags[0] != tag &&
                     Q8cache[index].tags[1] != tag)
                 {
@@ -423,6 +425,8 @@ void simulate(FILE* inputFile, FILE* outputFile)
             {
                 int lru = Q8cache[index].lru;
                 
+                Q8miss++;
+
                 Q8cache[index].tags[lru] = tag;
 
                 //miss leads to evict LRU block
@@ -472,11 +476,14 @@ void simulate(FILE* inputFile, FILE* outputFile)
   fprintf(outputFile, "Micro-ops: %" PRIi64 "\n", totalMicroops);
   fprintf(outputFile, "Macro-ops: %" PRIi64 "\n", totalMacroops);
 
-  fprintf(outputFile, "Question 4:\nCache size (log)\tCache miss rate\n");
+  fprintf(outputFile, "Question 4:\nCache size (log)\tCache miss rate\t"
+            "Miss number\n");
   for (int i = logSmin; i <= logSmax; ++i)
   {
-      fprintf(outputFile, "%16d\t%15f\n", 
-                          i, (double)Q4miss[i-logSmin]/totalMemAccess);
+      fprintf(outputFile, "%16d\t%15f%11lld\n", 
+                          i, 
+                          (double)Q4miss[i-logSmin]/totalMemAccess,
+                          Q4miss[i-logSmin]);
   }
   
   fprintf(outputFile, "Question 5:\nCache size (log)\tCache miss rate\n");
@@ -500,18 +507,21 @@ void simulate(FILE* inputFile, FILE* outputFile)
   fprintf(outputFile, "Question 7:\nBlock size (log)\tMiss rate\tTraffic\n");
   for (int i = 3; i <= 9; ++i)//from 8B to 512B
   {
+      int bSize = (int)pow(2,i);
       fprintf(outputFile, "%16d\t%9f\t%7f\n",
               i,
               (double)Q7miss[i-3]/totalMemAccess,
-              (double)(Q7WrtBck[i-3]+Q7miss[i-3])*64/totalMemAccess);
+              (double)(Q7WrtBck[i-3]+Q7miss[i-3])*bSize/totalMemAccess);
   }
 
-  fprintf(outputFile, "Question 8:\nPredictor Size (log)\tMis-prediction\n");
+  fprintf(outputFile, "Question 8: cache miss: %lld\n"
+          "Predictor Size (log)\tMis-prediction\tMis-pred+miss\n", Q8miss);
   for (int i = Q8Predmin; i <= Q8Predmax; ++i)
   {
-      fprintf(outputFile, "%20d\t%14f\n",
+      fprintf(outputFile, "%20d\t%14f\t%13lld\n",
               i,
-              (double)Q8misPred[i]/Q8hit);
+              (double)Q8misPred[i]/Q8hit,
+              Q8misPred[i]+Q8miss);
   }
   
   //clean up
