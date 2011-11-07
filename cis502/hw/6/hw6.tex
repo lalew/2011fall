@@ -1,0 +1,147 @@
+\documentclass[letter,12pt]{article}
+\usepackage[margin=2.3cm]{geometry}
+\usepackage{parskip}
+\usepackage{amsthm}
+\begin{document}
+Name: Yan, Zi \\
+Course: CIS 502 \\
+Assignment: HW6 \\
+\line(1,0){400}
+%Write your content here
+\section*{Question 1}
+First, we use Ford-Fulkerson algorithm to compute a maximum s-t flow and 
+the residual graph $G_f$. Then we use BFS to compute the corresponding 
+minimum s-t cut $(A, B)$. At last, we pick arbitrary $k$ edges of set $F$ in 
+the residual graph that go out of $A$. Thus, $G'=(V, E - F)$ will has as small 
+as possible maximum s-t flow.
+
+\begin{proof}
+If the minimum cut of $G$ is less than $k$, we will get a 0 maximum flow in
+$G'$. Let $c(A, B)$ be the minimum cut of $G$, which is the sum of the 
+capacities of all the edges out of $A$ and greater than $k$. After we delete 
+$k$ edges from the edges out of $A$, the minimum s-t cut is reduced to 
+$c(A, B) - k$, so the maximum s-t flow is at most $c(A, B)-k$.
+
+On the other hand, there are at least $c(A, B)$ edges out of $A$ in $G$, and 
+we delete $k$ of them. Therefore, there are at least $c(A, B)-k$ edges out of
+$A$ after deletion. Thus, the maximum s-t flow is at least $c(A, B)-k$.
+
+Consequently, the maximum s-t flow will be as small as $c(A, B)-k$.
+\end{proof}
+
+The runtime of Ford-Fulkerson algorithm in this question is $O(m)$, BFS
+takes $O(m)$, and the deletion will take $O(m)$. So the total runtime is
+$O(m)$.
+
+\section*{Question 2}
+The algorithm is: 1) split each vertex $v$, except $s$ and $t$, into two, 
+$v_{in}$ and $v_{out}$, where all the edges going into $v$ will go into 
+$v_{in}$ instead, and all the edges going out of $v$ will go out of $v_{out}$ 
+instead. And we connect $v_{in}$ and $v_{out}$ with a edge whose capacity 
+is $c_v$, while all the nodes $v_{in}$ and $v_{out}$ will not have capacities 
+any more; 2) for the edges in the original graph, we assume that they have 
+infinite capacities; 3) we run Ford-Fulkerson algorithm on this modified 
+graph to find the maximum s-t flow and use BFS to find the minimum s-t 
+cut; 4) a edge $(v_{in}, v_{out})$ that cross the minimum cut give us the node 
+$v$ is on the s-t cut for node-capacitated networks, and the cut across
+all these nodes is the minimum s-t cut for node-capacitated networks.
+
+An s-t cut for node-capacitated network is a deletion of a set of nodes,
+which disconnect all the paths from $s$ to $t$.
+
+\begin{proof}
+As we define before, all edges except the ones $(v_{in}, v_{out})$ have infinite 
+capacities, therefore the cut will only cross $(v_{in}, v_{out})$ edges, 
+otherwise, the minimum s-t cut will always be infinite. 
+
+In the modified graph, the Max-Flow Min-Cut Theorem applies, where the 
+maximum s-t flow is the minimum cut. While transforming from the 
+modified graph to the original one, we only need to contrast each pair of 
+nodes $v_{in}$, $v_{out}$ to $v$, and the maximum flow does not change,
+because the node capacities are respected.
+If we have a cut in the original graph, we simply split the nodes as we did
+before, and the maximum flow will not change as well, because the edge
+capacities are respected in the modified graph. 
+
+So the analogue of the Max-Flow Min-Cut Theorem holds true.
+\end{proof} 
+
+The runtime of modifying the graph is $O(n)$, and Ford-Fulkerson takes 
+$O(m)$. So the total runtime is $O(m)$
+\section*{Question 3}
+\paragraph*{a)}
+A $3 \times 3$ matrix, with first row 0, 1, 0, second row 1, 1, 1, and third
+row 0, 1, 0. Each row and each column have at least one 1 entry, but there
+is no way of rearranging the matrix, such that all diagonal entries are 1.
+
+\paragraph*{b)}
+Observation 1: If there are $n$ 1s  in the matrix, and each entry $n_k$ is 
+at $(x_k, y_k)$ with $k \in [1..n]$, where $x_k \notin \{x_1, x_2, ..., x_{k-1}, 
+x_{k+1},  ..., x_n\}$, and $y_k \notin \{y_1, y_2, ..., y_{k-1}, y_{k+1}, ..., 
+y_n\}$, then the matrix is rearrangeable. 
+\begin{proof}
+We can swap the row in which the entry $n_i$ with $y_i = 1$ resides to the 
+first row, then swap the row in which the entry $n_j$ with $y_j = 2$ 
+resides to the second row, and so on. In sum, we just swap the row where 
+the entry $n_l$ with $y_l = r$ resides to $i$th row, thus we can get a matrix
+with all diagonal entries equal to 1. And each entry has different row 
+number, thus any swapping will only move one entry, affecting no other
+entries. Consequently, the swapping method is valid.
+\end{proof}
+ 
+ Therefore, we just need to verify whether those $n$ 1s exists. We need to
+ build a graph that has a source $s$ with $-n$ demand, a sink $t$ with
+ $n$ demand, a set of $n$ nodes representing row numbers, a set of $n$ 
+ nodes representing column number, and a set of nodes representing the
+ entries equal to 1 in the matrix. We connect $s$ to each row nodes, 
+ connect each row nodes to the entry nodes residing that row, connect each  
+ entry node to a column node in which the entry resides, and connect 
+ all column nodes to $t$, where all the edges connecting the nodes have
+ capacity 1. If we can find a feasible circulation, then the matrix is 
+ rearrangeable, otherwise not.
+ 
+ \begin{proof}
+ Because the demands in $s$ and $t$, there will be at most $n$ entries equal
+ to 1 will be chosen. And due to each row and each column connect to $s$
+ or $t$ with capacity 1 edges, and each entry only has one row number and
+ one column number, thus each entry will have unique row number and 
+ column number different from each other's. And the resulting feasible 
+ circulation follows the Observation 1. And the matrix is rearrangeable.
+ 
+ On the other way, if the matrix is rearrangeable, Observation 1 follows that
+ there are $n$ entries at $(1, 1), (2, 2), ..., (n, n)$. Therefore, there are $n$
+ paths, where $i$th one is $s, r_i, entry(i, i), c_i, t$, showing a feasible 
+ circulation.
+ \end{proof}
+
+\section*{Question 4}
+First of all, we need to compute a maximum flow of $G$, and its residual
+graph $G_f$. 
+
+1) We use BFS to find all nodes that are reachable from $s$, and let them be
+a set $A$, the rest be $B = V - A$. Then, the nodes in $A$ must be 
+reachable from $s$ in other minimum cuts, if any. Suppose not. Let $v \in A$, 
+for another cut $(A', B')$, $v \in B'$. Because $v \in A$, there is a path 
+$s$-$v$ in the residual graph, but $v \in B'$, then there is an edge $(u, v)$ 
+along this path, where $u \in A', v \in B'$. This contradicts that no edge 
+crosses the cut $(A', B')$.
+
+2)We use BFS to find all nodes that will reach $t$ by reversing the direction
+of each edge but keeping the flow and capacities untouched. Then all found
+nodes are in set $B^*$, and the rest are in set $A^* = V - B^*$. Thus, the
+nodes in $B^*$ can reach $t$ in other minimum cuts, if any. The proof is 
+symmetric to the one above. Suppose not. In another cut $(A^{*'}, B^{*'})$,
+$v \in A^{*'}$, but $v \in B^*$. Thus there exists an edge $(v, u)$ in $B^*$, 
+where $v \in A^{*'}, u \in B^{*'}$. This contradicts that no edge crosses the 
+cut $(A^{*'}, B^{*'})$.
+
+3)After we find the set $A$ and $B^*$, if the set $N = V - A - B^*$ is not
+empty, the minimum s-t cut will not be unique. Because the nodes in $N$
+can be either in $A$ of some minimum cut $(A, B)$, or in $B'$ of some
+other minimum cut $(A', B')$. Otherwise, if $N = \emptyset$, the minimum
+cut is unique.
+
+The runtime will be $O(m)$ of Ford-Fulkerson, plus $O(m)$ of two BFS,
+namely $O(m)$. 
+
+\end{document}
