@@ -236,7 +236,7 @@ void simulate(FILE* inputFile, FILE* outputFile)
             }
 #endif
 
-            //Q5: miss
+            //Q5: read/write miss
             if (Q5cache[i - lowerI][index].tags[0] != tag &&
                 Q5cache[i - lowerI][index].tags[1] != tag)
             {
@@ -305,7 +305,7 @@ void simulate(FILE* inputFile, FILE* outputFile)
             }
 
 
-            //Q6: write hit
+            //Q6: write hit/miss
             if (loadStore == 'S')
             {
                 if (Q5cache[i - lowerI][index].tags[0] == tag)
@@ -324,7 +324,7 @@ void simulate(FILE* inputFile, FILE* outputFile)
         }
 
         //Q7: variant block size from 8B to 512B
-        for (int i = Q7logSmax; i >= Q7logSmin; --i)
+        for (int i = Q7logSmax; i >= Q7logSmin; --i)//from 11 to 5
         {
             int Q7logT = ADDRLEN - 14;//32KB two way set assoc cache
             int Q7logB = 14 - i;//32KB uses 14bits for both set and block
@@ -502,6 +502,10 @@ void simulate(FILE* inputFile, FILE* outputFile)
       (double)(Q6WriteThr[i-logSmin]*4+Q5miss[i-logSmin]*64)/totalMemAccess,
       (double)(Q6WriteBck[i-logSmin]*64+Q5miss[i-logSmin]*64)/totalMemAccess
       );
+/*      fprintf(outputFile, "%16d\t%11lld\t%11lld\n",
+              i,
+              Q6WriteThr[i-logSmin],
+              Q6WriteBck[i-logSmin]);*/
   }
 
   fprintf(outputFile, "Question 7:\nBlock size (log)\tMiss rate\tTraffic\n");
