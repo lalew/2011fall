@@ -3,6 +3,7 @@ module Sat where
 
 import Data.Map (Map)
 import qualified Data.Map as Map
+import Control.Monad (liftM,liftM2)
 
 
 import Test.QuickCheck
@@ -50,12 +51,31 @@ interp m (CNF f) = all (any (findLit m)) f where
           (Nothing, Nothing) -> True  
 
 dpll :: CNF -> Maybe (Map Lit Bool)
-dpll = undefined
+dpll cnf = let (a, b) = pureLitAssign cnf
+               (c, d) = unitPropagate b
+               e      = foldr step (Just Map.empty) (unCNF d)
+           in case e of
+                   Nothing -> Nothing
+                   Just f  -> if (valid (Map.unions [a, c, f]))
+                              then Just (Map.unions [a, c, f])
+                              else Nothing
+ where step :: Clause -> Maybe (Map Lit Bool) -> Maybe (Map Lit Bool)
+       step _ Nothing = Nothing
+       step c mmap    = liftM2 (Map.union) mmap (satisfy c) 
 
 -- | Given a list of literals, create the trivial assignment 
 -- that satisfies that list (if one exists). 
 satisfy :: Clause -> Maybe (Map Lit Bool)
-satisfy = undefined
+satisfy = foldr step Nothing
+          where step:: Lit -> Maybe (Map Lit Bool) -> Maybe (Map Lit Bool)
+                step _ Nothing   = Nothing
+                step l (Just ms) = 
+                     case (Map.lookup l ms, Map.lookup (invert l) ms) of
+                          (Just b1, Just b2) | b1 == not b2 -> Just ms
+                          (Just _, Just _)   -> Nothing
+                          (Just _, Nothing)  -> Just ms
+                          (Nothing, Just _)  -> Just ms
+                          (Nothing, Nothing) -> Just (Map.insert l True ms)
 
 -- | If a propositional variable occurs with only one polarity in the
 -- formula, it is called pure. Pure literals can always be assigned in
@@ -65,7 +85,31 @@ satisfy = undefined
 -- returns the assignment paired with the refactored formula 
 -- that reflects that assignment.
 pureLitAssign :: CNF -> (Map Lit Bool, CNF)
-pureLitAssign = undefined
+pureLitAssign (CNF [])     = (Map.empty, CNF []) 
+pureLitAssign (CNF xs) = aux (Map.empty, CNF xs)
+ where aux (a, CNF cs) = 
+let res = removeP x (x:xs)
+                             in case res of
+                                     Map.empty -> 
+
+removeP :: Clause -> [Clause] -> Map Lit Bool
+removeP _ []  = Map.empty
+removeP [] cs = Map.empty
+removeP (x:xs) cs = if (ifPure x cs)
+                    then Map.fromList [(x, True)]
+                    else removeP xs cs
+
+ifPure :: Lit -> [Clause] -> Bool
+ifPure l cs = all (\c -> notElem (invert l) c) cs
+
+{-let (ms, CNF cs) = pureLitAssign (CNF xs)
+                             in case (ifPure x) of
+                                     Just v  -> (Map.insert v True ms, CNF cs)
+                                     Nothing -> (ms, CNF (x:cs))
+ where ifPure []     = Nothing
+       ifPure (y:ys) | notElem (invert y) ys = Just y
+                     | otherwise = ifPure [r| r<-ys, r /= y, r /= invert y]-}
+--(filter (\z -> z /= y && z /= (invert y)) ys)
 
 -- | If a clause is a unit clause, i.e. it contains only a single
 -- unassigned literal, this clause can only be satisfied by assigning
@@ -73,8 +117,33 @@ pureLitAssign = undefined
 -- all unit clauses from the formula and returns the assignment paired 
 -- with the refactored formula that reflects that assignment.
 unitPropagate :: CNF -> (Map Lit Bool, CNF)
-unitPropagate = undefined
+unitPropagate (CNF []) = (Map.empty, CNF [])
+unitPropagate (CNF ps) = aux (Map.empty, CNF ps)      
+ where aux :: (Map Lit Bool, CNF) -> (Map Lit Bool, CNF)
+       aux (a, CNF cs) = let us = collectU cs
+                         in if (null us) then (a, CNF cs)
+                            else aux (Map.union a (mapToTrue us), CNF $ removeU us cs)
 
+       mapToTrue :: [Lit] -> Map Lit Bool
+       mapToTrue []     = Map.empty
+       mapToTrue (x:xs) = Map.insert x True (mapToTrue xs)
+       collectU :: [Clause] -> [Lit]
+       collectU []       = []
+       collectU ([x]:xs) = x:(collectU xs)
+       collectU (_:xs)     = collectU xs
+       removeU :: [Lit] -> [Clause] -> [Clause]
+       removeU _ []      = []
+       removeU us (x:xs) | any (\a -> elem a us) x = removeU us xs
+                         | otherwise = [r| r<-x, notElem (invert r) us]:(removeU us xs)
+
+{-unitPropagate (CNF ([x]:xs)) = let (ms, CNF cs) = unitPropagate (CNF xs)
+                               in (Map.insert x True ms, CNF $ removeS x cs)
+ where removeS _ []     = []
+       removeS s (y:ys) = [r| r<-y, r /= invert s]:removeS s ys
+
+unitPropagate (CNF (x:xs))   = let (ms, CNF cs) = unitPropagate (CNF xs)
+                               in (ms, CNF (x:cs)) 
+-}
 
 
 prop_dpll :: CNF -> Property
@@ -86,5 +155,6 @@ prop_dpll c =
       else property False
     Nothing ->  (property True)  
     
-
+instance Arbitrary CNF where
+         arbitrary = liftM CNF arbitrary
 
