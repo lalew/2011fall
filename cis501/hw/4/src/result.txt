@@ -1,9 +1,9 @@
-gcc -Wall -Wextra -pedantic -std=c99 -O2 -lm -o simulator simulator.c
 gzcat sjeng-10M.trace.gz | ./simulator
 Processing trace...
 Processed 10000000 trace records.
 Micro-ops: 10000000
 Macro-ops: 7569542
+Total memory access: 2703843
 Question 4:
 Cache size (log)	Cache miss rate	Miss number
                8	       0.480565    1299371

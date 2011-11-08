@@ -120,7 +120,7 @@ void simulate(FILE* inputFile, FILE* outputFile)
   wayPred = (int **)malloc((Q8Predmax - Q8Predmin + 1)*sizeof(int *));
   for (int i = Q8Predmin; i <= Q8Predmax; ++i)
   {
-      int entryN = (int)pow(2, i);
+      int entryN = (int)pow(2, i) + 1;
       wayPred[i] = (int *)malloc(entryN*sizeof(int));
       memset(wayPred[i], 0, entryN*sizeof(int));
   }
@@ -397,7 +397,7 @@ void simulate(FILE* inputFile, FILE* outputFile)
             {
                 //int predN = (int)pow(2, i);//predictor size
                 int indexP = (addressForMemoryOp>>Q8logB) &
-                             ((1<<i) - 1);
+                             ((uint64_t)(1<<i) - 1);
                 int wayP = wayPred[i][indexP];//way predicted
 
                 //prediction does not match the tag, but the other
@@ -431,10 +431,10 @@ void simulate(FILE* inputFile, FILE* outputFile)
 
                 //miss leads to evict LRU block
                 //dirty
-                if (Q8cache[index].dirty[lru] == 1)
-                {
-                    Q8cache[index].dirty[lru] = 0;
-                }
+                // if (Q8cache[index].dirty[lru] == 1)
+                //{
+                //    Q8cache[index].dirty[lru] = 0;
+                //}
                 
                 Q8cache[index].lru ^= 1;
 
@@ -451,20 +451,20 @@ void simulate(FILE* inputFile, FILE* outputFile)
                     Q8cache[index].lru = 0; 
                 }
             }
-            
-            if (loadStore == 'S')
-            {
-                if (Q8cache[index].tags[0] == tag)
-                {
-                    Q8cache[index].dirty[0] = 1;
-                    
-                }
-                else if (Q8cache[index].tags[1] == tag)
-                {
-                    Q8cache[index].dirty[1] = 1;
-                }
-            
-            }
+           
+            //if (loadStore == 'S')
+            //{
+            //    if (Q8cache[index].tags[0] == tag)
+            //    {
+            //        Q8cache[index].dirty[0] = 1;
+            //        
+            //    }
+            //    else if (Q8cache[index].tags[1] == tag)
+            //    {
+            //        Q8cache[index].dirty[1] = 1;
+            //    }
+            //
+            //}
         }//Q8
 
     }
@@ -476,6 +476,7 @@ void simulate(FILE* inputFile, FILE* outputFile)
   fprintf(outputFile, "Micro-ops: %" PRIi64 "\n", totalMicroops);
   fprintf(outputFile, "Macro-ops: %" PRIi64 "\n", totalMacroops);
 
+  fprintf(outputFile, "Total memory access: %lld\n", totalMemAccess);
   fprintf(outputFile, "Question 4:\nCache size (log)\tCache miss rate\t"
             "Miss number\n");
   for (int i = logSmin; i <= logSmax; ++i)
