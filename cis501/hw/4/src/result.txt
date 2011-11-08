@@ -1,3 +1,4 @@
+gcc -Wall -Wextra -pedantic -std=c99 -O2 -lm -o simulator simulator.c
 gzcat sjeng-10M.trace.gz | ./simulator
 Processing trace...
 Processed 10000000 trace records.

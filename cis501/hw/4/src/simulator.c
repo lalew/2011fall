@@ -270,8 +270,6 @@ void simulate(FILE* inputFile, FILE* outputFile)
                     Q5cache[i - lowerI][index].dirty[lru] = 0;
                 }
 
-                //if (loadStore == 'S')
-                //    Q5cache[i - lowerI][index].dirty[lru] = 1;
                 //Q5
                 Q5cache[i - lowerI][index].lru ^= 1;
                 
@@ -287,23 +285,12 @@ void simulate(FILE* inputFile, FILE* outputFile)
                 if (Q5cache[i - lowerI][index].tags[0] == tag)
                 {
                     Q5cache[i - lowerI][index].lru = 1; 
-            
-                    // if (loadStore == 'S')
-                    //{
-                    //    Q5cache[i - lowerI][index].dirty[0] = 1;
-                    //}
                 }
                 else if (Q5cache[i - lowerI][index].tags[1] == tag)
                 {
                     Q5cache[i - lowerI][index].lru = 0; 
-
-                    //if (loadStore == 'S')
-                    //{
-                    //    Q5cache[i - lowerI][index].dirty[1] = 1;
-                    //}
                 }
             }
-
 
             //Q6: write hit/miss
             if (loadStore == 'S')
@@ -428,13 +415,6 @@ void simulate(FILE* inputFile, FILE* outputFile)
                 Q8miss++;
 
                 Q8cache[index].tags[lru] = tag;
-
-                //miss leads to evict LRU block
-                //dirty
-                // if (Q8cache[index].dirty[lru] == 1)
-                //{
-                //    Q8cache[index].dirty[lru] = 0;
-                //}
                 
                 Q8cache[index].lru ^= 1;
 
@@ -451,20 +431,6 @@ void simulate(FILE* inputFile, FILE* outputFile)
                     Q8cache[index].lru = 0; 
                 }
             }
-           
-            //if (loadStore == 'S')
-            //{
-            //    if (Q8cache[index].tags[0] == tag)
-            //    {
-            //        Q8cache[index].dirty[0] = 1;
-            //        
-            //    }
-            //    else if (Q8cache[index].tags[1] == tag)
-            //    {
-            //        Q8cache[index].dirty[1] = 1;
-            //    }
-            //
-            //}
         }//Q8
 
     }
@@ -503,10 +469,6 @@ void simulate(FILE* inputFile, FILE* outputFile)
       (double)(Q6WriteThr[i-logSmin]*4+Q5miss[i-logSmin]*64)/totalMemAccess,
       (double)(Q6WriteBck[i-logSmin]*64+Q5miss[i-logSmin]*64)/totalMemAccess
       );
-/*      fprintf(outputFile, "%16d\t%11lld\t%11lld\n",
-              i,
-              Q6WriteThr[i-logSmin],
-              Q6WriteBck[i-logSmin]);*/
   }
 
   fprintf(outputFile, "Question 7:\nBlock size (log)\tMiss rate\tTraffic\n");
