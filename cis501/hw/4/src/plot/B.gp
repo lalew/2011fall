@@ -1,6 +1,6 @@
 set autoscale
 set title "Graph B"
-set xlabel "Cache Sizes (log)"
+set xlabel "Cache Sizes (bit)"
 set ylabel "Total data traffic per memory operation (bytes/op)"
 set xrange [7:23]
 set xtics 1

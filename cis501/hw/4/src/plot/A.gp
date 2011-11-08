@@ -1,6 +1,6 @@
 set autoscale
 set title "Graph A"
-set xlabel "Cache sizes (log)"
+set xlabel "Cache sizes (bit)"
 set ylabel "Cache miss rate (%)"
 set xrange [7:23]
 set xtics 1

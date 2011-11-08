@@ -1,6 +1,6 @@
 set autoscale
 set title "Graph C"
-set xlabel "Block sizes (log)"
+set xlabel "Block sizes (bit)"
 set ylabel "Miss rate (%)"
 set xrange [2:10]
 set xtics 1

@@ -6,7 +6,7 @@ Micro-ops: 10000000
 Macro-ops: 7569542
 Total memory access: 2703843
 Question 4:
-Cache size (log)	Cache miss rate	Miss number
+Cache size (bit)	Cache miss rate	Miss number
                8	       0.480565    1299371
                9	       0.385439    1042167
               10	       0.293367     793218
@@ -23,7 +23,7 @@ Cache size (log)	Cache miss rate	Miss number
               21	       0.001171       3165
               22	       0.001162       3143
 Question 5:
-Cache size (log)	Cache miss rate
+Cache size (bit)	Cache miss rate
                8	       0.445940
                9	       0.333600
               10	       0.236429
@@ -40,7 +40,7 @@ Cache size (log)	Cache miss rate
               21	       0.001155
               22	       0.001155
 Question 6:
-Cache size (log)	Traffic Thr	Traffic Bck
+Cache size (bit)	Traffic Thr	Traffic Bck
                8	  29.562798	  37.768678
                9	  22.372984	  28.815472
               10	  16.154043	  20.638287
@@ -57,7 +57,7 @@ Cache size (log)	Traffic Thr	Traffic Bck
               21	   1.096553	   0.074253
               22	   1.096530	   0.073992
 Question 7:
-Block size (log)	Miss rate	Traffic
+Block size (bit)	Miss rate	Traffic
                3	 0.019398	0.259414
                4	 0.015043	0.387117
                5	 0.012694	0.619764
@@ -66,7 +66,7 @@ Block size (log)	Miss rate	Traffic
                8	 0.018144	6.211674
                9	 0.025233	17.191436
 Question 8: cache miss: 33974
-Predictor Size (log)	Mis-prediction	Mis-pred+miss
+Predictor Size (bit)	Mis-prediction	Mis-pred+miss
                    0	      0.341619	       946051
                    1	      0.273446	       764040
                    2	      0.220017	       621390

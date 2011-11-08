@@ -443,7 +443,7 @@ void simulate(FILE* inputFile, FILE* outputFile)
   fprintf(outputFile, "Macro-ops: %" PRIi64 "\n", totalMacroops);
 
   fprintf(outputFile, "Total memory access: %lld\n", totalMemAccess);
-  fprintf(outputFile, "Question 4:\nCache size (log)\tCache miss rate\t"
+  fprintf(outputFile, "Question 4:\nCache size (bit)\tCache miss rate\t"
             "Miss number\n");
   for (int i = logSmin; i <= logSmax; ++i)
   {
@@ -453,14 +453,14 @@ void simulate(FILE* inputFile, FILE* outputFile)
                           Q4miss[i-logSmin]);
   }
   
-  fprintf(outputFile, "Question 5:\nCache size (log)\tCache miss rate\n");
+  fprintf(outputFile, "Question 5:\nCache size (bit)\tCache miss rate\n");
   for (int i = logSmin; i <= logSmax; ++i)
   {
       fprintf(outputFile, "%16d\t%15f\n", 
                           i, (double)Q5miss[i-logSmin]/totalMemAccess);
   }
 
-  fprintf(outputFile, "Question 6:\nCache size (log)\tTraffic Thr\t"
+  fprintf(outputFile, "Question 6:\nCache size (bit)\tTraffic Thr\t"
                       "Traffic Bck\n");
   for (int i = logSmin; i <= logSmax; ++i)
   {
@@ -471,7 +471,7 @@ void simulate(FILE* inputFile, FILE* outputFile)
       );
   }
 
-  fprintf(outputFile, "Question 7:\nBlock size (log)\tMiss rate\tTraffic\n");
+  fprintf(outputFile, "Question 7:\nBlock size (bit)\tMiss rate\tTraffic\n");
   for (int i = 3; i <= 9; ++i)//from 8B to 512B
   {
       int bSize = (int)pow(2,i);
@@ -482,7 +482,7 @@ void simulate(FILE* inputFile, FILE* outputFile)
   }
 
   fprintf(outputFile, "Question 8: cache miss: %lld\n"
-          "Predictor Size (log)\tMis-prediction\tMis-pred+miss\n", Q8miss);
+          "Predictor Size (bit)\tMis-prediction\tMis-pred+miss\n", Q8miss);
   for (int i = Q8Predmin; i <= Q8Predmax; ++i)
   {
       fprintf(outputFile, "%20d\t%14f\t%13lld\n",
