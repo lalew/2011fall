@@ -56,9 +56,11 @@ dpll cnf = let (a, b) = pureLitAssign cnf
                e      = foldr step (Just Map.empty) (unCNF d)
            in case e of
                    Nothing -> Nothing
-                   Just f  -> if (valid (Map.unions [a, c, f]))
-                              then Just (Map.unions [a, c, f])
-                              else Nothing
+                   Just f  -> if Map.null f
+                              then Nothing
+                              else Just $ Map.unions [a, c, f]--if (valid (Map.unions [a, c, f]))
+                              --then Just (Map.unions [a, c, f])
+                              --else Nothing
  where step :: Clause -> Maybe (Map Lit Bool) -> Maybe (Map Lit Bool)
        step _ Nothing = Nothing
        step c mmap    = liftM2 (Map.union) mmap (satisfy c) 
@@ -86,19 +88,24 @@ satisfy = foldr step Nothing
 -- that reflects that assignment.
 pureLitAssign :: CNF -> (Map Lit Bool, CNF)
 pureLitAssign (CNF [])     = (Map.empty, CNF []) 
-pureLitAssign (CNF xs) = aux (Map.empty, CNF xs)
- where aux (a, CNF cs) = 
-let res = removeP x (x:xs)
-                             in case res of
-                                     Map.empty -> 
+pureLitAssign (CNF xs) = foldr step (Map.empty, CNF []) xs
+ where step :: Clause -> (Map Lit Bool, CNF) -> (Map Lit Bool, CNF)
+       step c (m, CNF rs) = let (a, b) = removeP c xs
+                    in case b of
+                            Nothing  -> (m, CNF (c:rs))
+                            Just _ -> (Map.union a m, CNF (rs))
 
-removeP :: Clause -> [Clause] -> Map Lit Bool
-removeP _ []  = Map.empty
-removeP [] cs = Map.empty
-removeP (x:xs) cs = if (ifPure x cs)
-                    then Map.fromList [(x, True)]
+-- | Remove the clause if there is any Lit in it is
+--  pure.
+removeP :: Clause -> [Clause] -> (Map Lit Bool, Maybe Clause)
+removeP _ []        = (Map.empty, Nothing)
+removeP [] _        = (Map.empty, Nothing)
+removeP c@(x:xs) cs = if (ifPure x cs)
+                    then (Map.fromList [(x, True)], Just c)
                     else removeP xs cs
 
+-- | If l::Lit 's inversion does not appear in 
+--  any clause of the CNF
 ifPure :: Lit -> [Clause] -> Bool
 ifPure l cs = all (\c -> notElem (invert l) c) cs
 
@@ -148,13 +155,24 @@ unitPropagate (CNF (x:xs))   = let (ms, CNF cs) = unitPropagate (CNF xs)
 
 prop_dpll :: CNF -> Property
 prop_dpll c = 
-  
   case dpll c of 
     Just m -> if valid m then
        (property (interp m c))
       else property False
     Nothing ->  (property True)  
     
+myLit :: Gen Lit
+myLit = do NonZero a <- arbitrary :: Gen (NonZero Int)
+           return a
+
+myClause :: Gen Clause
+myClause = frequency [ (1, return []),
+                       (9,liftM2 (:) myLit myClause)]
+
+myCs :: Gen [Clause]
+myCs = frequency [(1, return []),
+                  (9, liftM2 (:) myClause myCs)]
+
 instance Arbitrary CNF where
-         arbitrary = liftM CNF arbitrary
+         arbitrary = liftM CNF myCs
 
