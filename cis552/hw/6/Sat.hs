@@ -56,9 +56,10 @@ dpll cnf = let (a, b) = pureLitAssign cnf
                e      = foldr step (Just Map.empty) (unCNF d)
            in case e of
                    Nothing -> Nothing
-                   Just f  -> if Map.null f
+                   Just f  -> {-if Map.null f
                               then Nothing
-                              else Just $ Map.unions [a, c, f]--if (valid (Map.unions [a, c, f]))
+                              else-} 
+                              Just $ Map.unions [a, c, f]--if (valid (Map.unions [a, c, f]))
                               --then Just (Map.unions [a, c, f])
                               --else Nothing
  where step :: Clause -> Maybe (Map Lit Bool) -> Maybe (Map Lit Bool)
@@ -109,14 +110,6 @@ removeP c@(x:xs) cs = if (ifPure x cs)
 ifPure :: Lit -> [Clause] -> Bool
 ifPure l cs = all (\c -> notElem (invert l) c) cs
 
-{-let (ms, CNF cs) = pureLitAssign (CNF xs)
-                             in case (ifPure x) of
-                                     Just v  -> (Map.insert v True ms, CNF cs)
-                                     Nothing -> (ms, CNF (x:cs))
- where ifPure []     = Nothing
-       ifPure (y:ys) | notElem (invert y) ys = Just y
-                     | otherwise = ifPure [r| r<-ys, r /= y, r /= invert y]-}
---(filter (\z -> z /= y && z /= (invert y)) ys)
 
 -- | If a clause is a unit clause, i.e. it contains only a single
 -- unassigned literal, this clause can only be satisfied by assigning
@@ -176,3 +169,5 @@ myCs = frequency [(1, return []),
 instance Arbitrary CNF where
          arbitrary = liftM CNF myCs
 
+quickCheckN :: Test.QuickCheck.Testable prop => Int -> prop -> IO () 
+quickCheckN n = quickCheckWith $ stdArgs { maxSuccess = n }
