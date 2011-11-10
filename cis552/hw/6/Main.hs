@@ -15,12 +15,72 @@ import Control.Monad.Writer
 import Test.HUnit hiding (State)
 
 type Store    = Map Variable Value
+
+evalE ::  (MonadState Store m, MonadError Value m, MonadWriter String m) => Expression -> m Value
+evalE (Var x) = do m <- get
+                   case (Map.lookup x m) of
+                     Just v ->  return v
+                     Nothing -> throwError $ IntVal 0
+evalE (Val v) = return v
+evalE (Op o e1 e2) = do v1 <- evalE e1
+                        v2 <- evalE e2
+                        evalB o v1 v2
+
+evalB ::  (MonadState Store m, MonadError Value m, MonadWriter String m) => Bop -> Value -> Value -> m Value
+evalB Plus   (IntVal i1) (IntVal i2) = return $ IntVal (i1 + i2)
+evalB Minus  (IntVal i1) (IntVal i2) = return $ IntVal (i1 - i2)
+evalB Times  (IntVal i1) (IntVal i2) = return $ IntVal (i1 * i2)
+evalB Gt     (IntVal i1) (IntVal i2) = return $ BoolVal (i1 > i2)
+evalB Ge     (IntVal i1) (IntVal i2) = return $ BoolVal (i1 >= i2)
+evalB Lt     (IntVal i1) (IntVal i2) = return $ BoolVal (i1 < i2)
+evalB Le     (IntVal i1) (IntVal i2) = return $ BoolVal (i1 <= i2)
+evalB Divide _ (IntVal 0)            = throwError $ IntVal 1
+evalB Divide (IntVal i1) (IntVal i2) = return $ IntVal (i1 `div` i2)
+evalB _      _          (BoolVal _)  = throwError $ IntVal 2
+evalB _      (BoolVal _) _           = throwError $ IntVal 2
+
 evalS :: (MonadState Store m, MonadError Value m, MonadWriter String m) => Statement -> m ()
-evalS = undefined
+evalS stmt = case stmt of 
+                  Assign x e -> do v <- evalE e
+                                   m <- get
+                                   put (Map.insert x v m)
+                  If e stmt1 stmt2 -> do v <- evalE e
+                                         case v of 
+                                           BoolVal True  -> evalS stmt1
+                                           BoolVal False -> evalS stmt2
+                                           IntVal _      -> throwError $ IntVal 2 
+                  w@(While e s) -> do v <- evalE e
+                                      case v of
+                                           BoolVal True  -> evalS (Sequence s w)
+                                           BoolVal False -> return ()
+                                           IntVal _      -> throwError $ IntVal 2      
+                  Sequence stmt1 stmt2 -> do evalS stmt1
+                                             evalS stmt2
+                  Skip -> return ()
+                  Print str e -> do v <- evalE e
+                                    tell $ str ++ (case v of
+                                                    IntVal i  -> show i
+                                                    BoolVal b -> show b)  
+                                    --tell $ str ++ show v
+                  Throw e -> do v <- evalE e
+                                throwError v
+                  Try stmt1 v stmt2 -> catchError (evalS stmt1) 
+                                                  (\x -> do m <- get
+                                                            put (Map.insert v x m)
+                                                            evalS stmt2)
+                                           
  
 
+instance Error Value where
+         noMsg = IntVal (-1)
+
+
 execute :: Store -> Statement -> (Store, Maybe Value, String)
-execute = undefined
+execute st p = (cnt, result, lg)
+  where ((res, lg), cnt) = runState (runWriterT (runErrorT (evalS p))) st
+        result = case res of 
+                      Left a -> Just a
+                      Right _ -> Nothing
 
 raises :: Statement -> Value -> Test
 s `raises` v = case (execute Map.empty s) of
