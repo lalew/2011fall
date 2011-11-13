@@ -1,0 +1,65 @@
+\documentclass[letter,12pt]{article}
+\usepackage[margin=2.3cm]{geometry}
+\usepackage{parskip}
+\usepackage{amsmath, amsthm, amssymb}
+\begin{document}
+Name: Yan, Zi \\
+Course: CIS 502 \\
+Assignment: HW7 \\
+\line(1,0){400}
+%Write your content here
+\section*{Question 1}
+First of all, in order to ensure that we have enough sequence of $x$ and 
+sequence of $y$ to choose from, let $xs = x^n$ and $ys = y^n$, such that both
+$xs$ and $ys$ will be no shorter than $s$. 
+
+Let $m(i, j)$ denote the feasibility of getting the first $i+j$ symbols after 
+interleaving first $i$ symbols of $xs$ and first $j$ symbols of $ys$. We know 
+$m(0, 0) = 1$, and we will have the formula, \\
+$ m(i, j) = 
+\begin{cases}
+1 & \text{if } (m(i - 1, j) = 1 \text{ and } xs[i] == s[i + j]) \text{ or }  
+                    (m(i, j -1) = 1 \text{ and } ys[j] == s[i + j]) \\
+0 & \text{otherwise}
+\end{cases}$. We will have to search all the combination of $i$ ,$j$ and 
+compute the corresponding $m(i, j)$, such that for $k \in [1..n]$,$i+j=k$. 
+At last, if there is at least one $m(i',j') = 1$, where $i'+j' = n$, we can say $s$
+is an interleaving of $x$ and $y$.
+
+Because the length of $s$ is $n$, the maximum value of $i$ or $j$ should be 
+$n$. Therefore, we need to compute a $n\times n$ matrix of $m$. The runtime 
+is $O(n^2)$.
+\section*{Question 2}
+Observation 1: we have to order some gas on day 1. Because the tank is empty
+at the end of day 0.
+
+Observation 2: we do not need to consider the oil cost. Because for each 
+possible scheme, the total cost of oil is always $\sum\limits_{i=1}^n g_i$.
+
+Observation 3: the amount of oil we order should be $\sum\limits_{i=a}^b g_i$,
+where $a \le b$.
+\begin{proof}
+Suppose not. If we order $A$ gallon oil on day $a$, we know $A>g_a$ and 
+$A= \sum\limits_{i=a}^b g_i + \Delta$, where $a \le b$. So we have to order
+again on day $a+b+1$. But we can actually save $c(a+b)\Delta$ by only ordering
+$\sum\limits_{i=a}^b g_i$ on day $a$. It contradicts our goal that we want to 
+save as much as we can.
+\end{proof}
+
+
+\section*{Question 3}
+\paragraph*{a)}
+For a bipartite graph $G=(V,E)$, each person $p_i \in V$, each night $d_i \in 
+ V$, and there is a edge $(p_i, d_j) \in E$ if $d_j \notin S_i$.
+ 
+ If $G$ has a perfect matching, each person $p_i$ will be paired with exact one 
+ night $d_j$, and no person is left alone and no night is left alone. Therefore, 
+ for each matching $(p_i, d_j)$, the person $p_i$ is able to cook on night $d_j$,
+ and this provides a feasible schedule.
+ 
+ \paragraph*{b)}
+ 
+\section*{Question 4}
+
+
+\end{document}
