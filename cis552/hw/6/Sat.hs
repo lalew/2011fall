@@ -1,10 +1,12 @@
+-- Advanced Programming, HW 6
+-- Christian DeLozier <delozier>, Zi Yan <yanzi>
+
 {-# OPTIONS -Wall -fwarn-tabs #-} 
 module Sat where
 
 import Data.Map (Map)
 import qualified Data.Map as Map
 import Control.Monad (liftM,liftM2)
-
 
 import Test.QuickCheck
 import Test.HUnit
@@ -56,12 +58,7 @@ dpll cnf = let (a, b) = pureLitAssign cnf
                e      = foldr step (Just Map.empty) (unCNF d)
            in case e of
                    Nothing -> Nothing
-                   Just f  -> {-if Map.null f
-                              then Nothing
-                              else-} 
-                              Just $ Map.unions [a, c, f]--if (valid (Map.unions [a, c, f]))
-                              --then Just (Map.unions [a, c, f])
-                              --else Nothing
+                   Just f  -> Just $ Map.unions [a, c, f]
  where step :: Clause -> Maybe (Map Lit Bool) -> Maybe (Map Lit Bool)
        step _ Nothing = Nothing
        step c mmap    = liftM2 (Map.union) mmap (satisfy c) 
@@ -79,6 +76,7 @@ satisfy = foldr step Nothing
                           (Just _, Nothing)  -> Just ms
                           (Nothing, Just _)  -> Just ms
                           (Nothing, Nothing) -> Just (Map.insert l True ms)
+
 prop_satisfy :: [Lit] ->Property
 prop_satisfy c =
       case satisfy cz of
@@ -130,7 +128,8 @@ unitPropagate (CNF ps) = aux (Map.empty, CNF ps)
  where aux :: (Map Lit Bool, CNF) -> (Map Lit Bool, CNF)
        aux (a, CNF cs) = let us = collectU cs
                          in if (null us) then (a, CNF cs)
-                            else aux (Map.union a (mapToTrue us), CNF $ removeU us cs)
+                            else aux (Map.union a (mapToTrue us), 
+                                      CNF $ removeU us cs)
 
        mapToTrue :: [Lit] -> Map Lit Bool
        mapToTrue []     = Map.empty
@@ -142,17 +141,8 @@ unitPropagate (CNF ps) = aux (Map.empty, CNF ps)
        removeU :: [Lit] -> [Clause] -> [Clause]
        removeU _ []      = []
        removeU us (x:xs) | any (\a -> elem a us) x = removeU us xs
-                         | otherwise = [r| r<-x, notElem (invert r) us]:(removeU us xs)
-
-{-unitPropagate (CNF ([x]:xs)) = let (ms, CNF cs) = unitPropagate (CNF xs)
-                               in (Map.insert x True ms, CNF $ removeS x cs)
- where removeS _ []     = []
-       removeS s (y:ys) = [r| r<-y, r /= invert s]:removeS s ys
-
-unitPropagate (CNF (x:xs))   = let (ms, CNF cs) = unitPropagate (CNF xs)
-                               in (ms, CNF (x:cs)) 
--}
-
+                         | otherwise = 
+                           [r| r<-x, notElem (invert r) us] : (removeU us xs)
 
 prop_dpll :: CNF -> Property
 prop_dpll c = 
