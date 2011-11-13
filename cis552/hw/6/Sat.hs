@@ -79,6 +79,14 @@ satisfy = foldr step Nothing
                           (Just _, Nothing)  -> Just ms
                           (Nothing, Just _)  -> Just ms
                           (Nothing, Nothing) -> Just (Map.insert l True ms)
+prop_satisfy :: [Lit] ->Property
+prop_satisfy c =
+      case satisfy cz of
+         Just m -> if valid m then
+            (property (interp m (CNF [cz])))
+                   else property False
+         Nothing -> property True
+      where cz = filter (/=0) c
 
 -- | If a propositional variable occurs with only one polarity in the
 -- formula, it is called pure. Pure literals can always be assigned in
@@ -155,8 +163,8 @@ prop_dpll c =
     Nothing ->  (property True)  
     
 myLit :: Gen Lit
-myLit = do NonZero a <- arbitrary :: Gen (NonZero Int)
-           return a
+myLit = oneof [choose (-10,-1), choose (1,10)]
+
 
 myClause :: Gen Clause
 myClause = frequency [ (1, return []),

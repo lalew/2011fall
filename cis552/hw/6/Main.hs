@@ -36,8 +36,8 @@ evalB Lt     (IntVal i1) (IntVal i2) = return $ BoolVal (i1 < i2)
 evalB Le     (IntVal i1) (IntVal i2) = return $ BoolVal (i1 <= i2)
 evalB Divide _ (IntVal 0)            = throwError $ IntVal 1
 evalB Divide (IntVal i1) (IntVal i2) = return $ IntVal (i1 `div` i2)
-evalB _      _          (BoolVal _)  = throwError $ IntVal 2
-evalB _      (BoolVal _) _           = throwError $ IntVal 2
+evalB _      _          _            = throwError $ IntVal 2
+--evalB _      (BoolVal _) _           = throwError $ IntVal 2
 
 evalS :: (MonadState Store m, MonadError Value m, MonadWriter String m) => Statement -> m ()
 evalS stmt = case stmt of 
@@ -71,8 +71,8 @@ evalS stmt = case stmt of
                                            
  
 
-instance Error Value where
-         noMsg = IntVal (-1)
+instance Error Value -- where
+         --noMsg = IntVal (-1)
 
 
 execute :: Store -> Statement -> (Store, Maybe Value, String)
