@@ -8,6 +8,7 @@ module Main where
 
 import Data.Either
 import Test.QuickCheck
+import Control.Monad
 
 data AVL e = E           -- empty tree
            | N           -- non-empty tree
@@ -213,6 +214,9 @@ checkInsert x avl = let res  = avlInsert x avl
                                         then Right res
                                         else Left "inserted element is missing"
 
+instance (Ord e, Show e, Arbitrary e) => Arbitrary (AVL e) where
+         arbitrary = liftM (foldr (\x res -> avlInsert x res) avlEmpty) arbitrary
+
 prob_insert :: (Show e, Ord e) => [e] -> Bool
 prob_insert xs = let avl = foldr (\x res -> avlInsert x res) avlEmpty xs
                      test = foldr step (Right avlEmpty) xs
@@ -224,6 +228,8 @@ prob_insert xs = let avl = foldr (\x res -> avlInsert x res) avlEmpty xs
 
 avlDelete :: Ord e => e -> AVL e -> AVL e
 avlDelete _ E = E
+avlDelete x (N _ _ E y E) | x == y = E
+                            | otherwise = error "not a member"
 avlDelete x s@(N _ _ l y r)
          | x < y = rebalance (node (avlDelete x l) y r)
          | x > y = rebalance (node l y (avlDelete x r))
@@ -233,9 +239,12 @@ avlDelete x s@(N _ _ l y r)
                                Just s' -> rebalance s'
 
 -- | find and delete the successor of the root of AVL e
--- return the successor's value as well
+-- return the successor's value as well, including some
+-- other corner cases, e.g. either child is empty
 findDelSucc :: Ord e => AVL e -> Maybe (AVL e)
 findDelSucc E = Nothing
+findDelSucc (N _ _ E _ rt) = Just rt
+findDelSucc (N _ _ lt _ E) = Just lt
 findDelSucc (N _ _ lt _ rt) = let (rt', vres) = aux rt
                               in Just $ node lt vres rt'
  where aux (N _ _ l v r) | l == E && r == E = (E, v)
@@ -244,7 +253,9 @@ findDelSucc (N _ _ lt _ rt) = let (rt', vres) = aux rt
                                        in (node l' v r, v')
        aux E = error "wrong place"
 
-
+prop_del :: (Show e, Ord e) => e -> [e] -> Bool
+prop_del x xs = 
+         not (avlLookup x (avlDelete x (avlInsert x (foldr (\s res -> avlInsert s res) avlEmpty xs))))
 
 quickCheckN :: Testable prop => Int -> prop -> IO ()
 quickCheckN n = quickCheckWith $ stdArgs { maxSuccess = n }
