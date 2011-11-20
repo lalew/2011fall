@@ -82,18 +82,19 @@ will be $O(mn)$
 \paragraph*{a)}First, the general Resource Reservation Problem is NP, because, given any allocation schema, by checking each process whether its request is satisfied, we 
 can tell whether there are $k$ active processes.
 
-Second, we use independent set problem, and if we can show IS $\le_P$ RRP, then we 
-can conclude that the general Resource Reservation Problem is NP-hard.
+Second, we use independent set problem, and if we can show Independent Set $\le_P$ 
+Resource Reservation Problem, then we  can conclude that the general Resource 
+Reservation Problem is NP-hard.
 
 Given any arbitrary instance of independent set problem, where the graph is $G=(V, E)$
-and the number of independent set is $k$, we will first construct an equivalent instance
+and the size of independent set is $k$, we will first construct an equivalent instance
 of resource reservation problem. We let each node $v \in V$ denote one process, and
 there is an edge $(u, v)$ if process $u$ and process $v$ both request at least one
-common resource. If we can find a $k$-sized independent set in $G$, then the 
-corresponding nodes are the active processes in resource reservation problem.
+common resource. We can find a $k$-sized independent set in $G$, if and only if  
+the corresponding nodes are the active processes in resource reservation problem.
 \begin{proof}
 First, we prove ``$\Rightarrow$". When we have a $k$-sized independent set, we
-have $k$ nodes are disjoint, namely $k$ processes request no common resources.
+have $k$ nodes are independent, namely $k$ processes request no common resources.
 Therefore, these $k$ processes can be active.
 
 Second, we prove ``$\Leftarrow$". When we have $k$ active processes, these 
@@ -106,7 +107,42 @@ Hereby, we have resource reservation problem is both NP and NP-hard, then we can
 conclude that resource reservation problem is NP-complete.
 
 \paragraph*{b)}
+We can simply check every pair of processes to see whether their requested resources
+are disjoint, and this takes $O(n^2)$.
+
 \paragraph*{c)}
+It is a bipartite problem. One type of resources, or say people, is denoted as one set of 
+nodes, and the other type, or say equipment, is denoted as the other set, and there is 
+an edge $(u, v)$ when a process requests people $u$ and equipment $v$. We just need 
+to find $k$ matchings.
 \paragraph*{d)}
+It is still an NP-complete problem. Because it is a special case of a) above, when an IS 
+problem is reduce to it, there are at most two edges adjacent to a single node, and we
+still need to find $k$-sized independent set.
+
 \section*{Question 4}
+We first show this problem is NP. Given a set of requests $P_1, P_2, ..., P_c$, we 
+examine each pair of these requests, in $O(c^2)$, we can tell whether $k$ paths exist
+shared no common nodes.
+
+Then, we need to show it is NP-hard by proving independent set $\le_P$ path selection
+problem. Given any arbitrary instance of independent set problem, where the graph
+is $G' = (V', E')$ and the size of independent set is $k$, we need to construct an 
+equivalent instance of path selection problem. We let each node $v_i \in V'$ denote
+a path $P_i$, and there is an edge $(v_i, v_j)$ if path $P_i$ and path $P_j$ share at 
+least one common node. We can find a $k$-sized independent set in $G'$ if and only
+if there are $k$ paths in $G$ share no common node.
+
+\begin{proof}
+``$\Rightarrow$". We have a $k$-sized independent set, namely there are $k$ nodes
+that are independent in $G'$. Therefore, the paths denoted by these nodes share no 
+common node in $G$, according to the definition of edge in $G'$.
+
+``$\Leftarrow$". We have $k$ paths in $G$ which share no common node, therefore
+in $G'$, the corresponding $k$ nodes do not have any edge between any pair, namely
+a $k$-sized independent set.
+\end{proof}
+
+Hereby, we have path selection problem is both NP and NP-hard, so we say path 
+selection problem is NP-complete.
 \end{document}
