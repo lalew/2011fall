@@ -157,6 +157,7 @@ bad4 = N 1 1 (N 0 5 (N 0 0 E 1 E) 2 E) 3 (N 0 4 E 4 (N 0 0 E 6 E))
 
 -- | Check all invariants of an AVL tree
 check :: (Ord e, Show e) => AVL e -> Either String ()
+--check x = do {prop_ht x; prop_bf x; prop_balance x; prop_inorder x}
 check avl = let m1 = prop_ht avl
                 m2 = prop_bf avl
                 m3 = prop_balance avl
@@ -167,7 +168,12 @@ check avl = let m1 = prop_ht avl
                else Left $ concat res
 
 main :: IO ()
-main = undefined
+main = do {aux (check t1); aux (check t2); aux (check bad1); aux (check bad2);
+           aux (check bad3); aux (check bad4)}
+ where
+      aux r = case r of
+          Right () -> return()
+          Left s   -> putStrLn $ "Error: " ++ s
 
 rebalance :: (Ord e) => AVL e -> AVL e
 rebalance (N 2 h5 (N 1 h4 st3 v4 c) v5 d)
@@ -217,8 +223,8 @@ checkInsert x avl = let res  = avlInsert x avl
 instance (Ord e, Show e, Arbitrary e) => Arbitrary (AVL e) where
          arbitrary = liftM (foldr (\x res -> avlInsert x res) avlEmpty) arbitrary
 
-prob_insert :: (Show e, Ord e) => [e] -> Bool
-prob_insert xs = let avl = foldr (\x res -> avlInsert x res) avlEmpty xs
+prop_insert :: (Show e, Ord e) => [e] -> Bool
+prop_insert xs = let avl = foldr (\x res -> avlInsert x res) avlEmpty xs
                      test = foldr step (Right avlEmpty) xs
                  in case test of 
                          Left _ -> False
