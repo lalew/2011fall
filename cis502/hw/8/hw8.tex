@@ -23,10 +23,10 @@ the case that the total length is as small as possible,
 Suppose not. Let $l_i$ denote the length of the path from $v$ to $x_i$, where $i \in 
 [1..k]$. Suppose we add $\Delta_i>0$ to each path from $v$ to $x_i$, such that all 
 $l_i+\Delta_i$ are equal and the total length is as small as possible. But we can find the 
-smallest $\Delta_m0$ and subtract $\Delta_m$ from each $\Delta_i$, such that for 
+smallest $\Delta_m$ and subtract $\Delta_m$ from each $\Delta_i$, such that for 
 each path from $v$ to $x_i$, $(l_i+\Delta_i-\Delta_m)$ is still equal to each other and 
-get the a smaller total length. Additionally, because $\Delta_m = 0$, the path from 
-$v$ to $x_m$ is untouched, therefore no edges along the path from $v$ to $x_m$ is 
+get the a smaller total length. Additionally, because the length of the path from 
+$v$ to $x_m$ is not changed, therefore no edges along the path from $v$ to $x_m$ is 
 increased. 
 \end{proof}
 \begin{proof}
@@ -41,7 +41,7 @@ There are three alternate solutions that can be better,
     be increased by $l_{(v,v')} - l_{(v, v'')}$, in order to keep zero skew from root to 
     leaves. Then all paths from $v''$ are increased, which contradicts the observation 1.
     \item[3)] we let $l_{(v,v')} < l_{(v, v'')}$ after we change the lengths of the 
-    corresponding edges. Symmetrically, we will get a contradiction.
+    corresponding edges. Symmetrically, we will get a contradiction at node $v'$.
 \end{itemize}
 In sum, any alternate solution is no better than the provided one. So the provided
 algorithm is optimal.
