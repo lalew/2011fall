@@ -1,14 +1,12 @@
--- by <YOUR NAME HERE> <pennkey> and <PARTNER's NAME HERE> <partner's pennkey>
+-- by Christian DeLozier <delozier> and Zi Yan <yanzi>
  
+{-# LANGUAGE FlexibleInstances #-}
 {-# OPTIONS -Wall -fwarn-tabs -fno-warn-type-defaults #-}
-
-
 
 module Main where
 
-import Data.Either
 import Test.QuickCheck
-import Control.Monad
+import Control.Monad.Error
 
 data AVL e = E           -- empty tree
            | N           -- non-empty tree
@@ -53,127 +51,104 @@ avlLookup a (N _ _ l x r) | a == x     = True
 -- | The height at each node is correctly calculated. 
 prop_ht :: Show e => AVL e -> Either String ()
 prop_ht E = Right ()
-prop_ht e@(N _ ht l _ r) = let lh = prop_ht l
-                               rh = prop_ht r
-                               res = case (lh, rh) of
-                                      (Left ls, Left rs)   -> ls++","++rs
-                                      (Left ls, Right ())  -> ls
-                                      (Right (), Left rs)  -> rs
-                                      (Right (), Right ()) -> []
-                           in if ht == max (height l) (height r) + 1 && null res
-                              then Right ()
-                              else if ht /= max (height l) (height r) + 1 
-                                   then Left (show e ++ "'s height is wrong," ++ res )
-                                   else Left res
-
+prop_ht (N _ ht l x r) = do _ <- prop_ht l
+                            _ <- prop_ht r
+                            if ht == (max ((height l) + 1) ((height r) + 1))
+                              then Right () else throwError errorMsg
+  where
+    errorMsg = "Node with value " ++ (show x) 
+                            ++ " has height " ++ (show ht) ++ 
+                            " but left sub-tree has height " ++ 
+                            (show $ height l) ++ 
+                            " and right sub-tree has height " ++ 
+                            (show $ height r)
 
 -- | The balance factor at each node is correctly calculated.  
 prop_bf :: Show e => AVL e -> Either String ()
 prop_bf E = Right ()
-prop_bf e@(N bf _ l _ r) = let lh = prop_bf l
-                               rh = prop_bf r
-                               res = case (lh, rh) of
-                                      (Left ls, Left rs)   -> ls++","++rs
-                                      (Left ls, Right ())  -> ls
-                                      (Right (), Left rs)  -> rs
-                                      (Right (), Right ()) -> []
-                           in if bf == (height l) - (height r)  && null res
-                              then Right ()
-                              else if bf /= (height l) - (height r)
-                                   then Left (show e ++ 
-                                         "'s balance factor is wrong," ++ 
-                                         res )
-                                   else Left res
-
+prop_bf (N bf _ l x r) = do _ <- prop_bf l
+                            _ <- prop_bf r
+                            if bf == (height l) - (height r) then
+                              Right () else throwError errorMsg
+  where
+    errorMsg = "Node with value " ++ (show x) ++ " has balance factor " 
+               ++ (show bf) ++ " but left sub-tree has height " ++ 
+               (show $ height l) ++ " and right sub-tree has height " ++ 
+               (show $ height r)
+  
 -- | The balance factor at each node is between -1 and +1.  
 prop_balance :: Show e => AVL e -> Either String ()    
 prop_balance E = Right ()
-prop_balance e@(N _ _ l _ r) = let lh = prop_balance l
-                                   rh = prop_balance r
-                                   res = case (lh, rh) of
-                                      (Left ls, Left rs)   -> ls++","++rs
-                                      (Left ls, Right ())  -> ls
-                                      (Right (), Left rs)  -> rs
-                                      (Right (), Right ()) -> []
-                                in if abs ((height l) - (height r)) <= 1 && null res
-                                   then Right ()
-                                   else if abs ((height l) - (height r)) > 1
-                                        then Left (show e ++ 
-                                         " is not balanced" ++ "," ++ 
-                                         res )
-                                        else Left res
+prop_balance (N bf _ l x r) = do _ <- prop_balance l
+                                 _ <- prop_balance r
+                                 if (abs bf) <= 1 
+                                    && (abs (height l - height r)) <= 1 then
+                                   Right () else throwError errorMsg
+  where
+    errorMsg = "Node with value " ++ (show x) ++
+               " has balance factor " ++ (show bf)
+
+isOrdered :: (Ord e) => AVL e -> e -> AVL e -> Bool
+isOrdered (N _ _ _ a _) b (N _ _ _ c _) = (a < b) && (b < c)
+isOrdered (N _ _ _ a _) b E             = a < b
+isOrdered E             b (N _ _ _ c _) = b < c
+isOrdered E             _ E             = True
 
 -- | The items stored in the tree are in strictly increasing order.
 prop_inorder :: (Ord e, Show e) => AVL e -> Either String ()
 prop_inorder E = Right ()
-prop_inorder e@(N _ _ l x r) = let lh = prop_inorder l
-                                   rh = prop_inorder r
-                                   res = case (lh, rh) of
-                                      (Left ls, Left rs)   -> ls++","++rs
-                                      (Left ls, Right ())  -> ls
-                                      (Right (), Left rs)  -> rs
-                                      (Right (), Right ()) -> []
-                                   lv = tVal l
-                                   rv = tVal r
-                               in case (lv, rv) of 
-                                       (Just a, Just b)  -> if a<x && x<b 
-                                                            then Right ()
-                                                            else Left (msg e ++ 
-                                                                      "," ++ res)
-                                       (Just a, Nothing) -> if a<x
-                                                            then Right ()
-                                                            else Left (msg e ++
-                                                                       "," ++ res)
-                                       (Nothing, Just b) -> if x<b
-                                                            then Right ()
-                                                            else Left (msg e ++
-                                                                       "," ++ res)
-                                       (Nothing, Nothing) -> Right ()
- where msg t = show t ++ " is out of order"
-
+prop_inorder (N _ _ l x r) = do _ <- prop_inorder l
+                                _ <- prop_inorder r
+                                if isOrdered l x r
+                                   then Right () else throwError errorMsg
+  where
+    errorMsg = "Node with value " ++ (show x) ++ " is out-of-order"
 
 tVal :: AVL e -> Maybe e
 tVal E = Nothing
 tVal (N _ _ _ x _) = Just x
 
+t0 :: AVL Int
+t0 = E
+
 t1 :: AVL Int
-t1 = E
+t1 = N 0 1 E 5 E
 
 t2 :: AVL Int
-t2 = N 0 3 (N 1 2 (N 0 1 E 1 E) 2 E) 3 (N (-1) 2 E 9 (N 0 1 E 10 E)) 
+t2 = N 1 2 (N 0 1 E 2 E) 5 E
 
+t3 :: AVL Int
+t3 = N (-1) 3 (N 0 1 E 1 E) 2 (N 1 2 (N 0 1 E 3 E) 4 E)
 
-bad1 :: AVL Int -- bad height and some bad balance factor
-bad1 = N 0 1 (N 1 2 (N 0 2 E 3 E) 2 E) 1 (N (-1) 2 E 4 (N 0 1 E 6 E)) 
+-- Exhibits incorrect height
+bad1 :: AVL Int
+bad1 = N 1 1 (N 0 1 E 5 E) 6 E
 
-bad2 :: AVL Int -- bad height but good balance factor
-bad2 = N 0 1 (N 2 2 (N 0 2 E 3 E) 2 E) 1 (N (-1) 2 E 4 (N 0 1 E 6 E))
+-- Exhibits incorrect balance factor
+bad2 :: AVL Int
+bad2 = N 0 2 (N 0 1 E 5 E) 6 E
 
-bad3 :: AVL Int -- bad height but good balanced
-bad3 = N 1 1 (N 0 5 (N 0 0 E 3 E) 2 E) 1 (N 0 4 E 4 (N 0 0 E 6 E))
+-- Exhibits balance factor outside of [-1,1]
+bad3 :: AVL Int
+bad3 = N 2 3 (N 1 2 (N 0 1 E 1 E) 2 E) 3 E
 
-bad4 :: AVL Int -- bad height but good balanced and ordered
-bad4 = N 1 1 (N 0 5 (N 0 0 E 1 E) 2 E) 3 (N 0 4 E 4 (N 0 0 E 6 E))
+-- Exhibits out-of-order tree
+bad4 :: AVL Int
+bad4 = N 0 2 (N 0 1 E 5 E) 4 (N 0 1 E 6 E)
 
 -- | Check all invariants of an AVL tree
 check :: (Ord e, Show e) => AVL e -> Either String ()
---check x = do {prop_ht x; prop_bf x; prop_balance x; prop_inorder x}
-check avl = let m1 = prop_ht avl
-                m2 = prop_bf avl
-                m3 = prop_balance avl
-                m4 = prop_inorder avl
-                res = lefts [m1, m2, m3, m4]
-            in if null res
-               then Right ()
-               else Left $ concat res
+check x = do { prop_ht x; prop_bf x; prop_balance x; prop_inorder x}
 
 main :: IO ()
-main = do {aux (check t1); aux (check t2); aux (check bad1); aux (check bad2);
-           aux (check bad3); aux (check bad4)}
- where
-      aux r = case r of
-          Right () -> return()
-          Left s   -> putStrLn $ "Error: " ++ s
+main = do { aux (check t0); aux (check t1); 
+            aux (check t2); aux (check t3); 
+            aux (check bad1); aux (check bad2); 
+            aux (check bad3); aux (check bad4) }
+  where
+    aux r = case r of
+      Right () -> return ()
+      Left  s  -> putStrLn $ "Error: " ++ s
 
 rebalance :: (Ord e) => AVL e -> AVL e
 rebalance (N 2 h5 (N 1 h4 st3 v4 c) v5 d)
@@ -220,9 +195,6 @@ checkInsert x avl = let res  = avlInsert x avl
                                         then Right res
                                         else Left "inserted element is missing"
 
-instance (Ord e, Show e, Arbitrary e) => Arbitrary (AVL e) where
-         arbitrary = liftM (foldr (\x res -> avlInsert x res) avlEmpty) arbitrary
-
 prop_insert :: (Show e, Ord e) => [e] -> Bool
 prop_insert xs = let avl = foldr (\x res -> avlInsert x res) avlEmpty xs
                      test = foldr step (Right avlEmpty) xs
@@ -261,7 +233,21 @@ findDelSucc (N _ _ lt _ rt) = let (rt', vres) = aux rt
 
 prop_del :: (Show e, Ord e) => e -> [e] -> Bool
 prop_del x xs = 
-         not (avlLookup x (avlDelete x (avlInsert x (foldr (\s res -> avlInsert s res) avlEmpty xs))))
+         not (avlLookup x 
+              (avlDelete x (avlInsert x 
+                            (foldr (\s res -> avlInsert s res) avlEmpty xs))))
 
 quickCheckN :: Testable prop => Int -> prop -> IO ()
 quickCheckN n = quickCheckWith $ stdArgs { maxSuccess = n }
+
+genAVL :: Gen (AVL Int)
+genAVL = frequency [(1, return E),
+                    (2, liftM2 avlInsert arbitrary genAVL)]
+
+instance Arbitrary (AVL Int) where
+  arbitrary = genAVL
+
+prop_AVL :: AVL Int -> Bool
+prop_AVL t = case check t of
+  Right () -> True
+  Left  _  -> False
