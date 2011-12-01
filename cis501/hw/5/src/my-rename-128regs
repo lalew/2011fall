@@ -1,0 +1,1007 @@
+g++ -Wall -Wextra -Wno-long-long -O2 -lm -o simulator simulator.c
+gzcat sjeng-1K.trace.gz | ./simulator
+Processing trace...
+1, r49 -> p49 | J JMP_IMM
+2, r1 -> p1, r44 -> p50 [p44] | MOVSX LOAD
+3, r44 -> p50, r2 -> p51 [p2] | MOVSX SEXT_DWORD_TO_QWORD
+4, r7 -> p7, r2 -> p51, r6 -> p52 [p6] | LEA LEA
+5, r6 -> p52, r6 -> p53 [p52] | MOVSX SEXT_DWORD_TO_QWORD
+6, r6 -> p53, r6 -> p54 [p53] | MOV LOAD
+7, r6 -> p54, r44 -> p55 [p50], r49 -> p56 [p49] | CMP SUB_IMM
+8, r49 -> p56 | J JMP_IMM
+9, r6 -> p54, r44 -> p57 [p55], r49 -> p58 [p56] | CMP SUB_IMM
+10, r49 -> p58 | J JMP_IMM
+11, r2 -> p51, r8 -> p59 [p8] | MOV ADD
+12, r8 -> p59, r7 -> p7, r8 -> p60 [p59] | LEA LEA
+13, r8 -> p60, r8 -> p61 [p60] | MOVSX SEXT_DWORD_TO_QWORD
+14, r8 -> p61, r8 -> p62 [p61] | LEA LEA
+15, r2 -> p51, r2 -> p63 [p51], r49 -> p64 [p58] | SHL SHL_IMM
+16 | JMP JMP_IMM
+17, r6 -> p54, r44 -> p65 [p57], r49 -> p66 [p64] | CMP SUB_IMM
+18, r49 -> p66 | J JMP_IMM
+19, r6 -> p54, r44 -> p67 [p65], r49 -> p68 [p66] | CMP SUB_IMM
+20, r49 -> p68 | J JMP_IMM
+21, r6 -> p54, r44 -> p69 [p67], r49 -> p70 [p68] | CMP SUB_IMM
+22, r49 -> p70 | J JMP_IMM
+23, r1 -> p1, r1 -> p71 [p1], r49 -> p72 [p70] | ADD ADD_IMM
+24, r0 -> p0, r0 -> p73 [p0] | INC ADD_IMM
+25, r0 -> p73, r44 -> p74 [p69], r49 -> p75 [p72] | CMP SUB_IMM
+26, r49 -> p75 | J JMP_IMM
+27, r1 -> p71, r44 -> p76 [p74] | MOVSX LOAD
+28, r44 -> p76, r2 -> p77 [p63] | MOVSX SEXT_DWORD_TO_QWORD
+29, r7 -> p7, r2 -> p77, r6 -> p78 [p54] | LEA LEA
+30, r6 -> p78, r6 -> p79 [p78] | MOVSX SEXT_DWORD_TO_QWORD
+31, r6 -> p79, r6 -> p80 [p79] | MOV LOAD
+32, r6 -> p80, r44 -> p81 [p76], r49 -> p82 [p75] | CMP SUB_IMM
+33, r49 -> p82 | J JMP_IMM
+34, r6 -> p80, r44 -> p83 [p81], r49 -> p84 [p82] | CMP SUB_IMM
+35, r49 -> p84 | J JMP_IMM
+36, r2 -> p77, r8 -> p85 [p62] | MOV ADD
+37, r8 -> p85, r7 -> p7, r8 -> p86 [p85] | LEA LEA
+38, r8 -> p86, r8 -> p87 [p86] | MOVSX SEXT_DWORD_TO_QWORD
+39, r8 -> p87, r8 -> p88 [p87] | LEA LEA
+40, r2 -> p77, r2 -> p89 [p77], r49 -> p90 [p84] | SHL SHL_IMM
+41 | JMP JMP_IMM
+42, r6 -> p80, r44 -> p91 [p83], r49 -> p92 [p90] | CMP SUB_IMM
+43, r49 -> p92 | J JMP_IMM
+44, r6 -> p80, r44 -> p93 [p91], r49 -> p94 [p92] | CMP SUB_IMM
+45, r49 -> p94 | J JMP_IMM
+46, r6 -> p80, r44 -> p95 [p93], r49 -> p96 [p94] | CMP SUB_IMM
+47, r49 -> p96 | J JMP_IMM
+48, r1 -> p71, r1 -> p97 [p71], r49 -> p98 [p96] | ADD ADD_IMM
+49, r0 -> p73, r0 -> p99 [p73] | INC ADD_IMM
+50, r0 -> p99, r44 -> p100 [p95], r49 -> p101 [p98] | CMP SUB_IMM
+51, r49 -> p101 | J JMP_IMM
+52, r1 -> p97, r44 -> p102 [p100] | MOVSX LOAD
+53, r44 -> p102, r2 -> p103 [p89] | MOVSX SEXT_DWORD_TO_QWORD
+54, r7 -> p7, r2 -> p103, r6 -> p104 [p80] | LEA LEA
+55, r6 -> p104, r6 -> p105 [p104] | MOVSX SEXT_DWORD_TO_QWORD
+56, r6 -> p105, r6 -> p106 [p105] | MOV LOAD
+57, r6 -> p106, r44 -> p107 [p102], r49 -> p108 [p101] | CMP SUB_IMM
+58, r49 -> p108 | J JMP_IMM
+59, r6 -> p106, r44 -> p109 [p107], r49 -> p110 [p108] | CMP SUB_IMM
+60, r49 -> p110 | J JMP_IMM
+61, r2 -> p103, r8 -> p111 [p88] | MOV ADD
+62, r8 -> p111, r7 -> p7, r8 -> p112 [p111] | LEA LEA
+63, r8 -> p112, r8 -> p113 [p112] | MOVSX SEXT_DWORD_TO_QWORD
+64, r8 -> p113, r8 -> p114 [p113] | LEA LEA
+65, r2 -> p103, r2 -> p115 [p103], r49 -> p116 [p110] | SHL SHL_IMM
+66 | JMP JMP_IMM
+67, r6 -> p106, r44 -> p117 [p109], r49 -> p118 [p116] | CMP SUB_IMM
+68, r49 -> p118 | J JMP_IMM
+69, r6 -> p106, r44 -> p119 [p117], r49 -> p120 [p118] | CMP SUB_IMM
+70, r49 -> p120 | J JMP_IMM
+71, r6 -> p106, r44 -> p121 [p119], r49 -> p122 [p120] | CMP SUB_IMM
+72, r49 -> p122 | J JMP_IMM
+73, r1 -> p97, r1 -> p123 [p97], r49 -> p124 [p122] | ADD ADD_IMM
+74, r0 -> p99, r0 -> p125 [p99] | INC ADD_IMM
+75, r0 -> p125, r44 -> p126 [p121], r49 -> p127 [p124] | CMP SUB_IMM
+76, r49 -> p127 | J JMP_IMM
+77, r0 -> p44 [p125] | XOR ADD
+78, r1 -> p2 [p123] | MOV ADD_IMM
+79 | JMP JMP_IMM
+80, r0 -> p44, r44 -> p6 [p126], r49 -> p52 [p127] | CMP SUB_IMM
+81, r49 -> p52 | J JMP_IMM
+82, r7 -> p7, r2 -> p53 [p115] | MOV ADD
+83, r1 -> p2, r44 -> p50 [p6] | ADD LOAD
+84, r2 -> p53, r44 -> p50, r2 -> p49 [p53], r49 -> p55 [p52] | ADD ADD
+85, r2 -> p49, r2 -> p56 [p49] | MOVSX SEXT_DWORD_TO_QWORD
+86, r2 -> p56, r45 -> p8 [p45] | CMP LOAD
+87, r45 -> p8, r44 -> p59 [p50], r49 -> p60 [p55] | CMP SUB_IMM
+88, r49 -> p60 | J JMP_IMM
+89, r1 -> p2, r1 -> p61 [p2], r49 -> p51 [p60] | ADD ADD_IMM
+90, r0 -> p44, r0 -> p58 [p44] | INC ADD_IMM
+91, r0 -> p58, r44 -> p57 [p59], r49 -> p64 [p51] | CMP SUB_IMM
+92, r49 -> p64 | J JMP_IMM
+93, r7 -> p7, r2 -> p65 [p56] | MOV ADD
+94, r1 -> p61, r44 -> p66 [p57] | ADD LOAD
+95, r2 -> p65, r44 -> p66, r2 -> p67 [p65], r49 -> p68 [p64] | ADD ADD
+96, r2 -> p67, r2 -> p1 [p67] | MOVSX SEXT_DWORD_TO_QWORD
+97, r2 -> p1, r45 -> p70 [p8] | CMP LOAD
+98, r45 -> p70, r44 -> p0 [p66], r49 -> p69 [p68] | CMP SUB_IMM
+99, r49 -> p69 | J JMP_IMM
+100, r1 -> p61, r1 -> p72 [p61], r49 -> p74 [p69] | ADD ADD_IMM
+101, r0 -> p58, r0 -> p63 [p58] | INC ADD_IMM
+102, r0 -> p63, r44 -> p54 [p0], r49 -> p78 [p74] | CMP SUB_IMM
+103, r49 -> p78 | J JMP_IMM
+104, r7 -> p7, r2 -> p79 [p1] | MOV ADD
+105, r1 -> p72, r44 -> p76 [p54] | ADD LOAD
+106, r2 -> p79, r44 -> p76, r2 -> p75 [p79], r49 -> p81 [p78] | ADD ADD
+107, r2 -> p75, r2 -> p82 [p75] | MOVSX SEXT_DWORD_TO_QWORD
+108, r2 -> p82, r45 -> p62 [p70] | CMP LOAD
+109, r45 -> p62, r44 -> p85 [p76], r49 -> p86 [p81] | CMP SUB_IMM
+110, r49 -> p86 | J JMP_IMM
+111, r1 -> p72, r1 -> p87 [p72], r49 -> p77 [p86] | ADD ADD_IMM
+112, r0 -> p63, r0 -> p84 [p63] | INC ADD_IMM
+113, r0 -> p84, r44 -> p83 [p85], r49 -> p90 [p77] | CMP SUB_IMM
+114, r49 -> p90 | J JMP_IMM
+115, r7 -> p7, r2 -> p91 [p82] | MOV ADD
+116, r1 -> p87, r44 -> p92 [p83] | ADD LOAD
+117, r2 -> p91, r44 -> p92, r2 -> p93 [p91], r49 -> p94 [p90] | ADD ADD
+118, r2 -> p93, r2 -> p71 [p93] | MOVSX SEXT_DWORD_TO_QWORD
+119, r2 -> p71, r45 -> p96 [p62] | CMP LOAD
+120, r45 -> p96, r44 -> p73 [p92], r49 -> p95 [p94] | CMP SUB_IMM
+121, r49 -> p95 | J JMP_IMM
+122, r1 -> p87, r1 -> p98 [p87], r49 -> p100 [p95] | ADD ADD_IMM
+123, r0 -> p84, r0 -> p89 [p84] | INC ADD_IMM
+124, r0 -> p89, r44 -> p80 [p73], r49 -> p104 [p100] | CMP SUB_IMM
+125, r49 -> p104 | J JMP_IMM
+126, r7 -> p7, r2 -> p105 [p71] | MOV ADD
+127, r1 -> p98, r44 -> p102 [p80] | ADD LOAD
+128, r2 -> p105, r44 -> p102, r2 -> p101 [p105], r49 -> p107 [p104] | ADD ADD
+129, r2 -> p101, r2 -> p108 [p101] | MOVSX SEXT_DWORD_TO_QWORD
+130, r2 -> p108, r45 -> p88 [p96] | CMP LOAD
+131, r45 -> p88, r44 -> p111 [p102], r49 -> p112 [p107] | CMP SUB_IMM
+132, r49 -> p112 | J JMP_IMM
+133, r1 -> p98, r1 -> p113 [p98], r49 -> p103 [p112] | ADD ADD_IMM
+134, r0 -> p89, r0 -> p110 [p89] | INC ADD_IMM
+135, r0 -> p110, r44 -> p109 [p111], r49 -> p116 [p103] | CMP SUB_IMM
+136, r49 -> p116 | J JMP_IMM
+137, r7 -> p7, r2 -> p117 [p108] | MOV ADD
+138, r1 -> p113, r44 -> p118 [p109] | ADD LOAD
+139, r2 -> p117, r44 -> p118, r2 -> p119 [p117], r49 -> p120 [p116] | ADD ADD
+140, r2 -> p119, r2 -> p97 [p119] | MOVSX SEXT_DWORD_TO_QWORD
+141, r2 -> p97, r45 -> p122 [p88] | CMP LOAD
+142, r45 -> p122, r44 -> p99 [p118], r49 -> p121 [p120] | CMP SUB_IMM
+143, r49 -> p121 | J JMP_IMM
+144, r1 -> p113, r1 -> p124 [p113], r49 -> p125 [p121] | ADD ADD_IMM
+145, r0 -> p110, r0 -> p123 [p110] | INC ADD_IMM
+146, r0 -> p123, r44 -> p126 [p99], r49 -> p127 [p125] | CMP SUB_IMM
+147, r49 -> p127 | J JMP_IMM
+148, r7 -> p7, r2 -> p115 [p97] | MOV ADD
+149, r1 -> p124, r44 -> p6 [p126] | ADD LOAD
+150, r2 -> p115, r44 -> p6, r2 -> p53 [p115], r49 -> p52 [p127] | ADD ADD
+151, r2 -> p53, r2 -> p49 [p53] | MOVSX SEXT_DWORD_TO_QWORD
+152, r2 -> p49, r45 -> p45 [p122] | CMP LOAD
+153, r45 -> p45, r44 -> p50 [p6], r49 -> p55 [p52] | CMP SUB_IMM
+154, r49 -> p55 | J JMP_IMM
+155, r1 -> p124, r1 -> p2 [p124], r49 -> p60 [p55] | ADD ADD_IMM
+156, r0 -> p123, r0 -> p44 [p123] | INC ADD_IMM
+157, r0 -> p44, r44 -> p59 [p50], r49 -> p51 [p60] | CMP SUB_IMM
+158, r49 -> p51 | J JMP_IMM
+159, r7 -> p7, r2 -> p56 [p49] | MOV ADD
+160, r1 -> p2, r44 -> p57 [p59] | ADD LOAD
+161, r2 -> p56, r44 -> p57, r2 -> p65 [p56], r49 -> p64 [p51] | ADD ADD
+162, r2 -> p65, r2 -> p67 [p65] | MOVSX SEXT_DWORD_TO_QWORD
+163, r2 -> p67, r45 -> p8 [p45] | CMP LOAD
+164, r45 -> p8, r44 -> p66 [p57], r49 -> p68 [p64] | CMP SUB_IMM
+165, r49 -> p68 | J JMP_IMM
+166, r1 -> p2, r1 -> p61 [p2], r49 -> p69 [p68] | ADD ADD_IMM
+167, r0 -> p44, r0 -> p58 [p44] | INC ADD_IMM
+168, r0 -> p58, r44 -> p0 [p66], r49 -> p74 [p69] | CMP SUB_IMM
+169, r49 -> p74 | J JMP_IMM
+170, r0 -> p1 [p58] | XOR ADD
+171, r1 -> p54 [p61] | MOV ADD_IMM
+172 | JMP JMP_IMM
+173, r0 -> p1, r44 -> p79 [p0], r49 -> p78 [p74] | CMP SUB_IMM
+174, r49 -> p78 | J JMP_IMM
+175, r1 -> p54, r44 -> p75 [p79] | MOVSX LOAD
+176, r44 -> p75, r2 -> p70 [p67] | MOVSX SEXT_DWORD_TO_QWORD
+177, r7 -> p7, r2 -> p70, r6 -> p76 [p106] | LEA LEA
+178, r6 -> p76, r6 -> p81 [p76] | MOVSX SEXT_DWORD_TO_QWORD
+179, r6 -> p81, r6 -> p72 [p81] | MOV LOAD
+180, r6 -> p72, r44 -> p86 [p75], r49 -> p63 [p78] | CMP SUB_IMM
+181, r49 -> p63 | J JMP_IMM
+182, r2 -> p70, r8 -> p85 [p114] | MOV ADD
+183, r8 -> p85, r7 -> p7, r8 -> p77 [p85] | LEA LEA
+184, r8 -> p77, r8 -> p82 [p77] | MOVSX SEXT_DWORD_TO_QWORD
+185, r8 -> p82, r8 -> p83 [p82] | LEA LEA
+186, r2 -> p70, r2 -> p91 [p70], r49 -> p90 [p63] | SHL SHL_IMM
+187 | JMP JMP_IMM
+188, r6 -> p72, r44 -> p93 [p86], r49 -> p62 [p90] | CMP SUB_IMM
+189, r49 -> p62 | J JMP_IMM
+190, r6 -> p72, r44 -> p92 [p93], r49 -> p94 [p62] | CMP SUB_IMM
+191, r49 -> p94 | J JMP_IMM
+192, r6 -> p72, r44 -> p87 [p92], r49 -> p95 [p94] | CMP SUB_IMM
+193, r49 -> p95 | J JMP_IMM
+194, r1 -> p54, r1 -> p84 [p54], r49 -> p73 [p95] | ADD ADD_IMM
+195, r0 -> p1, r0 -> p100 [p1] | INC ADD_IMM
+196, r0 -> p100, r44 -> p71 [p87], r49 -> p80 [p73] | CMP SUB_IMM
+197, r49 -> p80 | J JMP_IMM
+198, r1 -> p84, r44 -> p105 [p71] | MOVSX LOAD
+199, r44 -> p105, r2 -> p104 [p91] | MOVSX SEXT_DWORD_TO_QWORD
+200, r7 -> p7, r2 -> p104, r6 -> p101 [p72] | LEA LEA
+201, r6 -> p101, r6 -> p96 [p101] | MOVSX SEXT_DWORD_TO_QWORD
+202, r6 -> p96, r6 -> p102 [p96] | MOV LOAD
+203, r6 -> p102, r44 -> p107 [p105], r49 -> p98 [p80] | CMP SUB_IMM
+204, r49 -> p98 | J JMP_IMM
+205, r2 -> p104, r8 -> p112 [p83] | MOV ADD
+206, r8 -> p112, r7 -> p7, r8 -> p89 [p112] | LEA LEA
+207, r8 -> p89, r8 -> p111 [p89] | MOVSX SEXT_DWORD_TO_QWORD
+208, r8 -> p111, r8 -> p103 [p111] | LEA LEA
+209, r2 -> p104, r2 -> p108 [p104], r49 -> p109 [p98] | SHL SHL_IMM
+210 | JMP JMP_IMM
+211, r6 -> p102, r44 -> p117 [p107], r49 -> p116 [p109] | CMP SUB_IMM
+212, r49 -> p116 | J JMP_IMM
+213, r6 -> p102, r44 -> p119 [p117], r49 -> p88 [p116] | CMP SUB_IMM
+214, r49 -> p88 | J JMP_IMM
+215, r6 -> p102, r44 -> p118 [p119], r49 -> p120 [p88] | CMP SUB_IMM
+216, r49 -> p120 | J JMP_IMM
+217, r8 -> p103, r6 -> p113 [p102] | MOV LOAD
+218, r8 -> p103, r2 -> p108, r8 -> p121 [p103], r49 -> p110 [p120] | ADD ADD
+219, r6 -> p113, r44 -> p99 [p118], r49 -> p125 [p110] | CMP SUB_IMM
+220, r49 -> p125 | J JMP_IMM
+221, r6 -> p113, r44 -> p97 [p99], r49 -> p126 [p125] | CMP SUB_IMM
+222, r49 -> p126 | J JMP_IMM
+223, r6 -> p113, r44 -> p115 [p97], r49 -> p127 [p126] | CMP SUB_IMM
+224, r49 -> p127 | J JMP_IMM
+225, r8 -> p121, r6 -> p53 [p113] | MOV LOAD
+226, r8 -> p121, r2 -> p108, r8 -> p122 [p121], r49 -> p6 [p127] | ADD ADD
+227, r6 -> p53, r44 -> p52 [p115], r49 -> p124 [p6] | CMP SUB_IMM
+228, r49 -> p124 | J JMP_IMM
+229, r6 -> p53, r44 -> p55 [p52], r49 -> p123 [p124] | CMP SUB_IMM
+230, r49 -> p123 | J JMP_IMM
+231, r6 -> p53, r44 -> p50 [p55], r49 -> p60 [p123] | CMP SUB_IMM
+232, r49 -> p60 | J JMP_IMM
+233, r1 -> p84, r1 -> p49 [p84], r49 -> p59 [p60] | ADD ADD_IMM
+234, r0 -> p100, r0 -> p56 [p100] | INC ADD_IMM
+235, r0 -> p56, r44 -> p51 [p50], r49 -> p65 [p59] | CMP SUB_IMM
+236, r49 -> p65 | J JMP_IMM
+237, r1 -> p49, r44 -> p45 [p51] | MOVSX LOAD
+238, r44 -> p45, r2 -> p57 [p108] | MOVSX SEXT_DWORD_TO_QWORD
+239, r7 -> p7, r2 -> p57, r6 -> p64 [p53] | LEA LEA
+240, r6 -> p64, r6 -> p2 [p64] | MOVSX SEXT_DWORD_TO_QWORD
+241, r6 -> p2, r6 -> p68 [p2] | MOV LOAD
+242, r6 -> p68, r44 -> p44 [p45], r49 -> p66 [p65] | CMP SUB_IMM
+243, r49 -> p66 | J JMP_IMM
+244, r2 -> p57, r8 -> p69 [p122] | MOV ADD
+245, r8 -> p69, r7 -> p7, r8 -> p58 [p69] | LEA LEA
+246, r8 -> p58, r8 -> p61 [p58] | MOVSX SEXT_DWORD_TO_QWORD
+247, r8 -> p61, r8 -> p0 [p61] | LEA LEA
+248, r2 -> p57, r2 -> p74 [p57], r49 -> p79 [p66] | SHL SHL_IMM
+249 | JMP JMP_IMM
+250, r6 -> p68, r44 -> p67 [p44], r49 -> p106 [p79] | CMP SUB_IMM
+251, r49 -> p106 | J JMP_IMM
+252, r6 -> p68, r44 -> p76 [p67], r49 -> p81 [p106] | CMP SUB_IMM
+253, r49 -> p81 | J JMP_IMM
+254, r6 -> p68, r44 -> p75 [p76], r49 -> p78 [p81] | CMP SUB_IMM
+255, r49 -> p78 | J JMP_IMM
+256, r8 -> p0, r6 -> p114 [p68] | MOV LOAD
+257, r8 -> p0, r2 -> p74, r8 -> p85 [p0], r49 -> p77 [p78] | ADD ADD
+258, r6 -> p114, r44 -> p82 [p75], r49 -> p70 [p77] | CMP SUB_IMM
+259, r49 -> p70 | J JMP_IMM
+260, r6 -> p114, r44 -> p63 [p82], r49 -> p86 [p70] | CMP SUB_IMM
+261, r49 -> p86 | J JMP_IMM
+262, r6 -> p114, r44 -> p90 [p63], r49 -> p93 [p86] | CMP SUB_IMM
+263, r49 -> p93 | J JMP_IMM
+264, r8 -> p85, r6 -> p62 [p114] | MOV LOAD
+265, r8 -> p85, r2 -> p74, r8 -> p92 [p85], r49 -> p94 [p93] | ADD ADD
+266, r6 -> p62, r44 -> p54 [p90], r49 -> p95 [p94] | CMP SUB_IMM
+267, r49 -> p95 | J JMP_IMM
+268, r6 -> p62, r44 -> p1 [p54], r49 -> p87 [p95] | CMP SUB_IMM
+269, r49 -> p87 | J JMP_IMM
+270, r6 -> p62, r44 -> p73 [p1], r49 -> p71 [p87] | CMP SUB_IMM
+271, r49 -> p71 | J JMP_IMM
+272, r1 -> p49, r1 -> p91 [p49], r49 -> p72 [p71] | ADD ADD_IMM
+273, r0 -> p56, r0 -> p101 [p56] | INC ADD_IMM
+274, r0 -> p101, r44 -> p96 [p73], r49 -> p105 [p72] | CMP SUB_IMM
+275, r49 -> p105 | J JMP_IMM
+276, r1 -> p91, r44 -> p80 [p96] | MOVSX LOAD
+277, r44 -> p80, r2 -> p83 [p74] | MOVSX SEXT_DWORD_TO_QWORD
+278, r7 -> p7, r2 -> p83, r6 -> p112 [p62] | LEA LEA
+279, r6 -> p112, r6 -> p89 [p112] | MOVSX SEXT_DWORD_TO_QWORD
+280, r6 -> p89, r6 -> p111 [p89] | MOV LOAD
+281, r6 -> p111, r44 -> p104 [p80], r49 -> p98 [p105] | CMP SUB_IMM
+282, r49 -> p98 | J JMP_IMM
+283, r2 -> p83, r8 -> p107 [p92] | MOV ADD
+284, r8 -> p107, r7 -> p7, r8 -> p109 [p107] | LEA LEA
+285, r8 -> p109, r8 -> p117 [p109] | MOVSX SEXT_DWORD_TO_QWORD
+286, r8 -> p117, r8 -> p116 [p117] | LEA LEA
+287, r2 -> p83, r2 -> p119 [p83], r49 -> p88 [p98] | SHL SHL_IMM
+288 | JMP JMP_IMM
+289, r6 -> p111, r44 -> p102 [p104], r49 -> p103 [p88] | CMP SUB_IMM
+290, r49 -> p103 | J JMP_IMM
+291, r6 -> p111, r44 -> p120 [p102], r49 -> p118 [p103] | CMP SUB_IMM
+292, r49 -> p118 | J JMP_IMM
+293, r6 -> p111, r44 -> p110 [p120], r49 -> p99 [p118] | CMP SUB_IMM
+294, r49 -> p99 | J JMP_IMM
+295, r8 -> p116, r6 -> p125 [p111] | MOV LOAD
+296, r8 -> p116, r2 -> p119, r8 -> p97 [p116], r49 -> p126 [p99] | ADD ADD
+297, r6 -> p125, r44 -> p113 [p110], r49 -> p121 [p126] | CMP SUB_IMM
+298, r49 -> p121 | J JMP_IMM
+299, r6 -> p125, r44 -> p127 [p113], r49 -> p115 [p121] | CMP SUB_IMM
+300, r49 -> p115 | J JMP_IMM
+301, r6 -> p125, r44 -> p6 [p127], r49 -> p52 [p115] | CMP SUB_IMM
+302, r49 -> p52 | J JMP_IMM
+303, r8 -> p97, r6 -> p124 [p125] | MOV LOAD
+304, r8 -> p97, r2 -> p119, r8 -> p55 [p97], r49 -> p123 [p52] | ADD ADD
+305, r6 -> p124, r44 -> p84 [p6], r49 -> p60 [p123] | CMP SUB_IMM
+306, r49 -> p60 | J JMP_IMM
+307, r6 -> p124, r44 -> p100 [p84], r49 -> p50 [p60] | CMP SUB_IMM
+308, r49 -> p50 | J JMP_IMM
+309, r6 -> p124, r44 -> p59 [p100], r49 -> p51 [p50] | CMP SUB_IMM
+310, r49 -> p51 | J JMP_IMM
+311, r8 -> p55, r6 -> p108 [p124] | MOV LOAD
+312, r8 -> p55, r2 -> p119, r8 -> p53 [p55], r49 -> p64 [p51] | ADD ADD
+313, r6 -> p108, r44 -> p2 [p59], r49 -> p45 [p64] | CMP SUB_IMM
+314, r49 -> p45 | J JMP_IMM
+315, r6 -> p108, r44 -> p65 [p2], r49 -> p122 [p45] | CMP SUB_IMM
+316, r49 -> p122 | J JMP_IMM
+317, r6 -> p108, r44 -> p69 [p65], r49 -> p58 [p122] | CMP SUB_IMM
+318, r49 -> p58 | J JMP_IMM
+319, r1 -> p91, r1 -> p61 [p91], r49 -> p57 [p58] | ADD ADD_IMM
+320, r0 -> p101, r0 -> p66 [p101] | INC ADD_IMM
+321, r0 -> p66, r44 -> p44 [p69], r49 -> p79 [p57] | CMP SUB_IMM
+322, r49 -> p79 | J JMP_IMM
+323, r0 -> p67 [p66] | XOR ADD
+324, r4 -> p4, r44 -> p106 [p44] | RET LOAD
+325, r4 -> p4, r4 -> p76 [p4] | RET ADD_IMM
+326, r44 -> p106 | RET JMP_REG
+327, r0 -> p67, r0 -> p67, r44 -> p81 [p106], r49 -> p68 [p79] | TEST AND
+328, r0 -> p0 [p67] | SET ADD
+329, r49 -> p68, r0 -> p78 [p0] | SET ADD_IMM
+330, r0 -> p78, r0 -> p75 [p78] | MOVZX ZEXT_BYTE_TO_DWORD
+331, r4 -> p76, r4 -> p77 [p76], r49 -> p82 [p68] | ADD ADD_IMM
+332, r4 -> p77, r44 -> p70 [p81] | RET LOAD
+333, r4 -> p77, r4 -> p63 [p77] | RET ADD_IMM
+334, r44 -> p70 | RET JMP_REG
+335, r0 -> p75, r0 -> p75, r44 -> p86 [p70], r49 -> p114 [p82] | TEST AND
+336, r49 -> p114 | J JMP_IMM
+337, r4 -> p63, r0 -> p85 [p75] | LEA LEA
+338, r0 -> p85, r7 -> p93 [p7] | MOV ADD
+339, r13 -> p13, r6 -> p90 [p108] | MOV ADD
+340, r44 -> p94 [p86] | CALL SAVE_PC
+341, r4 -> p63, r4 -> p54 [p63] | CALL SUB_IMM
+342, r44 -> p94, r4 -> p54 | CALL STORE
+343 | CALL JMP_IMM
+344, r4 -> p54, r4 -> p95 [p54], r49 -> p1 [p114] | SUB SUB_IMM
+345, r45 -> p87 [p8] | CMP SAVE_PC
+346, r45 -> p87, r45 -> p49 [p87] | CMP LOAD
+347, r45 -> p49, r44 -> p71 [p94], r49 -> p56 [p1] | CMP SUB_IMM
+348, r49 -> p56 | J JMP_IMM
+349, r6 -> p90, r0 -> p73 [p85] | MOVSX SEXT_DWORD_TO_QWORD
+350, r0 -> p73, r0 -> p73, r1 -> p72 [p61] | LEA LEA
+351, r1 -> p72, r7 -> p93, r44 -> p96 [p71] | MOVSX LOAD
+352, r44 -> p96, r2 -> p74 [p119] | MOVSX SEXT_DWORD_TO_QWORD
+353, r1 -> p72, r7 -> p93, r44 -> p62 [p96] | MOVSX LOAD
+354, r44 -> p62, r1 -> p112 [p72] | MOVSX SEXT_DWORD_TO_QWORD
+355, r1 -> p112, r6 -> p89 [p90] | MOV LOAD
+356, r45 -> p80 [p49] | CMP SAVE_PC
+357, r45 -> p80, r45 -> p105 [p80] | CMP LOAD
+358, r45 -> p105, r44 -> p92 [p62], r49 -> p107 [p56] | CMP SUB_IMM
+359, r49 -> p107 | J JMP_IMM
+360, r6 -> p89, r6 -> p109 [p89], r49 -> p117 [p107] | ADD ADD_IMM
+361, r6 -> p109, r44 -> p83 [p92], r49 -> p98 [p117] | CMP SUB_IMM
+362, r49 -> p98 | J JMP_IMM
+363, r6 -> p109, r44 -> p104 [p83] | JMP LOAD
+364, r44 -> p104 | JMP JMP_REG
+365, r1 -> p112, r6 -> p88 [p109] | LEA LEA
+366, r6 -> p88, r0 -> p102 [p73] | MOVSX SEXT_DWORD_TO_QWORD
+367, r0 -> p102, r45 -> p103 [p105] | CMP LOAD
+368, r45 -> p103, r44 -> p120 [p104], r49 -> p118 [p98] | CMP SUB_IMM
+369, r49 -> p118 | J JMP_IMM
+370, r1 -> p112, r1 -> p111 [p112], r49 -> p116 [p118] | ADD ADD_IMM
+371, r1 -> p111, r0 -> p99 [p102] | MOVSX SEXT_DWORD_TO_QWORD
+372, r0 -> p99, r45 -> p110 [p103] | CMP LOAD
+373, r45 -> p110, r44 -> p126 [p120], r49 -> p113 [p116] | CMP SUB_IMM
+374, r49 -> p113 | J JMP_IMM
+375, r2 -> p74, r2 -> p74, r44 -> p121 [p126], r49 -> p127 [p113] | TEST AND
+376, r49 -> p127 | J JMP_IMM
+377, r44 -> p115 [p121] | MOVSX SAVE_PC
+378, r44 -> p115, r44 -> p125 [p115] | MOVSX LOAD
+379, r44 -> p125, r0 -> p97 [p99] | MOVSX SEXT_DWORD_TO_QWORD
+380, r0 -> p97, r6 -> p52 [p88] | MOV LOAD
+381, r2 -> p74, r45 -> p6 [p110] | CMP LOAD
+382, r45 -> p6, r6 -> p52, r44 -> p123 [p125], r49 -> p84 [p127] | CMP SUB
+383, r49 -> p84 | J JMP_IMM
+384, r0 -> p97, r6 -> p60 [p52] | MOV LOAD
+385, r2 -> p74, r45 -> p100 [p6] | CMP LOAD
+386, r45 -> p100, r6 -> p60, r44 -> p50 [p123], r49 -> p124 [p84] | CMP SUB
+387, r49 -> p124 | J JMP_IMM
+388, r0 -> p97, r6 -> p55 [p60] | MOV LOAD
+389, r2 -> p74, r45 -> p51 [p100] | CMP LOAD
+390, r45 -> p51, r6 -> p55, r44 -> p59 [p50], r49 -> p64 [p124] | CMP SUB
+391, r49 -> p64 | J JMP_IMM
+392, r0 -> p97, r6 -> p2 [p55] | MOV LOAD
+393, r2 -> p74, r45 -> p45 [p51] | CMP LOAD
+394, r45 -> p45, r6 -> p2, r44 -> p65 [p59], r49 -> p122 [p64] | CMP SUB
+395, r49 -> p122 | J JMP_IMM
+396, r0 -> p91 [p97] | XOR ADD
+397, r4 -> p95, r4 -> p58 [p95], r49 -> p101 [p122] | ADD ADD_IMM
+398, r4 -> p58, r44 -> p69 [p65] | RET LOAD
+399, r4 -> p58, r4 -> p57 [p58] | RET ADD_IMM
+400, r44 -> p69 | RET JMP_REG
+401, r5 -> p5, r44 -> p66 [p69] | MOV LEA
+402, r0 -> p91, r44 -> p66 | MOV STORE
+403, r0 -> p91, r0 -> p91, r44 -> p44 [p66], r49 -> p4 [p101] | TEST AND
+404, r49 -> p4 | J JMP_IMM
+405, r44 -> p106 [p44] | MOV SAVE_PC
+406, r44 -> p106, r14 -> p79 [p14] | MOV LOAD
+407, r14 -> p79, r14 -> p67 [p79], r49 -> p0 [p4] | ADD ADD_IMM
+408, r14 -> p67, r44 -> p78 [p106], r49 -> p76 [p0] | CMP SUB_IMM
+409, r49 -> p76 | J JMP_IMM
+410, r4 -> p57, r45 -> p68 [p45] | CMP LOAD
+411, r45 -> p68, r44 -> p81 [p78], r49 -> p77 [p76] | CMP SUB_IMM
+412, r49 -> p77 | J JMP_IMM
+413, r13 -> p13, r1 -> p70 [p111] | MOVSX SEXT_DWORD_TO_QWORD
+414, r1 -> p70, r1 -> p70, r1 -> p82 [p70] | LEA LEA
+415, r1 -> p82, r4 -> p57, r44 -> p75 [p81] | MOVSX LOAD
+416, r44 -> p75, r1 -> p7 [p82] | MOVSX SEXT_DWORD_TO_QWORD
+417, r1 -> p7, r14 -> p108 [p67] | MOV LOAD
+418, r14 -> p108, r44 -> p86 [p75], r49 -> p63 [p77] | CMP SUB_IMM
+419, r49 -> p63 | J JMP_IMM
+420, r14 -> p108, r44 -> p54 [p86], r49 -> p114 [p63] | CMP SUB_IMM
+421, r49 -> p114 | J JMP_IMM
+422, r1 -> p7, r1 -> p8 [p7] | MOV LOAD
+423 | JMP JMP_IMM
+424, r1 -> p8, r44 -> p87 [p54], r49 -> p94 [p114] | CMP SUB_IMM
+425, r49 -> p94 | J JMP_IMM
+426, r14 -> p1 [p108] | XOR ADD
+427 | JMP JMP_IMM
+428, r13 -> p13, r1 -> p85 [p8] | MOVSX SEXT_DWORD_TO_QWORD
+429, r1 -> p85, r1 -> p85, r2 -> p61 [p74] | LEA LEA
+430, r2 -> p61, r4 -> p57, r45 -> p71 [p68] | CMP LOAD
+431, r45 -> p71, r44 -> p119 [p87], r49 -> p96 [p94] | CMP SUB
+432, r49 -> p96 | J JMP_IMM
+433, r0 -> p91, r0 -> p91, r44 -> p72 [p119], r49 -> p90 [p96] | TEST AND
+434, r0 -> p49 [p91] | SET ADD
+435, r49 -> p90, r0 -> p80 [p49] | SET ADD_IMM
+436, r4 -> p57, r45 -> p62 [p71] | CMP LOAD
+437, r45 -> p62, r44 -> p56 [p72], r49 -> p89 [p90] | CMP SUB
+438, r49 -> p89 | J JMP_IMM
+439, r4 -> p57, r2 -> p107 [p61] | MOV LOAD
+440, r14 -> p1, r2 -> p107, r5 -> p92 [p5] | LEA LEA
+441, r4 -> p57, r45 -> p117 [p62] | TEST LOAD
+442, r45 -> p117, r44 -> p83 [p56], r49 -> p109 [p89] | TEST AND_IMM
+443, r49 -> p109 | J JMP_IMM
+444, r14 -> p73 [p1] | XOR ADD
+445, r4 -> p57, r7 -> p105 [p93] | MOV LOAD
+446, r12 -> p12, r6 -> p104 [p2] | MOV ADD
+447, r5 -> p92, r2 -> p98 [p107] | MOV ADD
+448, r1 -> p112 [p85] | XOR ADD
+449, r44 -> p118 [p83] | CALL SAVE_PC
+450, r4 -> p57, r4 -> p102 [p57] | CALL SUB_IMM
+451, r44 -> p118, r4 -> p102 | CALL STORE
+452 | CALL JMP_IMM
+453, r5 -> p92, r4 -> p102 | PUSH STORE
+454, r4 -> p102, r4 -> p103 [p102] | PUSH SUB_IMM
+455, r15 -> p15, r4 -> p103 | PUSH STORE
+456, r4 -> p103, r4 -> p120 [p103] | PUSH SUB_IMM
+457, r14 -> p73, r4 -> p120 | PUSH STORE
+458, r4 -> p120, r4 -> p116 [p120] | PUSH SUB_IMM
+459, r13 -> p13, r4 -> p116 | PUSH STORE
+460, r4 -> p116, r4 -> p126 [p116] | PUSH SUB_IMM
+461, r12 -> p12, r4 -> p126 | PUSH STORE
+462, r4 -> p126, r4 -> p113 [p126] | PUSH SUB_IMM
+463, r3 -> p3, r4 -> p113 | PUSH STORE
+464, r4 -> p113, r4 -> p121 [p113] | PUSH SUB_IMM
+465, r4 -> p121, r4 -> p115 [p121], r49 -> p99 [p109] | SUB SUB_IMM
+466, r44 -> p88 [p118] | MOV SAVE_PC
+467, r44 -> p88, r0 -> p110 [p80] | MOV LOAD
+468, r0 -> p110, r0 -> p125 [p110] | INC ADD_IMM
+469, r44 -> p127 [p88] | MOV SAVE_PC
+470, r0 -> p125, r44 -> p127 | MOV STORE
+471, r0 -> p125, r44 -> p52 [p127], r49 -> p6 [p99] | TEST AND_IMM
+472, r1 -> p112, r4 -> p115 | MOV STORE
+473, r2 -> p98, r4 -> p115 | MOV STORE
+474, r6 -> p104, r4 -> p115 | MOV STORE
+475, r7 -> p105, r4 -> p115 | MOV STORE
+476, r49 -> p6 | J JMP_IMM
+477, r4 -> p115 | MOV STORE
+478, r44 -> p123 [p52] | MOVSX SAVE_PC
+479, r44 -> p123, r44 -> p84 [p123] | MOVSX LOAD
+480, r44 -> p84, r3 -> p60 [p3] | MOVSX SEXT_DWORD_TO_QWORD
+481, r3 -> p60, r44 -> p100 [p84] | MOV LEA
+482, r3 -> p60, r44 -> p100 | MOV STORE
+483, r44 -> p50 [p100] | CALL SAVE_PC
+484, r4 -> p115, r4 -> p124 [p115] | CALL SUB_IMM
+485, r44 -> p50, r4 -> p124 | CALL STORE
+486 | CALL JMP_IMM
+487, r44 -> p55 [p50] | MOV SAVE_PC
+488, r44 -> p55, r0 -> p51 [p125] | MOV LOAD
+489, r0 -> p51, r44 -> p59 [p55], r49 -> p64 [p6] | CMP SUB_IMM
+490, r49 -> p64 | J JMP_IMM
+491, r0 -> p51, r44 -> p97 [p59], r49 -> p95 [p64] | CMP SUB_IMM
+492, r49 -> p95 | J JMP_IMM
+493, r0 -> p122 [p51] | XOR ADD
+494, r4 -> p124, r44 -> p65 [p97] | RET LOAD
+495, r4 -> p124, r4 -> p58 [p124] | RET ADD_IMM
+496, r44 -> p65 | RET JMP_REG
+497, r0 -> p122, r0 -> p122, r44 -> p69 [p65], r49 -> p66 [p95] | TEST AND
+498, r49 -> p66 | J JMP_IMM
+499, r3 -> p60, r0 -> p101 [p122] | MOV LOAD
+500, r0 -> p101, r4 -> p58 | MOV STORE
+501, r3 -> p60, r44 -> p44 [p69] | MOV LEA
+502, r44 -> p44 | MOV STORE
+503, r3 -> p60, r44 -> p14 [p44], r49 -> p79 [p66] | CMP SUB_IMM
+504, r49 -> p79 | J JMP_IMM
+505, r0 -> p101, r0 -> p101, r44 -> p4 [p14], r49 -> p106 [p79] | TEST AND
+506, r49 -> p106 | J JMP_IMM
+507, r4 -> p58 | MOV STORE
+508 | JMP JMP_IMM
+509, r4 -> p58, r45 -> p0 [p117] | CMP LOAD
+510, r45 -> p0, r44 -> p45 [p4], r49 -> p78 [p106] | CMP SUB
+511, r49 -> p78 | J JMP_IMM
+512, r44 -> p76 [p45] | MOV SAVE_PC
+513, r44 -> p76, r0 -> p111 [p101] | MOV LOAD
+514, r0 -> p111, r44 -> p70 [p76], r49 -> p81 [p78] | CMP SUB_IMM
+515, r49 -> p81 | J JMP_IMM
+516, r0 -> p111, r44 -> p82 [p70], r49 -> p67 [p81] | CMP SUB_IMM
+517, r49 -> p67 | J JMP_IMM
+518, r2 -> p75 [p98] | MOV ADD_IMM
+519, r2 -> p75, r3 -> p60, r2 -> p77 [p75], r49 -> p86 [p67] | SUB SUB
+520, r44 -> p63 [p82] | MOV ADD_IMM
+521, r45 -> p7 [p0] | MOV SAVE_PC
+522, r44 -> p63, r45 -> p7 | MOV STORE
+523, r4 -> p58, r7 -> p54 [p105] | MOV LOAD
+524, r4 -> p58, r6 -> p114 [p104] | MOV LOAD
+525, r44 -> p108 [p63] | CALL SAVE_PC
+526, r4 -> p58, r4 -> p8 [p58] | CALL SUB_IMM
+527, r44 -> p108, r4 -> p8 | CALL STORE
+528 | CALL JMP_IMM
+529, r5 -> p92, r4 -> p8 | PUSH STORE
+530, r4 -> p8, r4 -> p74 [p8] | PUSH SUB_IMM
+531, r15 -> p15, r4 -> p74 | PUSH STORE
+532, r4 -> p74, r4 -> p68 [p74] | PUSH SUB_IMM
+533, r14 -> p73, r4 -> p68 | PUSH STORE
+534, r4 -> p68, r4 -> p87 [p68] | PUSH SUB_IMM
+535, r13 -> p13, r4 -> p87 | PUSH STORE
+536, r4 -> p87, r4 -> p94 [p87] | PUSH SUB_IMM
+537, r12 -> p12, r4 -> p94 | PUSH STORE
+538, r4 -> p94, r4 -> p119 [p94] | PUSH SUB_IMM
+539, r3 -> p60, r4 -> p119 | PUSH STORE
+540, r4 -> p119, r4 -> p96 [p119] | PUSH SUB_IMM
+541, r4 -> p96, r4 -> p91 [p96], r49 -> p49 [p86] | SUB SUB_IMM
+542, r44 -> p71 [p108] | MOVSX SAVE_PC
+543, r44 -> p71, r44 -> p72 [p71] | MOVSX LOAD
+544, r44 -> p72, r0 -> p90 [p111] | MOVSX SEXT_DWORD_TO_QWORD
+545, r0 -> p90, r44 -> p61 [p72] | MOV LEA
+546, r0 -> p90, r44 -> p61 | MOV STORE
+547, r44 -> p5 [p61] | MOVZX SAVE_PC
+548, r44 -> p5, r44 -> p62 [p5] | MOVZX LOAD
+549, r44 -> p62, r0 -> p56 [p90] | MOVZX ZEXT_WORD_TO_DWORD
+550, r0 -> p56, r0 -> p56, r44 -> p89 [p62], r49 -> p1 [p49] | TEST AND
+551, r2 -> p77, r4 -> p91 | MOV STORE
+552, r6 -> p114, r4 -> p91 | MOV STORE
+553, r7 -> p54, r4 -> p91 | MOV STORE
+554, r49 -> p1 | J JMP_IMM
+555, r4 -> p91, r45 -> p93 [p7] | CMP LOAD
+556, r45 -> p93, r44 -> p2 [p89], r49 -> p107 [p1] | CMP SUB
+557, r49 -> p107 | J JMP_IMM
+558, r45 -> p85 [p93] | CMP SAVE_PC
+559, r45 -> p85, r45 -> p83 [p85] | CMP LOAD
+560, r45 -> p83, r44 -> p57 [p2], r49 -> p102 [p107] | CMP SUB_IMM
+561, r49 -> p102 | J JMP_IMM
+562, r44 -> p103 [p57] | INC SAVE_PC
+563, r44 -> p103, r44 -> p120 [p103] | INC LOAD
+564, r44 -> p120, r44 -> p116 [p120] | INC ADD_IMM
+565, r45 -> p126 [p83] | INC SAVE_PC
+566, r44 -> p116, r45 -> p126 | INC STORE
+567, r44 -> p113 [p116] | INC SAVE_PC
+568, r44 -> p113, r44 -> p121 [p113] | INC LOAD
+569, r44 -> p121, r44 -> p109 [p121] | INC ADD_IMM
+570, r45 -> p118 [p126] | INC SAVE_PC
+571, r44 -> p109, r45 -> p118 | INC STORE
+572, r44 -> p80 [p109] | INC SAVE_PC
+573, r44 -> p80, r44 -> p110 [p80] | INC LOAD
+574, r44 -> p110, r44 -> p88 [p110] | INC ADD_IMM
+575, r45 -> p127 [p118] | INC SAVE_PC
+576, r44 -> p88, r45 -> p127 | INC STORE
+577, r1 -> p99 [p112] | MOV ADD_IMM
+578, r44 -> p52 [p88] | MOV SAVE_PC
+579, r44 -> p52, r6 -> p123 [p114] | MOV LOAD
+580, r6 -> p123, r0 -> p3 [p56] | MOV ADD
+581, r0 -> p3, r1 -> p99, r44 -> p84 [p52], r49 -> p100 [p102] | MUL MUL
+582, r44 -> p84, r0 -> p115 [p3] | MUL ADD
+583, r44 -> p84, r2 -> p50 [p77] | MUL UPPER_HALF
+584, r2 -> p50, r2 -> p125 [p50], r49 -> p55 [p100] | SHR SHR_IMM
+585, r2 -> p125, r0 -> p6 [p115], r49 -> p59 [p55] | IMUL IMUL_T_IMM
+586, r6 -> p123, r1 -> p64 [p99] | MOV ADD
+587, r1 -> p64, r0 -> p6, r1 -> p51 [p64], r49 -> p97 [p59] | SUB SUB
+588, r1 -> p51, r0 -> p124 [p6] | MOV ADD
+589, r0 -> p124, r0 -> p65 [p124], r49 -> p95 [p97] | SHL SHL_IMM
+590, r44 -> p122 [p84] | MOV SAVE_PC
+591, r44 -> p122, r2 -> p69 [p125] | MOV LOAD
+592, r0 -> p65, r2 -> p69, r45 -> p44 [p127] | CMP LOAD
+593, r45 -> p44, r6 -> p123, r44 -> p66 [p122], r49 -> p14 [p95] | CMP SUB
+594, r49 -> p14 | J JMP_IMM
+595, r44 -> p79 [p66] | MOV ADD_IMM
+596, r44 -> p79, r4 -> p91 | MOV STORE
+597, r4 -> p91, r7 -> p117 [p54] | MOV LOAD
+598, r4 -> p91, r3 -> p4 [p60] | MOV LOAD
+599, r3 -> p4, r6 -> p106 [p123] | MOV ADD
+600, r44 -> p45 [p79] | CALL SAVE_PC
+601, r4 -> p91, r4 -> p101 [p91] | CALL SUB_IMM
+602, r44 -> p45, r4 -> p101 | CALL STORE
+603 | CALL JMP_IMM
+604, r5 -> p92, r4 -> p101 | PUSH STORE
+605, r4 -> p101, r4 -> p76 [p101] | PUSH SUB_IMM
+606, r15 -> p15, r4 -> p76 | PUSH STORE
+607, r4 -> p76, r4 -> p78 [p76] | PUSH SUB_IMM
+608, r14 -> p73, r4 -> p78 | PUSH STORE
+609, r4 -> p78, r4 -> p70 [p78] | PUSH SUB_IMM
+610, r13 -> p13, r4 -> p70 | PUSH STORE
+611, r4 -> p70, r4 -> p81 [p70] | PUSH SUB_IMM
+612, r12 -> p12, r4 -> p81 | PUSH STORE
+613, r4 -> p81, r4 -> p98 [p81] | PUSH SUB_IMM
+614, r3 -> p4, r4 -> p98 | PUSH STORE
+615, r4 -> p98, r4 -> p75 [p98] | PUSH SUB_IMM
+616, r4 -> p75, r4 -> p67 [p75], r49 -> p82 [p14] | SUB SUB_IMM
+617, r44 -> p0 [p45] | MOV SAVE_PC
+618, r44 -> p0, r1 -> p105 [p51] | MOV LOAD
+619, r1 -> p105, r44 -> p104 [p0], r49 -> p63 [p82] | CMP SUB_IMM
+620, r49 -> p63 | J JMP_IMM
+621, r1 -> p105, r44 -> p58 [p104], r49 -> p8 [p63] | CMP SUB_IMM
+622, r49 -> p8 | J JMP_IMM
+623, r1 -> p105, r44 -> p74 [p58], r49 -> p68 [p8] | CMP SUB_IMM
+624, r49 -> p68 | J JMP_IMM
+625, r44 -> p87 [p74] | MOV SAVE_PC
+626, r44 -> p87, r1 -> p94 [p105] | MOV LOAD
+627, r1 -> p94, r2 -> p119 [p69] | MOV ADD
+628, r2 -> p119, r2 -> p96 [p119], r49 -> p86 [p68] | NEG SUB
+629, r44 -> p108 [p87] | MOV SAVE_PC
+630, r44 -> p108, r8 -> p71 [p53] | MOV LOAD
+631, r8 -> p71, r8 -> p71, r44 -> p111 [p108], r49 -> p72 [p86] | TEST AND
+632, r1 -> p94, r49 -> p72, r2 -> p61 [p96] | CMOV ADD
+633, r44 -> p5 [p111] | MOV SAVE_PC
+634, r44 -> p5, r1 -> p90 [p94] | MOV LOAD
+635, r2 -> p61, r0 -> p62 [p65] | MOV ADD
+636, r0 -> p62, r1 -> p90, r0 -> p49 [p62], r49 -> p7 [p72] | SUB SUB
+637, r0 -> p49, r6 -> p106, r44 -> p89 [p5], r49 -> p1 [p7] | CMP SUB
+638, r49 -> p1 | J JMP_IMM
+639, r2 -> p61, r1 -> p90, r2 -> p93 [p61], r49 -> p85 [p1] | ADD ADD
+640, r2 -> p93, r7 -> p117, r44 -> p2 [p89], r49 -> p107 [p85] | CMP SUB
+641, r49 -> p107 | J JMP_IMM
+642, r2 -> p93, r0 -> p57 [p49] | MOV ADD
+643 | JMP JMP_IMM
+644, r4 -> p67, r4 -> p103 [p67], r49 -> p120 [p107] | ADD ADD_IMM
+645, r4 -> p103, r3 -> p83 [p4] | POP LOAD
+646, r4 -> p103, r4 -> p116 [p103] | POP ADD_IMM
+647, r4 -> p116, r12 -> p113 [p12] | POP LOAD
+648, r4 -> p116, r4 -> p121 [p116] | POP ADD_IMM
+649, r4 -> p121, r13 -> p126 [p13] | POP LOAD
+650, r4 -> p121, r4 -> p109 [p121] | POP ADD_IMM
+651, r4 -> p109, r14 -> p80 [p73] | POP LOAD
+652, r4 -> p109, r4 -> p110 [p109] | POP ADD_IMM
+653, r4 -> p110, r15 -> p118 [p15] | POP LOAD
+654, r4 -> p110, r4 -> p112 [p110] | POP ADD_IMM
+655, r4 -> p112, r5 -> p88 [p92] | POP LOAD
+656, r4 -> p112, r4 -> p114 [p112] | POP ADD_IMM
+657, r4 -> p114, r44 -> p56 [p2] | RET LOAD
+658, r4 -> p114, r4 -> p52 [p114] | RET ADD_IMM
+659, r44 -> p56 | RET JMP_REG
+660, r0 -> p57, r3 -> p83, r44 -> p102 [p56], r49 -> p3 [p120] | CMP SUB
+661, r0 -> p57, r3 -> p77 [p83] | MOV ADD
+662, r49 -> p3 | J JMP_IMM
+663, r4 -> p52, r7 -> p50 [p117] | LEA LEA
+664, r44 -> p100 [p102] | CALL SAVE_PC
+665, r4 -> p52, r4 -> p115 [p52] | CALL SUB_IMM
+666, r44 -> p100, r4 -> p115 | CALL STORE
+667 | CALL JMP_IMM
+668, r5 -> p88, r4 -> p115 | PUSH STORE
+669, r4 -> p115, r4 -> p55 [p115] | PUSH SUB_IMM
+670, r15 -> p118, r4 -> p55 | PUSH STORE
+671, r4 -> p55, r4 -> p99 [p55] | PUSH SUB_IMM
+672, r14 -> p80, r4 -> p99 | PUSH STORE
+673, r4 -> p99, r4 -> p64 [p99] | PUSH SUB_IMM
+674, r13 -> p126, r4 -> p64 | PUSH STORE
+675, r4 -> p64, r4 -> p59 [p64] | PUSH SUB_IMM
+676, r12 -> p113, r4 -> p59 | PUSH STORE
+677, r4 -> p59, r4 -> p6 [p59] | PUSH SUB_IMM
+678, r3 -> p77, r4 -> p6 | PUSH STORE
+679, r4 -> p6, r4 -> p124 [p6] | PUSH SUB_IMM
+680, r4 -> p124, r4 -> p97 [p124], r49 -> p84 [p3] | SUB SUB_IMM
+681, r44 -> p125 [p100] | MOV SAVE_PC
+682, r44 -> p125 | MOV STORE
+683, r44 -> p127 [p125] | MOV SAVE_PC
+684, r44 -> p127 | MOV STORE
+685, r44 -> p122 [p127] | MOV SAVE_PC
+686, r7 -> p50, r44 -> p122 | MOV STORE
+687, r45 -> p95 [p44] | CMP SAVE_PC
+688, r45 -> p95, r45 -> p66 [p95] | CMP LOAD
+689, r45 -> p66, r44 -> p54 [p122], r49 -> p60 [p84] | CMP SUB_IMM
+690, r49 -> p60 | J JMP_IMM
+691, r44 -> p123 [p54] | MOV SAVE_PC
+692, r44 -> p123, r0 -> p79 [p57] | MOV LOAD
+693, r0 -> p79, r4 -> p97 | MOV STORE
+694, r44 -> p91 [p123] | MOV SAVE_PC
+695, r44 -> p91, r3 -> p101 [p77] | MOV LOAD
+696, r44 -> p76 [p91] | MOV SAVE_PC
+697, r44 -> p76, r0 -> p78 [p79] | MOV LOAD
+698, r0 -> p78, r4 -> p97 | MOV STORE
+699, r44 -> p70 [p76] | MOV SAVE_PC
+700, r44 -> p70, r0 -> p81 [p78] | MOV LOAD
+701, r0 -> p81, r4 -> p97 | MOV STORE
+702, r14 -> p98 [p80] | MOV ADD_IMM
+703 | JMP JMP_IMM
+704, r4 -> p97, r45 -> p75 [p66] | CMP LOAD
+705, r45 -> p75, r44 -> p14 [p70], r49 -> p45 [p60] | CMP SUB
+706, r49 -> p45 | J JMP_IMM
+707, r15 -> p51 [p118] | MOV ADD_IMM
+708, r12 -> p0 [p113] | MOV ADD_IMM
+709 | JMP JMP_IMM
+710, r4 -> p97, r45 -> p82 [p75] | CMP LOAD
+711, r15 -> p51, r45 -> p82, r44 -> p104 [p14], r49 -> p63 [p45] | CMP SUB
+712, r49 -> p63 | J JMP_IMM
+713, r44 -> p58 [p104] | MOV SAVE_PC
+714, r44 -> p58, r0 -> p8 [p81] | MOV LOAD
+715, r0 -> p8, r44 -> p74 [p58], r49 -> p105 [p63] | CMP SUB_IMM
+716, r49 -> p105 | J JMP_IMM
+717, r44 -> p69 [p74] | MOV SAVE_PC
+718, r44 -> p69, r1 -> p119 [p90] | MOV LOAD
+719, r1 -> p119, r44 -> p68 [p69], r49 -> p87 [p105] | CMP SUB_IMM
+720, r49 -> p87 | J JMP_IMM
+721, r12 -> p0, r44 -> p53 [p68] | MOVSX LOAD
+722, r44 -> p53, r13 -> p108 [p126] | MOVSX SEXT_DWORD_TO_QWORD
+723, r13 -> p108, r13 -> p108, r44 -> p86 [p53], r49 -> p96 [p87] | TEST AND
+724, r49 -> p96 | J JMP_IMM
+725, r13 -> p108, r5 -> p111 [p88] | MOV ADD
+726, r44 -> p94 [p86] | MOV SAVE_PC
+727, r5 -> p111, r44 -> p94 | MOV STORE
+728, r15 -> p51, r15 -> p65 [p51] | INC ADD_IMM
+729, r13 -> p108, r1 -> p62 [p119] | MOV LOAD
+730, r1 -> p62, r1 -> p72 [p62] | DEC SUB_IMM
+731, r1 -> p72, r44 -> p5 [p94], r49 -> p7 [p96] | CMP SUB_IMM
+732, r49 -> p7 | J JMP_IMM
+733, r1 -> p72, r44 -> p61 [p5] | JMP LOAD
+734, r44 -> p61 | JMP JMP_REG
+735, r5 -> p111, r7 -> p1 [p50] | LEA LEA
+736, r7 -> p1, r0 -> p89 [p8] | MOVSX SEXT_DWORD_TO_QWORD
+737, r0 -> p89, r45 -> p85 [p82] | CMP LOAD
+738, r45 -> p85, r44 -> p49 [p61], r49 -> p67 [p7] | CMP SUB
+739, r49 -> p67 | J JMP_IMM
+740, r5 -> p111, r7 -> p107 [p1] | LEA LEA
+741, r7 -> p107, r0 -> p4 [p89] | MOVSX SEXT_DWORD_TO_QWORD
+742, r0 -> p4, r45 -> p103 [p85] | CMP LOAD
+743, r45 -> p103, r44 -> p12 [p49], r49 -> p116 [p67] | CMP SUB
+744, r49 -> p116 | J JMP_IMM
+745, r44 -> p13 [p12] | CALL SAVE_PC
+746, r4 -> p97, r4 -> p121 [p97] | CALL SUB_IMM
+747, r44 -> p13, r4 -> p121 | CALL STORE
+748 | CALL JMP_IMM
+749, r14 -> p98, r4 -> p121 | PUSH STORE
+750, r4 -> p121, r4 -> p73 [p121] | PUSH SUB_IMM
+751, r3 -> p101, r4 -> p73 | PUSH STORE
+752, r4 -> p73, r4 -> p109 [p73] | PUSH SUB_IMM
+753, r7 -> p107, r0 -> p15 [p4] | MOVSX SEXT_DWORD_TO_QWORD
+754, r0 -> p15, r0 -> p15, r1 -> p110 [p72] | LEA LEA
+755, r44 -> p92 [p13] | MOVSX SAVE_PC
+756, r44 -> p92, r44 -> p112 [p92] | MOVSX LOAD
+757, r44 -> p112, r2 -> p2 [p93] | MOVSX SEXT_DWORD_TO_QWORD
+758, r0 -> p15, r6 -> p114 [p106] | MOV ADD
+759, r6 -> p114, r2 -> p2, r6 -> p56 [p114], r49 -> p120 [p116] | SUB SUB
+760, r6 -> p56, r6 -> p83 [p56] | MOVSX SEXT_DWORD_TO_QWORD
+761, r1 -> p110, r2 -> p2, r1 -> p117 [p110], r49 -> p102 [p120] | SUB SUB
+762, r1 -> p117, r1 -> p52 [p117] | MOVSX SEXT_DWORD_TO_QWORD
+763, r1 -> p52, r1 -> p115 [p52] | LEA LEA
+764, r2 -> p2, r7 -> p55 [p107] | MOV LOAD
+765, r0 -> p15, r8 -> p99 [p71] | LEA LEA
+766, r9 -> p64 [p9] | XOR ADD
+767, r44 -> p59 [p112] | MOV SAVE_PC
+768, r44 -> p59, r10 -> p6 [p10] | MOV LOAD
+769, r44 -> p124 [p59] | MOV SAVE_PC
+770, r44 -> p124, r11 -> p3 [p11] | MOV LOAD
+771, r44 -> p100 [p124] | MOV SAVE_PC
+772, r44 -> p100, r3 -> p125 [p101] | MOV LOAD
+773 | JMP JMP_IMM
+774, r9 -> p64, r8 -> p99, r14 -> p127 [p98] | MOV LOAD
+775, r14 -> p127, r44 -> p44 [p100], r49 -> p95 [p102] | CMP SUB_IMM
+776, r49 -> p95 | J JMP_IMM
+777, r3 -> p125, r44 -> p122 [p44], r49 -> p84 [p95] | TEST AND_IMM
+778, r49 -> p84 | J JMP_IMM
+779, r0 -> p15, r6 -> p83, r0 -> p54 [p15], r49 -> p57 [p84] | ADD ADD
+780, r6 -> p83, r9 -> p64, r14 -> p123 [p127] | LEA LEA
+781, r9 -> p64, r1 -> p115, r45 -> p77 [p103] | CMP LOAD
+782, r45 -> p77, r44 -> p91 [p122], r49 -> p79 [p57] | CMP SUB
+783, r49 -> p79 | J JMP_IMM
+784, r14 -> p123, r9 -> p76 [p64] | MOV ADD
+785, r9 -> p76, r8 -> p99, r14 -> p78 [p123] | MOV LOAD
+786, r14 -> p78, r44 -> p80 [p91], r49 -> p66 [p79] | CMP SUB_IMM
+787, r49 -> p66 | J JMP_IMM
+788, r3 -> p125, r44 -> p70 [p80], r49 -> p60 [p66] | TEST AND_IMM
+789, r49 -> p60 | J JMP_IMM
+790, r0 -> p54, r6 -> p83, r0 -> p118 [p54], r49 -> p113 [p60] | ADD ADD
+791, r6 -> p83, r9 -> p76, r14 -> p75 [p78] | LEA LEA
+792, r9 -> p76, r1 -> p115, r45 -> p14 [p77] | CMP LOAD
+793, r45 -> p14, r44 -> p45 [p70], r49 -> p104 [p113] | CMP SUB
+794, r49 -> p104 | J JMP_IMM
+795, r44 -> p81 [p45] | MOV SAVE_PC
+796, r10 -> p6, r44 -> p81 | MOV STORE
+797 | JMP JMP_IMM
+798, r4 -> p109, r3 -> p58 [p125] | POP LOAD
+799, r4 -> p109, r4 -> p63 [p109] | POP ADD_IMM
+800, r4 -> p63, r14 -> p74 [p75] | POP LOAD
+801, r4 -> p63, r4 -> p90 [p63] | POP ADD_IMM
+802, r4 -> p90, r44 -> p69 [p81] | RET LOAD
+803, r4 -> p90, r4 -> p105 [p90] | RET ADD_IMM
+804, r44 -> p69 | RET JMP_REG
+805, r5 -> p111, r7 -> p68 [p55] | LEA LEA
+806, r7 -> p68, r0 -> p126 [p118] | MOVSX SEXT_DWORD_TO_QWORD
+807, r0 -> p126, r45 -> p53 [p14] | CMP LOAD
+808, r45 -> p53, r44 -> p87 [p69], r49 -> p88 [p104] | CMP SUB
+809, r49 -> p88 | J JMP_IMM
+810, r44 -> p86 [p87] | CALL SAVE_PC
+811, r4 -> p105, r4 -> p51 [p105] | CALL SUB_IMM
+812, r44 -> p86, r4 -> p51 | CALL STORE
+813 | CALL JMP_IMM
+814, r14 -> p74, r4 -> p51 | PUSH STORE
+815, r4 -> p51, r4 -> p119 [p51] | PUSH SUB_IMM
+816, r3 -> p58, r4 -> p119 | PUSH STORE
+817, r4 -> p119, r4 -> p62 [p119] | PUSH SUB_IMM
+818, r7 -> p68, r0 -> p94 [p126] | MOVSX SEXT_DWORD_TO_QWORD
+819, r0 -> p94, r0 -> p94, r1 -> p96 [p115] | LEA LEA
+820, r44 -> p5 [p86] | MOVSX SAVE_PC
+821, r44 -> p5, r44 -> p50 [p5] | MOVSX LOAD
+822, r44 -> p50, r2 -> p8 [p2] | MOVSX SEXT_DWORD_TO_QWORD
+823, r0 -> p94, r6 -> p82 [p83] | MOV ADD
+824, r6 -> p82, r2 -> p8, r6 -> p61 [p82], r49 -> p7 [p88] | SUB SUB
+825, r6 -> p61, r6 -> p1 [p61] | MOVSX SEXT_DWORD_TO_QWORD
+826, r1 -> p96, r2 -> p8, r1 -> p89 [p96], r49 -> p85 [p7] | SUB SUB
+827, r1 -> p89, r1 -> p49 [p89] | MOVSX SEXT_DWORD_TO_QWORD
+828, r1 -> p49, r1 -> p67 [p49] | LEA LEA
+829, r2 -> p8, r7 -> p12 [p68] | MOV LOAD
+830, r0 -> p94, r8 -> p97 [p99] | LEA LEA
+831, r9 -> p121 [p76] | XOR ADD
+832, r44 -> p73 [p50] | MOV SAVE_PC
+833, r44 -> p73, r10 -> p4 [p6] | MOV LOAD
+834, r44 -> p72 [p73] | MOV SAVE_PC
+835, r44 -> p72, r11 -> p13 [p3] | MOV LOAD
+836, r44 -> p92 [p72] | MOV SAVE_PC
+837, r44 -> p92, r3 -> p93 [p58] | MOV LOAD
+838 | JMP JMP_IMM
+839, r9 -> p121, r8 -> p97, r14 -> p106 [p74] | MOV LOAD
+840, r14 -> p106, r44 -> p114 [p92], r49 -> p116 [p85] | CMP SUB_IMM
+841, r49 -> p116 | J JMP_IMM
+842, r3 -> p93, r44 -> p56 [p114], r49 -> p110 [p116] | TEST AND_IMM
+843, r49 -> p110 | J JMP_IMM
+844, r0 -> p94, r6 -> p1, r0 -> p120 [p94], r49 -> p117 [p110] | ADD ADD
+845, r6 -> p1, r9 -> p121, r14 -> p52 [p106] | LEA LEA
+846, r9 -> p121, r1 -> p67, r45 -> p107 [p53] | CMP LOAD
+847, r45 -> p107, r44 -> p71 [p56], r49 -> p9 [p117] | CMP SUB
+848, r49 -> p9 | J JMP_IMM
+849, r14 -> p52, r9 -> p112 [p121] | MOV ADD
+850, r9 -> p112, r8 -> p97, r14 -> p10 [p52] | MOV LOAD
+851, r14 -> p10, r44 -> p59 [p71], r49 -> p11 [p9] | CMP SUB_IMM
+852, r49 -> p11 | J JMP_IMM
+853, r44 -> p124 [p59] | MOV SAVE_PC
+854, r10 -> p4, r44 -> p124 | MOV STORE
+855, r7 -> p12, r14 -> p10, r7 -> p101 [p12], r49 -> p98 [p11] | XOR XOR
+856, r7 -> p101, r44 -> p100 [p124], r49 -> p102 [p98] | TEST AND_IMM
+857, r49 -> p102 | J JMP_IMM
+858, r4 -> p62, r3 -> p44 [p93] | POP LOAD
+859, r4 -> p62, r4 -> p95 [p62] | POP ADD_IMM
+860, r4 -> p95, r14 -> p15 [p10] | POP LOAD
+861, r4 -> p95, r4 -> p84 [p95] | POP ADD_IMM
+862, r4 -> p84, r44 -> p127 [p100] | RET LOAD
+863, r4 -> p84, r4 -> p103 [p84] | RET ADD_IMM
+864, r44 -> p127 | RET JMP_REG
+865, r5 -> p111, r7 -> p122 [p101] | LEA LEA
+866, r7 -> p122, r0 -> p57 [p120] | MOVSX SEXT_DWORD_TO_QWORD
+867, r0 -> p57, r45 -> p64 [p107] | CMP LOAD
+868, r45 -> p64, r44 -> p123 [p127], r49 -> p91 [p102] | CMP SUB
+869, r49 -> p91 | J JMP_IMM
+870, r44 -> p79 [p123] | CALL SAVE_PC
+871, r4 -> p103, r4 -> p80 [p103] | CALL SUB_IMM
+872, r44 -> p79, r4 -> p80 | CALL STORE
+873 | CALL JMP_IMM
+874, r14 -> p15, r4 -> p80 | PUSH STORE
+875, r4 -> p80, r4 -> p66 [p80] | PUSH SUB_IMM
+876, r3 -> p44, r4 -> p66 | PUSH STORE
+877, r4 -> p66, r4 -> p54 [p66] | PUSH SUB_IMM
+878, r7 -> p122, r0 -> p60 [p57] | MOVSX SEXT_DWORD_TO_QWORD
+879, r0 -> p60, r0 -> p60, r1 -> p78 [p67] | LEA LEA
+880, r44 -> p77 [p79] | MOVSX SAVE_PC
+881, r44 -> p77, r44 -> p70 [p77] | MOVSX LOAD
+882, r44 -> p70, r2 -> p113 [p8] | MOVSX SEXT_DWORD_TO_QWORD
+883, r0 -> p60, r6 -> p45 [p1] | MOV ADD
+884, r6 -> p45, r2 -> p113, r6 -> p125 [p45], r49 -> p109 [p91] | SUB SUB
+885, r6 -> p125, r6 -> p75 [p125] | MOVSX SEXT_DWORD_TO_QWORD
+886, r1 -> p78, r2 -> p113, r1 -> p63 [p78], r49 -> p81 [p109] | SUB SUB
+887, r1 -> p63, r1 -> p90 [p63] | MOVSX SEXT_DWORD_TO_QWORD
+888, r1 -> p90, r1 -> p55 [p90] | LEA LEA
+889, r2 -> p113, r7 -> p118 [p122] | MOV LOAD
+890, r0 -> p60, r8 -> p14 [p97] | LEA LEA
+891, r9 -> p69 [p112] | XOR ADD
+892, r44 -> p104 [p70] | MOV SAVE_PC
+893, r44 -> p104, r10 -> p87 [p4] | MOV LOAD
+894, r44 -> p105 [p104] | MOV SAVE_PC
+895, r44 -> p105, r11 -> p51 [p13] | MOV LOAD
+896, r44 -> p119 [p105] | MOV SAVE_PC
+897, r44 -> p119, r3 -> p126 [p44] | MOV LOAD
+898 | JMP JMP_IMM
+899, r9 -> p69, r8 -> p14, r14 -> p115 [p15] | MOV LOAD
+900, r14 -> p115, r44 -> p86 [p119], r49 -> p5 [p81] | CMP SUB_IMM
+901, r49 -> p5 | J JMP_IMM
+902, r44 -> p2 [p86] | MOV SAVE_PC
+903, r10 -> p87, r44 -> p2 | MOV STORE
+904, r7 -> p118, r14 -> p115, r7 -> p83 [p118], r49 -> p82 [p5] | XOR XOR
+905, r7 -> p83, r44 -> p88 [p2], r49 -> p61 [p82] | TEST AND_IMM
+906, r49 -> p61 | J JMP_IMM
+907, r45 -> p96 [p64] | CMP SAVE_PC
+908, r45 -> p96, r45 -> p7 [p96] | CMP LOAD
+909, r45 -> p7, r44 -> p89 [p88], r49 -> p49 [p61] | CMP SUB_IMM
+910, r49 -> p49 | J JMP_IMM
+911, r14 -> p115, r44 -> p68 [p89], r49 -> p99 [p49] | CMP SUB_IMM
+912, r49 -> p99 | J JMP_IMM
+913, r14 -> p115, r1 -> p76 [p55] | LEA LEA
+914, r1 -> p76, r44 -> p50 [p68], r49 -> p6 [p99] | CMP SUB_IMM
+915, r49 -> p6 | J JMP_IMM
+916, r44 -> p73 [p50] | MOV ADD_IMM
+917, r45 -> p3 [p7] | MOV SAVE_PC
+918, r44 -> p73, r45 -> p3 | MOV STORE
+919, r10 -> p87, r1 -> p72 [p76] | MOVSX SEXT_DWORD_TO_QWORD
+920, r1 -> p72, r1 -> p72, r1 -> p58 [p72] | LEA LEA
+921, r44 -> p74 [p73] | MOV SAVE_PC
+922, r44 -> p74, r10 -> p92 [p87] | MOV LOAD
+923, r44 -> p85 [p74] | MOV SAVE_PC
+924, r44 -> p85, r2 -> p114 [p113] | MOV LOAD
+925, r1 -> p58, r2 -> p114, r44 -> p116 [p85] | MOV LEA
+926, r10 -> p92, r44 -> p116 | MOV STORE
+927, r44 -> p94 [p116] | MOVSX SAVE_PC
+928, r44 -> p94, r44 -> p110 [p94] | MOVSX LOAD
+929, r44 -> p110, r1 -> p106 [p58] | MOVSX SEXT_DWORD_TO_QWORD
+930, r1 -> p106, r1 -> p106, r1 -> p53 [p106] | LEA LEA
+931, r44 -> p56 [p110] | MOV SAVE_PC
+932, r44 -> p56, r2 -> p117 [p114] | MOV LOAD
+933, r1 -> p53, r2 -> p117, r44 -> p121 [p56] | MOV LEA
+934, r0 -> p60, r44 -> p121 | MOV STORE
+935, r44 -> p52 [p121] | MOVSX SAVE_PC
+936, r44 -> p52, r44 -> p71 [p52] | MOVSX LOAD
+937, r44 -> p71, r0 -> p9 [p60] | MOVSX SEXT_DWORD_TO_QWORD
+938, r0 -> p9, r0 -> p9, r0 -> p59 [p9] | LEA LEA
+939, r44 -> p12 [p71] | MOV SAVE_PC
+940, r44 -> p12, r1 -> p11 [p53] | MOV LOAD
+941, r0 -> p59, r1 -> p11, r44 -> p124 [p12] | MOV LEA
+942, r14 -> p115, r44 -> p124 | MOV STORE
+943, r44 -> p98 [p124] | MOVSX SAVE_PC
+944, r44 -> p98, r44 -> p93 [p98] | MOVSX LOAD
+945, r44 -> p93, r0 -> p62 [p59] | MOVSX SEXT_DWORD_TO_QWORD
+946, r0 -> p62, r0 -> p62, r0 -> p10 [p62] | LEA LEA
+947, r44 -> p95 [p93] | MOV SAVE_PC
+948, r44 -> p95, r1 -> p100 [p11] | MOV LOAD
+949, r0 -> p10, r1 -> p100, r44 -> p84 [p95] | MOV LEA
+950, r44 -> p84 | MOV STORE
+951, r44 -> p101 [p84] | MOVSX SAVE_PC
+952, r44 -> p101, r44 -> p120 [p101] | MOVSX LOAD
+953, r44 -> p120, r0 -> p107 [p10] | MOVSX SEXT_DWORD_TO_QWORD
+954, r0 -> p107, r0 -> p107, r0 -> p127 [p107] | LEA LEA
+955, r44 -> p102 [p120] | MOV SAVE_PC
+956, r44 -> p102, r1 -> p123 [p100] | MOV LOAD
+957, r0 -> p127, r1 -> p123, r44 -> p103 [p102] | MOV LEA
+958, r44 -> p103 | MOV STORE
+959, r44 -> p80 [p103] | MOVSX SAVE_PC
+960, r44 -> p80, r44 -> p66 [p80] | MOVSX LOAD
+961, r44 -> p66, r0 -> p57 [p127] | MOVSX SEXT_DWORD_TO_QWORD
+962, r0 -> p57, r0 -> p57, r0 -> p67 [p57] | LEA LEA
+963, r44 -> p79 [p66] | MOV SAVE_PC
+964, r44 -> p79, r1 -> p77 [p123] | MOV LOAD
+965, r0 -> p67, r1 -> p77, r44 -> p8 [p79] | MOV LEA
+966, r44 -> p8 | MOV STORE
+967, r44 -> p1 [p8] | INC SAVE_PC
+968, r44 -> p1, r44 -> p45 [p1] | INC LOAD
+969, r44 -> p45, r44 -> p91 [p45] | INC ADD_IMM
+970, r45 -> p125 [p3] | INC SAVE_PC
+971, r44 -> p91, r45 -> p125 | INC STORE
+972, r4 -> p54, r3 -> p78 [p126] | POP LOAD
+973, r4 -> p54, r4 -> p109 [p54] | POP ADD_IMM
+974, r4 -> p109, r14 -> p63 [p115] | POP LOAD
+975, r4 -> p109, r4 -> p90 [p109] | POP ADD_IMM
+976, r4 -> p90, r44 -> p122 [p91] | RET LOAD
+977, r4 -> p90, r4 -> p97 [p90] | RET ADD_IMM
+978, r44 -> p122 | RET JMP_REG
+979 | JMP JMP_IMM
+980, r12 -> p0, r12 -> p112 [p0], r49 -> p70 [p6] | ADD ADD_IMM
+981, r4 -> p97, r45 -> p4 [p125] | CMP LOAD
+982, r15 -> p65, r45 -> p4, r44 -> p104 [p122], r49 -> p13 [p70] | CMP SUB
+983, r49 -> p13 | J JMP_IMM
+984, r44 -> p105 [p104] | MOV SAVE_PC
+985, r44 -> p105, r0 -> p44 [p67] | MOV LOAD
+986, r0 -> p44, r44 -> p15 [p105], r49 -> p119 [p13] | CMP SUB_IMM
+987, r49 -> p119 | J JMP_IMM
+988, r44 -> p81 [p15] | MOV SAVE_PC
+989, r44 -> p81, r1 -> p86 [p77] | MOV LOAD
+990, r1 -> p86, r44 -> p118 [p81], r49 -> p5 [p119] | CMP SUB_IMM
+991, r49 -> p5 | J JMP_IMM
+992, r12 -> p112, r44 -> p2 [p118] | MOVSX LOAD
+993, r44 -> p2, r13 -> p82 [p108] | MOVSX SEXT_DWORD_TO_QWORD
+994, r13 -> p82, r13 -> p82, r44 -> p64 [p2], r49 -> p96 [p5] | TEST AND
+995, r49 -> p96 | J JMP_IMM
+996, r13 -> p82, r5 -> p88 [p111] | MOV ADD
+997, r44 -> p61 [p64] | MOV SAVE_PC
+998, r5 -> p88, r44 -> p61 | MOV STORE
+999, r15 -> p65, r15 -> p89 [p65] | INC ADD_IMM
+1000, r13 -> p82, r1 -> p49 [p86] | MOV LOAD
+Processed 1000 trace records.
+Micro-ops: 1000
+Macro-ops: 750
+IPC is :1.000000
