@@ -18,6 +18,7 @@ using std::deque;
 #define PREG_SIZE 2048
 #define ROB_SIZE  1024
 #define ISSUE_WD  8
+#define RESTART_PENALTY 5
 
 int64_t totalMicroops = 0;
 int64_t totalMacroops = 0;
@@ -52,7 +53,122 @@ typedef struct{
 
     int is_load;//0--not, 1--load
     int is_store;//0--not, 1--store
+
+    uint64_t instrAddr;
+    char TN;
+    int is_mis_pred;
 } Microop;
+
+inline int16_t satureOp(int16_t counter, int16_t change)
+{
+    int16_t res = counter + change;
+    if (res < 0)
+        return 0;
+    if (res > 3)
+        return 3;
+    return res;
+}
+
+inline uint32_t lastNbit(uint64_t pc, int nBit)
+{
+    uint64_t mask;
+            
+    mask = (1<<nBit) - 1;
+
+    return (uint32_t)(pc & mask);
+}
+
+inline uint32_t xorNBit(uint32_t addr, uint32_t his, int len)
+{
+    uint32_t mask;
+
+    mask = (1<<len) - 1;
+    addr = addr ^ (his & mask);
+
+    return addr;
+}
+
+inline uint32_t histShift(uint32_t old, char ifTake, int len)
+{
+    uint32_t mask;
+    mask = (1<<len) - 1;
+
+    old = old << 1;
+
+    if (ifTake == 'T')//taken
+    {
+        old = old | 1;
+    }
+    else if (ifTake == 'N')//not taken
+    {
+        old = old & ~1;
+    }
+    old = old & mask;
+
+    return old;
+}
+
+//0--mis-prediction, 1--right
+int bimodal(uint64_t instrAddr, char TNnotBranch)
+{
+    static int addr_len = 16;
+    static int8_t BiCounter[1<<16];
+
+    int pred_res = 1;
+
+    int index = lastNbit(instrAddr, addr_len);
+
+    if (TNnotBranch == 'T')
+    {
+        if (BiCounter[index] <= 1)
+            pred_res = 0;
+
+        BiCounter[index] = satureOp(BiCounter[index], 1);
+    }
+    else if (TNnotBranch == 'N')
+    {
+        if (BiCounter[index] >= 2)
+            pred_res = 0;
+
+        BiCounter[index] = satureOp(BiCounter[index], -1);
+    }
+    //16KB predicotr, 2^16 entries
+    //see hw3 for code
+
+    return pred_res;
+}
+
+//0--mis-prediction, 1--right
+int gshare(uint64_t instrAddr, char TNnotBranch)
+{
+    //16bit history
+    static int32_t history;
+    static int addr_len = 16;
+    static int8_t GsCounter[1<<16];
+
+    int pred_res = 1;//right
+
+    int index = lastNbit(instrAddr, addr_len);
+
+    int gIndex = xorNBit(index, history, addr_len); 
+
+    if (TNnotBranch == 'T')
+    {
+        if (GsCounter[gIndex] <= 1)
+            pred_res = 0;
+        GsCounter[gIndex] = satureOp(GsCounter[gIndex], 1);
+    }
+    else if (TNnotBranch == 'N')
+    {
+        if (GsCounter[gIndex] >= 2)
+            pred_res = 0;
+        GsCounter[gIndex] = satureOp(GsCounter[gIndex], -1);
+    }
+
+    history = histShift(history, TNnotBranch, addr_len);
+
+    return pred_res;
+}
 
 void reg_rename(Microop &pInstr,
                 uint32_t *maptable,
@@ -233,6 +349,8 @@ void fetch(Microop &pInstr, int &endOfTrace, FILE *inputFile)
     if (loadStore != '-')
         pInstr.mem_op_addr = addressForMemoryOp;
 
+    pInstr.instrAddr = instructionAddress;
+    pInstr.TN = TNnotBranch;
 }
 
 void log_info(const Microop &pInstr, 
@@ -270,6 +388,7 @@ void simulate(FILE* inputFile, FILE* outputFile)
   uint32_t maptable[AREG_SIZE];//architecture register from 0 to AREG_SIZE-1
   queue<uint32_t> freelist;//free list from AREG_SIZE to PREG_SIZE-1
   deque<Microop> ROB;//a list of reorder buffer
+  int fetch_ready = 0;
   int scoreboard[PREG_SIZE];
 
   memset(scoreboard, 0, sizeof(int)*PREG_SIZE);
@@ -332,6 +451,13 @@ void simulate(FILE* inputFile, FILE* outputFile)
             if ((*it).writeFlag == 1)
                 scoreboard[(*it).flag_phys] = (*it).latency;
 
+            //exp 4, 5
+            if ((*it).is_mis_pred == 1)
+            {
+                assert(fetch_ready == -1);
+                fetch_ready = (*it).latency + RESTART_PENALTY;
+            }
+
             issueCnt++;
 
             if (issueCnt == ISSUE_WD)
@@ -345,6 +471,17 @@ void simulate(FILE* inputFile, FILE* outputFile)
     {
         for (int i = 0; i < ISSUE_WD; ++i)
         {
+            if (fetch_ready > 0)
+            {
+                fetch_ready = fetch_ready -1;
+                break;
+            }
+            if (fetch_ready == -1)
+                break;
+
+            assert(fetch_ready == 0);
+
+
             if (ROB.size() == ROB_SIZE)
                 break;
 
@@ -353,6 +490,19 @@ void simulate(FILE* inputFile, FILE* outputFile)
             memset(&aInstr, 0, sizeof(Microop));
 
             fetch(aInstr, endOfTrace, inputFile);
+
+            //exp4
+            if (aInstr.readFlag == 1 && aInstr.TN != '-')
+            {
+                //int pred_res = bimodal(aInstr.instrAddr, aInstr.TN);
+                int pred_res = gshare(aInstr.instrAddr, aInstr.TN);
+                if (pred_res == 0)//misprediction
+                {
+                    fetch_ready = -1;
+                    aInstr.is_mis_pred = 1;
+                }
+            }
+            //exp5
             
             if (endOfTrace)
                 break;
