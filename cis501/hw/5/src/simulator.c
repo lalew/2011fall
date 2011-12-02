@@ -13,9 +13,9 @@
 using std::queue;
 using std::deque;
 
+#define RFLAG     49
 #define AREG_SIZE 50
 #define PREG_SIZE 2048
-#define RFLAG     49
 #define ROB_SIZE  1024
 #define ISSUE_WD  8
 
@@ -49,6 +49,9 @@ typedef struct{
     int64_t commit_cycle;
     int64_t numMicro;
     int latency;
+
+    int is_load;//0--not, 1--load
+    int is_store;//0--not, 1--store
 } Microop;
 
 void reg_rename(Microop &pInstr,
@@ -95,8 +98,9 @@ void commit(const Microop &pInstr, queue<uint32_t> &freelist)
         freelist.push(pInstr.flag_phys_ex);
 }
 
-bool isReady(const Microop &pInstr, int *scoreboard)
+bool isReady(const Microop &pInstr, int *scoreboard, deque<Microop> &ROB)
 {
+    //exp1 requirement
     if (pInstr.arch_src1 != -1 && 
         scoreboard[pInstr.phys_src1] != 0)
         return false;
@@ -107,7 +111,21 @@ bool isReady(const Microop &pInstr, int *scoreboard)
         scoreboard[pInstr.flag_phys_ex] != 0)
         return false;
 
+    //exp2 requirement
+    if (pInstr.is_load == 1)
+    {
+        deque<Microop>::iterator it;
+        for (it = ROB.begin(); it != ROB.end(); ++it)
+            if ((*it).is_store == 1 &&
+                (*it).numMicro < pInstr.numMicro &&
+                !((*it).issued ==1 && (*it).done_cycle <= totalCycle))
+                return false;
+    }
+
+
     return true;
+
+
 }
 
 void fetch(Microop &pInstr, int &endOfTrace, FILE *inputFile)
@@ -205,6 +223,11 @@ void fetch(Microop &pInstr, int &endOfTrace, FILE *inputFile)
     pInstr.fetch_cycle = totalCycle;
     pInstr.numMicro = totalMicroops;
 
+    if (loadStore == 'L')
+        pInstr.is_load = 1;
+    if (loadStore == 'S')
+        pInstr.is_store = 1;
+
 
 }
 
@@ -292,7 +315,7 @@ void simulate(FILE* inputFile, FILE* outputFile)
     deque<Microop>::iterator it;
     for (it = ROB.begin(); it != ROB.end(); it++)
     {
-        if ((*it).issued == 0 && isReady(*it, scoreboard))
+        if ((*it).issued == 0 && isReady(*it, scoreboard, ROB))
         {
             (*it).issued = 1;
             (*it).issue_cycle = totalCycle;
@@ -322,6 +345,8 @@ void simulate(FILE* inputFile, FILE* outputFile)
                 break;
 
             Microop aInstr;
+
+            memset(&aInstr, 0, sizeof(Microop));
 
             fetch(aInstr, endOfTrace, inputFile);
             
