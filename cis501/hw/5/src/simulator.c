@@ -119,7 +119,9 @@ bool isReady(const Microop &pInstr, int *scoreboard, deque<Microop> &ROB)
             if ((*it).is_store == 1 &&
                 (*it).numMicro < pInstr.numMicro &&
                 !((*it).issued ==1 && (*it).done_cycle <= totalCycle))
-                return false;
+                //exp3 requirement
+                if ((*it).mem_op_addr == pInstr.mem_op_addr)
+                    return false;
     }
 
 
@@ -228,6 +230,8 @@ void fetch(Microop &pInstr, int &endOfTrace, FILE *inputFile)
     if (loadStore == 'S')
         pInstr.is_store = 1;
 
+    if (loadStore != '-')
+        pInstr.mem_op_addr = addressForMemoryOp;
 
 }
 
