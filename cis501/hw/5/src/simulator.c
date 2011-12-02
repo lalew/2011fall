@@ -16,7 +16,7 @@ using std::deque;
 #define AREG_SIZE 50
 #define PREG_SIZE 2048
 #define RFLAG     49
-#define ROB_SIZE  128
+#define ROB_SIZE  1024
 #define ISSUE_WD  8
 
 int64_t totalMicroops = 0;
@@ -272,9 +272,9 @@ void simulate(FILE* inputFile, FILE* outputFile)
             ROB.front().done_cycle <= totalCycle)
         {
             ROB.front().commit_cycle = totalCycle;
-
+#ifdef DEBUG
             log_info(ROB.front(), outputFile);
-            
+#endif            
             commit(ROB.front(), freelist);
             ROB.pop_front();
         }
