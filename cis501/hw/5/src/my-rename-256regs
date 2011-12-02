@@ -1,4 +1,5 @@
-gzcat sjeng-1K.trace.gz | ./simulator
+g++ -Wall -Wextra -Wno-long-long -O2 -lm -D DEBUG -o simulator_d simulator.c
+gzcat sjeng-1K.trace.gz | ./simulator_d
 Processing trace...
 1, r49 -> p49 | J JMP_IMM
 2, r1 -> p1, r44 -> p50 [p44] | MOVSX LOAD
