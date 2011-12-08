@@ -235,9 +235,11 @@ bool isReady(const Microop &pInstr, int *scoreboard, deque<Microop> &ROB)
             if ((*it).is_store == 1 &&
                 (*it).numMicro < pInstr.numMicro &&
                 !((*it).issued ==1 && (*it).done_cycle <= totalCycle))
+            {
                 //exp3 requirement
                 if ((*it).mem_op_addr == pInstr.mem_op_addr)
                     return false;
+            }
     }
 
 
